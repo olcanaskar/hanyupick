@@ -1,4 +1,4 @@
-import { buildOptions, shuffle } from '../services/quizBuilder';
+import { buildOptions, pickWord, shuffle } from '../services/quizBuilder';
 import { ALL_WORDS, LEVEL_POOLS } from '../services/wordRepository';
 
 // Havuzlar artık tek kaynaktan (Faz 3.1) — test kopya tutmaz.
@@ -182,4 +182,64 @@ describe('buildOptions — gerçek veri (2.500 kelime)', () => {
       }
     }
   );
+});
+
+// Ardışık sorularda aynı kelimenin tekrar gelmesi: 5 kelimelik bir destede
+// `Math.random` ile her soruda ~1/5 olasılıkla aynı kart üst üste geliyordu.
+describe('pickWord — ardışık tekrar engeli', () => {
+  test('boş havuzda null döner', () => {
+    expect(pickWord([])).toBeNull();
+    expect(pickWord(null)).toBeNull();
+    expect(pickWord(undefined)).toBeNull();
+  });
+
+  test('önceki kelime verilmezse normal rastgele seçim yapar', () => {
+    const pool = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const seen = new Set();
+
+    for (let i = 0; i < 300; i++) seen.add(pickWord(pool).id);
+
+    expect([...seen].sort()).toEqual([1, 2, 3]);
+  });
+
+  test('havuzda alternatif varsa önceki kelimeyi ASLA seçmez', () => {
+    const pool = [{ id: 1 }, { id: 2 }];
+
+    for (let i = 0; i < 100; i++) {
+      expect(pickWord(pool, 1).id).toBe(2);
+      expect(pickWord(pool, 2).id).toBe(1);
+    }
+  });
+
+  test('daha büyük havuzda da önceki kelime elenir, diğerleri eşit şanslıdır', () => {
+    const pool = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }];
+    const seen = new Set();
+
+    for (let i = 0; i < 500; i++) {
+      const picked = pickWord(pool, 3);
+      expect(picked.id).not.toBe(3);
+      seen.add(picked.id);
+    }
+
+    expect([...seen].sort()).toEqual([1, 2, 4, 5]);
+  });
+
+  test('tek kelimelik havuzda mecburen o kelime döner (sonsuz döngüye girmez)', () => {
+    const pool = [{ id: 7 }];
+
+    for (let i = 0; i < 20; i++) expect(pickWord(pool, 7).id).toBe(7);
+  });
+
+  test('havuzda olmayan önceki id sonucu kısıtlamaz', () => {
+    const pool = [{ id: 1 }, { id: 2 }];
+
+    for (let i = 0; i < 50; i++) expect([1, 2]).toContain(pickWord(pool, 99).id);
+  });
+
+  test('özel destenin metin id leri ile de çalışır', () => {
+    const pool = [{ id: 'custom_Liste_0' }, { id: 'custom_Liste_1' }];
+
+    expect(pickWord(pool, 'custom_Liste_0').id).toBe('custom_Liste_1');
+    expect(pickWord(pool, 'custom_Liste_1').id).toBe('custom_Liste_0');
+  });
 });

@@ -10,7 +10,7 @@ import Header from '../components/Header';
 import QuestionCard from '../components/QuestionCard';
 import ScoreBoard from '../components/ScoreBoard';
 
-import { buildOptions } from '../services/quizBuilder';
+import { buildOptions, pickWord } from '../services/quizBuilder';
 import {
   ALL_WORDS,
   LEVEL_POOLS,
@@ -68,6 +68,11 @@ export default function QuizScreen({
     reviewPoolRef.current = reviewPool;
   }, [reviewPool]);
 
+  // Son gösterilen kelimenin id'si. Yine ref: generateQuestion'ın bağımlılıklarına
+  // girerse (state olsaydı) effect her soruda yeniden tetiklenip soruyu iki kez
+  // üretirdi. Ardışık sorularda aynı kartın tekrar gelmemesi için kullanılır.
+  const lastWordIdRef = useRef(null);
+
   // Review moduna yalnızca İLK girişte yanlışı olan bir modu seçmek için kullanılan bayrak
   const didInitReviewMode = useRef(false);
 
@@ -110,8 +115,9 @@ export default function QuizScreen({
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * currentPool.length);
-    const correctWord = currentPool[randomIndex];
+    // Ardışık iki soruda aynı kelime gösterilmez (havuzda alternatif varsa).
+    const correctWord = pickWord(currentPool, lastWordIdRef.current);
+    lastWordIdRef.current = correctWord.id;
 
     // Çeldiriciler önce doğru cevapla AYNI seviyeden seçilir; yeterli benzersiz aday
     // bulunamazsa tüm kelimelerden tamamlanır. Review'da kelimenin seviyesi id'den bulunur.

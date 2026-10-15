@@ -1,4 +1,4 @@
-// Soru şıklarını (doğru cevap + çeldiriciler) oluşturan saf yardımcılar.
+// Soru seçimini ve şıkları (doğru cevap + çeldiriciler) oluşturan saf yardımcılar.
 //
 // Neden ayrı dosya: Bu mantık daha önce QuizScreen içinde gömülüydü ve yalnızca `id`
 // ile eleme yapıyordu. Aynı hanzi/pinyin/anlam birden çok kayıtta geçtiği için (bkz.
@@ -9,6 +9,20 @@
 
 // Bir kelimenin şık olarak gösterilebilecek içerik alanları.
 const WORD_FIELDS = ['hanzi', 'pinyin', 'meaning'];
+
+// Havuzdan rastgele bir kelime seçer; havuzda birden fazla kelime varsa bir öncekiyle
+// AYNI olanı atlar. Küçük bir destede (5 kelime) `Math.random` ardışık iki soruda aynı
+// kartı ~1/5 olasılıkla getiriyordu ve bu kullanıcıya "takıldı" hissi veriyor.
+//
+// Tek kelimelik havuzda (ya da hepsi öncekiyle aynıysa) mecburen o kelime döner.
+export const pickWord = (pool, previousId = null) => {
+  if (!pool || pool.length === 0) return null;
+
+  const candidates = pool.filter((word) => word.id !== previousId);
+  const from = candidates.length > 0 ? candidates : pool;
+
+  return from[Math.floor(Math.random() * from.length)];
+};
 
 // Fisher-Yates karıştırma. (Array.prototype.sort(() => 0.5 - Math.random()) yanlı
 // sonuç üretir.) Girdiyi değiştirmez, yeni dizi döndürür.
