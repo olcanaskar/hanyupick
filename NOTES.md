@@ -364,6 +364,7 @@ Her maddeyi **ayrı commit** olarak yap.
   4. Arka plan **dokunuşları engellememeli** (butonlar/şıklar normal) ve arayüz **donmamalı** — 4.3'ün asıl iddiası bu (kilitlenme senaryosu jest ile de kanıtlandı).
   5. *(Varsa)* Android'de bölünmüş ekran/çoklu pencere ile pencere ölçüsü değiştirilip geri alındığında karakterler ekranda kalmalı (eskiden eski ölçüyle konumlanıyordu).
 - **Cihaz testi (Faz 4.5: erişilebilirlik, `4bbacf6`) ⏳ BEKLİYOR** — TalkBack (Android) veya VoiceOver (iOS) açıkken:
+  - **Nasıl açılır — Android/TalkBack:** Ayarlar → Erişilebilirlik → TalkBack → aç (kısayol: **iki ses tuşuna birlikte ~3 sn bas**). Gezinme: tek parmakla **sağa kaydır** = sonraki öğe, **sola** = önceki, **çift dokun** = etkinleştir, **iki parmakla kaydır** = kaydır. **iOS/VoiceOver:** Ayarlar → Erişilebilirlik → VoiceOver → aç (kısayol: yan tuşa **üç kez bas**). Gezinme: tek parmak sağa/sola kaydır = sonraki/önceki, **çift dokun** = etkinleştir. Test bitince kapatmayı unutma.
   1. **Quiz (en önemli):** 4 şık **tek tek** odaklanabilmeli ve her biri görünen metnini okumalı; hoparlör "Play pronunciation" demeli. **Cevaplamadan önce** kart büyük bir "Continue to the next question" öğesi **olmamalı**; cevaplandıktan sonra **olmalı** (ve şıklar artık odaklanmaz).
   2. **Home:** seviye seçici "Select level: HSK 1. Opens the level list" · ➔ "Start quiz: HSK 1" · 4 kart (Review the wrongs / Custom word decks / Vocabulary and search / Statistics and progress).
   3. **Header:** 3 sekme `sekme` olarak yön adını okumalı; seviye butonu mevcut seviyeyi söylemeli.
