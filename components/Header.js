@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   Animated,
-  Dimensions,
   DeviceEventEmitter,
   ScrollView,
   Modal,

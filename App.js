@@ -23,7 +23,6 @@ const AppTheme = {
 
 export default function App() {
   const [reviewPool, setReviewPool] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   // 1. Uygulama açılışında kayıtlı veriyi yükle
   useEffect(() => {
@@ -51,8 +50,6 @@ export default function App() {
         }
       } catch (error) {
         console.error('Kayıtlı veriler yüklenemedi:', error);
-      } finally {
-        setIsLoaded(true);
       }
     };
 

@@ -22,7 +22,7 @@ export const pickAndParseJSON = async () => {
     let parsedWords = [];
     try {
       parsedWords = JSON.parse(fileContent);
-    } catch (e) {
+    } catch {
       throw new Error('Invalid JSON format. Please select a valid JSON file.');
     }
 
