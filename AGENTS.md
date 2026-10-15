@@ -84,4 +84,4 @@ Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submi
 - `.git/hooks/post-commit` (local only) pushes `main` and the `known-good` tag after every commit.
 - `NOTES.md` is the handoff document — read it first, update it when a phase lands.
 - Keep exactly one `ChineseQuizApp-backup-*.tar.gz` in `C:\Projects\App`: delete the older archive when taking a new one.
-- `eslint.config.js` deliberately relaxes three rules, with the reasons inline: `react-hooks/refs` is off (the code uses React Native's `Animated` ref API, which the rule cannot model), and `react-hooks/set-state-in-effect` / `react/no-unescaped-entities` are warnings rather than errors.
+- `eslint.config.js` deliberately relaxes three rules, with the reasons inline: `react-hooks/refs` is off (the code uses React Native's `Animated` ref API, which the rule cannot model), and `react-hooks/set-state-in-effect` / `react-hooks/exhaustive-deps` are warnings rather than errors. `npm run lint` is expected to stay at **0 errors**.
