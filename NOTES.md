@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2.1 (istatistik yarış koşulu) tamamlandı. Sıradaki: Faz 2.2 (UTC/yerel tarih).
+Son güncelleme: Faz 2.1 tamamlandı **ve** `jest`/`jest-expo` test altyapısı kuruldu (28 test yeşil). Sıradaki: Faz 2.2 (UTC/yerel tarih).
 
 ---
 
@@ -43,15 +43,22 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 - **Remote (uzak depo) YOK** → commit'ler yalnızca bu diskte. Gerçek yedek için ileride GitHub vb. eklenmeli.
 - `android/` ve `ios/` `.gitignore`'da (Expo prebuild çıktısı; elle düzenleme).
 - **`tsconfig.json` ve ESLint yapılandırması YOK** → `AGENTS.md`'nin istediği `tsc` / `expo lint` çalışmaz (bkz. Faz 3.4).
-- Derleme/emülatör yok → doğrulama statik (Babel parse + mantık simülasyonu) + cihazda elle test.
-- Geçici doğrulama scriptleri: `%TEMP%\opencode\{audit,verify,sim,review_sim}.js`.
+- **Test altyapısı VAR** (Faz 2.1 sonrası eklendi): `jest` + `jest-expo`.
+  - Komut: `npm test` (tek seferlik) veya `npm run test:watch`.
+  - `jest.setup.js` → AsyncStorage'ın resmi jest mock'unu bağlar (`jest.mock(...)`).
+  - Kapsam: **servisler** (saf iş mantığı, tarih/streak, veri doğrulama). UI/dokunma/animasyon hâlâ cihazda elle test edilir.
+- Derleme/emülatör yok → UI doğrulaması statik (Babel parse) + cihazda elle; **mantık doğrulaması `npm test` ile.**
+- Geçici doğrulama scriptleri (artık gerekmiyor, duruyor): `%TEMP%\opencode\*.js`.
 
 ---
 
 ## 3. Git durumu
 
 ```
-bc97841  fix(stats): serialize stat writes to prevent lost updates; add ref-based double-tap guard   ← HEAD
+163b3f9  test: add unit tests for stats, import and example services                    ← HEAD
+cf46bbb  chore(test): add jest-expo setup with AsyncStorage mock
+46e3279  docs: mark Faz 2.1 done in NOTES.md
+bc97841  fix(stats): serialize stat writes to prevent lost updates; add ref-based double-tap guard
 f51ebe9  docs: add NOTES.md (phase plan and handoff notes)
 e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count   ← tag: known-good
 2a7e4e4  fix: P0 quiz bugs (hsk5 examples export, mixed hsk5 pool, review mode lock, missing hint in meaning modes)
@@ -84,6 +91,14 @@ e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mo
   - Sonrasında mod asla zorla geri alınmaz; kullanıcı sekmeler arasında serbestçe gezer.
 - **Ek:** Header'daki kalan kelime sayacı artık **o moda özel** (`reviewCountForMode`).
 
+### Test altyapısı (Faz 2.1 sonrası)
+- [x] `jest` + `jest-expo` kuruldu. Kurulum komutu (Windows): `npx expo install jest-expo jest @types/jest "--" --dev`.
+- [x] `package.json` → `"jest": { "preset": "jest-expo", "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"] }`, `"test": "jest"`.
+- [x] `jest.setup.js` → AsyncStorage resmi jest mock'u.
+- [x] `__tests__/`: `statsManager.test.js` (10) + `importService.test.js` (10) + `exampleService.test.js` (8) = **28 test**.
+- **Not:** `importService`'te `defaultName` testi `test.failing` olarak işaretli — **Faz 2.3 hatası bilinçli belgeleniyor**. 2.3 düzeltilince bu testi normal `test(...)` yapıp yeşile çevir.
+- **Commit:** `cf46bbb` (altyapı), `163b3f9` (testler)
+
 ---
 
 ## 5. Sıradaki: Faz 2 — Veri bütünlüğü / yarış koşulları
@@ -107,6 +122,7 @@ Her maddeyi **ayrı commit** olarak yap.
 - **Sorun:** `/\.[^/.]+\$/` bozuk → uzantı hiç kırpılmıyor; üretilen `defaultName` `CustomDeckModal` tarafından kullanılmıyor.
 - **Çözüm:** regex'i düzelt (`/\.(json)$/i` gibi); `setCustomDeckName(result.defaultName ?? '')`.
 - **Doğrulama:** `kelimeler.json` seçilince isim alanı "kelimeler" ile dolu gelmeli.
+- **Test:** `__tests__/importService.test.js` → `test.failing('defaultName dosya uzantısını kırpar', ...)`. Düzeltince normal teste çevir (suite yeşil kalır).
 
 ### 2.4 Tekrarlanan hanzi / çeldirici tekilliği (P1)
 - **Sorun:** 66 hanzi birden çok seviyede var; çeldiriciler yalnızca `id` ile eleniyor → aynı/çok benzer şık gelebilir.
@@ -155,5 +171,5 @@ Her maddeyi **ayrı commit** olarak yap.
 1. Bu dosyayı oku (`NOTES.md`).
 2. `git log --oneline` ve `git status` ile durumu doğrula.
 3. Çalışılacak maddeyi seç (kural: **her düzeltme ayrı commit**, mesajı açıklayıcı).
-4. Bitince: doğrula → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
+4. Bitince: doğrula (`npm test`, varsa Babel parse) → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
 5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
