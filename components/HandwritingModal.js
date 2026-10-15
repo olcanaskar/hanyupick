@@ -11,8 +11,15 @@ import {
   Pressable,
 } from 'react-native';
 import Svg, { Path, Line } from 'react-native-svg';
+import { recognizeHandwriting } from '../services/handwritingService';
 
 const CANVAS_SIZE = 280;
+
+// Kullanıcıya gösterilen hata metinleri (servis yalnızca hata KODU döner).
+const ERROR_MESSAGES = {
+  timeout: '⚠️ Timed out (internet slow?)',
+  network: '⚠️ No connection (Internet required)',
+};
 
 export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
   const [paths, setPaths] = useState([]); // [[{x, y}, ...], ...]
@@ -28,7 +35,9 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
   const currentPathRef = useRef(currentPath);
   currentPathRef.current = currentPath;
 
-  // Çizimleri API formatına dönüştürüp karakter tanıma isteği atar
+  // Çizimleri servise gönderip karakter tanıma isteği atar.
+  // İsteğin kendisi `services/handwritingService.js`te: orada ZAMAN AŞIMI var, yani
+  // yavaş/askıda kalan bir ağda spinner sonsuza kadar dönmez.
   const recognizeStrokes = async (allPaths) => {
     if (!allPaths || allPaths.length === 0) {
       setCandidates([]);
@@ -40,48 +49,18 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
     setErrorMessage('');
 
     try {
-      // API'nin beklediği [[[x1, x2], [y1, y2], []], ...] formatı
-      const ink = allPaths.map((stroke) => {
-        const xCoords = stroke.map((p) => Math.round(p.x));
-        const yCoords = stroke.map((p) => Math.round(p.y));
-        return [xCoords, yCoords, []];
+      const { candidates: found, error } = await recognizeHandwriting(allPaths, {
+        canvasSize: CANVAS_SIZE,
       });
 
-      const response = await fetch(
-        'https://inputtools.google.com/request?itc=zh-t-i0-handwrit&app=mobilesearch',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            app_version: 0.4,
-            api_level: '537.36',
-            device: '5.0',
-            input_type: '0',
-            options: 'enable_homophone_converter',
-            requests: [
-              {
-                writer_size: { width: CANVAS_SIZE, height: CANVAS_SIZE },
-                ink: ink,
-              },
-            ],
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      if (data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1]) {
-        setCandidates(data[1][0][1]);
-      } else {
-        setCandidates([]);
-      }
-    } catch (error) {
-      console.error('Handwriting Recognition Error:', error);
+      setCandidates(found);
+      setErrorMessage(ERROR_MESSAGES[error] ?? '');
+    } catch (unexpectedError) {
+      // Servis hata durumlarını kod olarak döner; buraya yalnızca beklenmeyen bir
+      // hata düşer (ör. ortamda AbortController yoksa). Kullanıcı yine bilgilendirilir.
+      if (__DEV__) console.warn('El yazısı tanıma beklenmeyen hata:', unexpectedError);
       setCandidates([]);
-      setErrorMessage('⚠️ No connection (Internet required)');
+      setErrorMessage(ERROR_MESSAGES.network);
     } finally {
       setLoading(false);
     }
