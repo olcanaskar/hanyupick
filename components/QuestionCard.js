@@ -105,18 +105,17 @@ export default function QuestionCard({
     });
   };
 
-  // Hoparlör hile koruması
+  // Hoparlör hile koruması: sesli okuma cevabı ele verecek modlarda,
+  // cevap verilene kadar hoparlörü gizle.
   const isAudioCheat =
-    mode?.endsWith('to-pinyin') ||
-    mode?.endsWith('to-hanzi') ||
-    mode?.startsWith('en');
+    mode?.endsWith('to-pinyin') || mode?.endsWith('to-hanzi');
   const showSpeaker = isAudioCheat ? isAnswered : true;
 
   // 1. Soru Alanı Metni (Prompt)
   const renderPrompt = () => {
     const m = (mode || '').toLowerCase();
 
-    if (m.startsWith('en') || m.startsWith('meaning')) {
+    if (m.startsWith('meaning')) {
       return (
         <Text style={styles.promptMeaning}>
           {word.meaning || word.en || word.english}
@@ -154,9 +153,9 @@ export default function QuestionCard({
 
     if (mode?.includes('hanzi') && mode?.includes('pinyin')) {
       missingText = `Meaning: ${word.meaning}`;
-    } else if (mode?.includes('hanzi') && mode?.includes('en')) {
+    } else if (mode?.includes('hanzi') && mode?.includes('meaning')) {
       missingText = `Pinyin: ${word.pinyin}`;
-    } else if (mode?.includes('pinyin') && mode?.includes('en')) {
+    } else if (mode?.includes('pinyin') && mode?.includes('meaning')) {
       missingText = `Hanzi: ${word.hanzi}`;
     }
 

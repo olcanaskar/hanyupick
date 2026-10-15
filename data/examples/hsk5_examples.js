@@ -1301,4 +1301,6 @@ const hsk5Examples = {
   "2498": { "hanzi": "龙是中国传统文化中象征吉祥与力量的神兽。", "pinyin": "Lóng shì Zhōngguó chuántǒng wénhuà zhōng xiàngzhēng jíxiáng yǔ lìliàng de shénshòu.", "meaning": "The dragon is a mythical beast in Chinese culture symbolizing auspiciousness and power." },
   "2499": { "hanzi": "水管老化导致卫生间发生了漏水现象。", "pinyin": "Shuǐguǎn lǎohuà dǎozhì wèi shēngjiān fāshēng le lòushuǐ xiànxiàng.", "meaning": "Aging water pipes caused leakage in the bathroom." },
   "2500": { "hanzi": "经过漫长航行，船只终于安全降落靠港在陆地上。", "pinyin": "Jīngguò màncháng hángxíng, chuánzhī zhōngyú ānquán jiàngluò kào gǎng zài lùdì shàng.", "meaning": "After long navigation, ship safely docked on land." }
-}
+};
+
+export default hsk5Examples;

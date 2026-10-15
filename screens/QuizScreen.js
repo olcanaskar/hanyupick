@@ -54,7 +54,8 @@ export default function QuizScreen({
     if (targetLevel === 'hsk3') return hsk3Data;
     if (targetLevel === 'hsk4') return hsk4Data;
     if (targetLevel === 'hsk5') return hsk5Data;
-    if (targetLevel === 'mixed') return [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data];
+    if (targetLevel === 'mixed')
+      return [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data, ...hsk5Data];
     return hsk1Data;
   }, [level]);
 
@@ -111,14 +112,18 @@ export default function QuizScreen({
     generateQuestion(level, mode);
   }, [level, mode, generateQuestion]);
 
-  // Review modunda soru havuzu kontrolü
+  // Review modunda: mevcut modda yanlış yoksa, dolu olan ilk moda geç.
+  // (Modu zorla sabitlemez; kullanıcı dolu modlar arasında serbestçe gezebilir.)
   useEffect(() => {
-    if (level === 'review' && reviewPool && reviewPool.length > 0) {
-      const firstWrongMode = reviewPool[0].wrongMode || 'hanzi-to-pinyin';
-      if (mode !== firstWrongMode) {
-        setMode(firstWrongMode);
-      }
-    }
+    if (level !== 'review' || !reviewPool || reviewPool.length === 0) return;
+
+    const hasItemsInMode = reviewPool.some(
+      (item) => (item.wrongMode || 'hanzi-to-pinyin') === mode
+    );
+    if (hasItemsInMode) return;
+
+    const firstWrongMode = reviewPool[0].wrongMode || 'hanzi-to-pinyin';
+    setMode(firstWrongMode);
   }, [level, reviewPool, mode]);
 
   // Seçenek tıklama mantığı
