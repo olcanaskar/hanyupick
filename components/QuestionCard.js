@@ -117,14 +117,17 @@ export default function QuestionCard({
   // yapılır ve "Question: …" olarak okunur; yoksa kullanıcı soruyu hiç duymaz.
   const renderPrompt = () => {
     let promptText = word.hanzi;
-    let promptStyle = styles.promptHanzi;
+    const promptStyle =
+      promptType === 'meaning'
+        ? styles.promptMeaning
+        : promptType === 'pinyin'
+        ? styles.promptPinyin
+        : styles.promptHanzi;
 
     if (promptType === 'meaning') {
       promptText = word.meaning || word.en || word.english;
-      promptStyle = styles.promptMeaning;
     } else if (promptType === 'pinyin') {
       promptText = word.pinyin;
-      promptStyle = styles.promptPinyin;
     }
 
     return (
