@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2.2 (UTC→yerel tarih) tamamlandı; **39 test yeşil**. Sıradaki: Faz 2.3 (`importService` regex + `defaultName`).
+Son güncelleme: Faz 2.3 (`importService` regex + `defaultName`) tamamlandı; **41 test yeşil**. Sıradaki: Faz 2.4 (çeldirici tekilliği).
 
 ---
 
@@ -55,9 +55,11 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 ## 3. Git durumu
 
 ```
+91d3597  fix(import): strip file extension for default deck name and prefill it
+0ea3c62  docs: mark Faz 2.2 done in NOTES.md
 c2de580  fix(date): use local date keys for daily stats and calendar
 6ea6c87  docs: move known-good tag to the verified test-covered state
-610c768  docs: record test setup and green suite in NOTES.md                          ← tag: known-good
+610c768  docs: record test setup and green suite in NOTES.md
 163b3f9  test: add unit tests for stats, import and example services
 cf46bbb  chore(test): add jest-expo setup with AsyncStorage mock
 46e3279  docs: mark Faz 2.1 done in NOTES.md
@@ -68,7 +70,7 @@ e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mo
 4191644  chore: baseline commit (pre-fix snapshot)
 ```
 
-- **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl (**şu an `610c768`** — Faz 2.1 + test altyapısı yeşil; sonraki doğrulanmış fazda ileri taşınır).
+- **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
 - Her şey ters giderse dönüş: `git reset --hard known-good`
 - Tek commit geri alma: `git revert <hash>`
@@ -127,11 +129,13 @@ Her maddeyi **ayrı commit** olarak yap.
 - **Not (veri göçü):** Anahtarlar UTC'den yerele geçtiği için eski kayıtlarda akşam saatlerine ait birkaç gün anahtarı kayabilir. Küçük ve tek seferlik; ayrı bir göç kodu eklenmedi.
 - **Commit:** `c2de580`
 
-### 2.3 `importService` regex + default isim (P1)
-- **Sorun:** `/\.[^/.]+\$/` bozuk → uzantı hiç kırpılmıyor; üretilen `defaultName` `CustomDeckModal` tarafından kullanılmıyor.
-- **Çözüm:** regex'i düzelt (`/\.(json)$/i` gibi); `setCustomDeckName(result.defaultName ?? '')`.
-- **Doğrulama:** `kelimeler.json` seçilince isim alanı "kelimeler" ile dolu gelmeli.
-- **Test:** `__tests__/importService.test.js` → `test.failing('defaultName dosya uzantısını kırpar', ...)`. Düzeltince normal teste çevir (suite yeşil kalır).
+### 2.3 ✅ TAMAMLANDI — `importService` regex + default isim (P1)
+- **Sorun:** `/\.[^/.]+\$/` bozuk (sondaki `\$` yüzünden hiç eşleşmiyordu) → dosya uzantısı `defaultName`'den kırpılmıyordu; ayrıca üretilen `defaultName` `CustomDeckModal` tarafından hiç kullanılmıyordu.
+- **Yapıldı:**
+  - `services/importService.js`: regex `/\.[^/.]+$/` olarak düzeltildi; ad kırpılıp `trim()` edilir, boş kalırsa eski `'Custom Deck'` yedeğine düşer.
+  - `components/CustomDeckModal.js`: `handlePickFile` artık isim alanını `result.defaultName` ile önceden doldurur (`setCustomDeckName(result.defaultName || '')`).
+- **Doğrulama:** `test.failing` normal teste çevrildi; uzantısız ad ve çok noktalı ad senaryoları eklendi. Suite: **41 test yeşil**.
+- **Commit:** `91d3597`
 
 ### 2.4 Tekrarlanan hanzi / çeldirici tekilliği (P1)
 - **Sorun:** 66 hanzi birden çok seviyede var; çeldiriciler yalnızca `id` ile eleniyor → aynı/çok benzer şık gelebilir.
