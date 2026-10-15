@@ -226,9 +226,13 @@ export default function QuestionCard({
               }
             }
 
-            const animatedTransform = isSelected
-              ? [{ scale: buttonScale }, { translateX: buttonShakeX }]
-              : [];
+            // Not: `isSelected ? [...] : []` yazıldığında TypeScript iki ayrı nesne
+            // şeklinin birleşimini çıkarıp Animated'ın `transform` tipine atanamaz
+            // diyordu; diziyi koşullu olarak doldurmak hem tipi hem davranışı net.
+            const animatedTransform = [];
+            if (isSelected) {
+              animatedTransform.push({ scale: buttonScale }, { translateX: buttonShakeX });
+            }
 
             return (
               <Animated.View

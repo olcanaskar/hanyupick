@@ -67,10 +67,14 @@ export default function App() {
     });
   };
 
+  // Not: @react-navigation v7 tip tanımları Stack.Navigator'da `id` alanını zorunlu
+  // tutuyor (çalışma zamanında opsiyoneldir). Değer yalnızca `navigation.getParent(id)`
+  // için anlam taşır; uygulamada kullanılmıyor.
   return (
     <SafeAreaProvider>
       <NavigationContainer theme={AppTheme}>
         <Stack.Navigator
+          id="root"
           initialRouteName="Home"
           screenOptions={{
             headerShown: false,

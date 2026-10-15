@@ -18,6 +18,21 @@ const BASE_LEVELS = [
   { id: 'mixed', label: 'Mixed' },
 ];
 
+/**
+ * Not: Header iki farklı prop adını destekliyor (`setLevel`/`onSelectLevel`,
+ * `setMode`/`onToggleMode`); uygulamada yalnızca `setX` biçimi kullanılıyor,
+ * yine de ikisi de opsiyonel olarak tanımlı (bkz. handleLevelChange/handleModeChange).
+ *
+ * @param {{
+ *   level: any,
+ *   setLevel?: any,
+ *   onSelectLevel?: any,
+ *   mode?: string,
+ *   setMode?: any,
+ *   onToggleMode?: any,
+ *   reviewCount?: number,
+ * }} props
+ */
 export default function Header({
   level,
   setLevel,

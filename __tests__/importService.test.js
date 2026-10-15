@@ -9,6 +9,9 @@ import {
 
 jest.mock('expo-document-picker', () => ({ getDocumentAsync: jest.fn() }));
 
+// jest.mock ile değiştirilen fonksiyon; testte mock API'sine erişmek için jest.Mock'a çeviriyoruz.
+const getDocumentAsyncMock = /** @type {jest.Mock} */ (DocumentPicker.getDocumentAsync);
+
 const DECKS_KEY = '@custom_word_decks';
 
 const VALID_WORDS = [
@@ -18,11 +21,11 @@ const VALID_WORDS = [
 ];
 
 const mockPickedFile = (name, content) => {
-  DocumentPicker.getDocumentAsync.mockResolvedValue({
+  getDocumentAsyncMock.mockResolvedValue({
     canceled: false,
     assets: [{ uri: `file:///tmp/${name}`, name }],
   });
-  global.fetch = jest.fn().mockResolvedValue({
+  globalThis.fetch = jest.fn().mockResolvedValue({
     ok: true,
     text: async () => content,
   });
@@ -40,7 +43,7 @@ afterEach(() => {
 
 describe('pickAndParseJSON', () => {
   test('iptal edilirse canceled döner', async () => {
-    DocumentPicker.getDocumentAsync.mockResolvedValue({ canceled: true });
+    getDocumentAsyncMock.mockResolvedValue({ canceled: true });
 
     await expect(pickAndParseJSON()).resolves.toEqual({ success: false, reason: 'canceled' });
   });
