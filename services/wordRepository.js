@@ -63,3 +63,10 @@ export const getLevelFromWordId = (id) => {
 // Seviyeye ait kelime havuzu. Bilinmeyen seviye veya "mixed" için tüm havuz döner
 // (mezun olmuş davranış: `LEVEL_POOLS[level] || ALL_WORDS`).
 export const getWordPool = (level) => LEVEL_POOLS[level] || ALL_WORDS;
+
+// `id` → kelime (O(1)). Review havuzu artık kelimeyi kopyalamak yerine yalnızca
+// id saklıyor (Faz 3.2 → services/reviewPool.js); çözümleme buradan yapılır.
+// Bilinmeyen id için null.
+const WORD_BY_ID = new Map(ALL_WORDS.map((word) => [word.id, word]));
+
+export const getWordById = (id) => WORD_BY_ID.get(id) || null;

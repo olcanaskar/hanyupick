@@ -4,6 +4,7 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { normalizeReviewPool } from './services/reviewPool';
 import HomeScreen from './screens/HomeScreen';
 import QuizScreen from './screens/QuizScreen';
 import VocabularyScreen from './screens/VocabularyScreen';
@@ -30,7 +31,23 @@ export default function App() {
       try {
         const savedData = await AsyncStorage.getItem(STORAGE_KEY);
         if (savedData !== null) {
-          setReviewPool(JSON.parse(savedData));
+          const parsed = JSON.parse(savedData);
+
+          // Faz 3.2 göçü: eski kayıtlar (kelime kopyası taşıyan şekiller) kanonik
+          // şekle çevrilir. Veri değişmediği sürece görünür içerik aynı kalır.
+          const migrated = normalizeReviewPool(parsed);
+          setReviewPool(migrated);
+
+          // Göç gerçekten bir şey değiştirdiyse diski de güncelle (tek seferlik).
+          const migratedRaw = JSON.stringify(migrated);
+          if (migratedRaw !== savedData) {
+            if (Array.isArray(parsed) && migrated.length !== parsed.length) {
+              console.warn(
+                `[reviewPool] göç: ${parsed.length - migrated.length} kayıt atlandı (çözülemez/geçersiz).`
+              );
+            }
+            await AsyncStorage.setItem(STORAGE_KEY, migratedRaw);
+          }
         }
       } catch (error) {
         console.error('Kayıtlı veriler yüklenemedi:', error);

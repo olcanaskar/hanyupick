@@ -17,6 +17,15 @@ import {
   getLevelFromWordId,
   getWordPool,
 } from '../services/wordRepository';
+import {
+  addEntry,
+  countForMode,
+  filterByMode,
+  getWrongMode,
+  makeReviewEntry,
+  removeEntry,
+  resolveReviewWord,
+} from '../services/reviewPool';
 
 export default function QuizScreen({ 
   route, 
@@ -65,10 +74,9 @@ export default function QuizScreen({
     let currentPool = [];
 
     if (targetLevel === 'review') {
-      const matchingItems = (reviewPoolRef.current || []).filter(
-        (item) => (item.wrongMode || 'hanzi-to-pinyin') === targetMode
-      );
-      currentPool = matchingItems.map((item) => item.word || item);
+      currentPool = filterByMode(reviewPoolRef.current, targetMode)
+        .map(resolveReviewWord)
+        .filter(Boolean);
     } else if (targetLevel.startsWith('custom_')) {
       const deckName = targetLevel.replace('custom_', '');
       const customDecks = await getCustomDecks();
@@ -128,11 +136,9 @@ export default function QuizScreen({
 
     if (!reviewPool || reviewPool.length === 0) return;
 
-    const hasItemsInMode = reviewPool.some(
-      (item) => (item.wrongMode || 'hanzi-to-pinyin') === mode
-    );
+    const hasItemsInMode = countForMode(reviewPool, mode) > 0;
     if (!hasItemsInMode) {
-      setMode(reviewPool[0].wrongMode || 'hanzi-to-pinyin');
+      setMode(getWrongMode(reviewPool[0]));
     }
   }, [level, reviewPool, mode]);
 
@@ -169,15 +175,7 @@ export default function QuizScreen({
           wrong: Math.max(0, prev.wrong - 1),
         }));
 
-        setReviewPool((prev) =>
-          prev.filter(
-            (item) =>
-              !(
-                (item.id || item.word?.id) === currentWord.id &&
-                (item.wrongMode || 'hanzi-to-pinyin') === mode
-              )
-          )
-        );
+        setReviewPool((prev) => removeEntry(prev, currentWord.id, mode));
       } else {
         setScore((prev) => ({ ...prev, wrong: prev.wrong + 1 }));
       }
@@ -186,24 +184,14 @@ export default function QuizScreen({
         setScore((prev) => ({ ...prev, correct: prev.correct + 1 }));
       } else {
         setScore((prev) => ({ ...prev, wrong: prev.wrong + 1 }));
-        setReviewPool((prev) => {
-          const exists = prev.some(
-            (item) =>
-              (item.id || item.word?.id) === currentWord.id &&
-              (item.wrongMode || 'hanzi-to-pinyin') === mode
-          );
-          if (exists) return prev;
-          return [...prev, { ...currentWord, word: currentWord, wrongMode: mode }];
-        });
+        setReviewPool((prev) => addEntry(prev, makeReviewEntry(currentWord, mode)));
       }
     }
   };
 
   const handleNextQuestion = () => {
     if (level === 'review') {
-      const remaining = (reviewPoolRef.current || []).filter(
-        (item) => (item.wrongMode || 'hanzi-to-pinyin') === mode
-      );
+      const remaining = filterByMode(reviewPoolRef.current, mode);
       if (remaining.length === 0) {
         setCurrentWord(null);
         setOptions([]);
@@ -225,9 +213,7 @@ export default function QuizScreen({
   };
 
   // Review modunda, içinde bulunulan moda ait kalan yanlış sayısı
-  const reviewCountForMode = (reviewPool || []).filter(
-    (item) => (item.wrongMode || 'hanzi-to-pinyin') === mode
-  ).length;
+  const reviewCountForMode = countForMode(reviewPool, mode);
 
   // Seviye değiştiğinde HomeScreen'i bilgilendiren dinleyici tetikleyicisi
   const handleLevelChange = (newLevel) => {
