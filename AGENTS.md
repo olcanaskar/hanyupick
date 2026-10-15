@@ -79,6 +79,7 @@ Do not introduce `expo-router`.
 
 ## Rules
 
+- Custom-deck word IDs (`custom_<sanitized name>_<item.id ?? index>`, `services/importService.js`) are **identity**: review-pool and stats entries resolve by `wordId`, so never change the prefix rule without writing a migration. `saveCustomDeck` over-writes nothing silently (needs `{ overwrite: true }`) and rejects a name whose word IDs would collide with another deck.
 - Never create or edit `android/` or `ios/` by hand — they are generated (Continuous Native Generation). Configure native behaviour in `app.json` and config plugins. (A stale `android/` folder exists locally; it is gitignored.)
 - Expo Go only ships its bundled native modules. Adding a library with native code requires a development build (`npx expo run:*`, or `eas build --profile development`).
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
