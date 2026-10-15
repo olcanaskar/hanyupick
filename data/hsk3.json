@@ -1,0 +1,2102 @@
+[
+  {
+    "id": 301,
+    "hanzi": "阿姨",
+    "pinyin": "āyí",
+    "meaning": "aunt, maternal aunt",
+    "level": 3
+  },
+  {
+    "id": 302,
+    "hanzi": "啊",
+    "pinyin": "a",
+    "meaning": "ah, modal particle",
+    "level": 3
+  },
+  {
+    "id": 303,
+    "hanzi": "矮",
+    "pinyin": "ǎi",
+    "meaning": "short (height), low",
+    "level": 3
+  },
+  {
+    "id": 304,
+    "hanzi": "爱好",
+    "pinyin": "àihào",
+    "meaning": "hobby, interest",
+    "level": 3
+  },
+  {
+    "id": 305,
+    "hanzi": "安静",
+    "pinyin": "ānjìng",
+    "meaning": "quiet, peaceful",
+    "level": 3
+  },
+  {
+    "id": 306,
+    "hanzi": "把",
+    "pinyin": "bǎ",
+    "meaning": "handle, grammatical object marker",
+    "level": 3
+  },
+  {
+    "id": 307,
+    "hanzi": "班",
+    "pinyin": "bān",
+    "meaning": "class, team, shift",
+    "level": 3
+  },
+  {
+    "id": 308,
+    "hanzi": "搬",
+    "pinyin": "bān",
+    "meaning": "to move (objects), to relocate",
+    "level": 3
+  },
+  {
+    "id": 309,
+    "hanzi": "办法",
+    "pinyin": "bànfǎ",
+    "meaning": "method, way",
+    "level": 3
+  },
+  {
+    "id": 310,
+    "hanzi": "办公室",
+    "pinyin": "bàngōngshì",
+    "meaning": "office",
+    "level": 3
+  },
+  {
+    "id": 311,
+    "hanzi": "半",
+    "pinyin": "bàn",
+    "meaning": "half",
+    "level": 3
+  },
+  {
+    "id": 312,
+    "hanzi": "帮忙",
+    "pinyin": "bāngmáng",
+    "meaning": "to help, to do a favor",
+    "level": 3
+  },
+  {
+    "id": 313,
+    "hanzi": "包",
+    "pinyin": "bāo",
+    "meaning": "bag, package, to wrap",
+    "level": 3
+  },
+  {
+    "id": 314,
+    "hanzi": "饱",
+    "pinyin": "bǎo",
+    "meaning": "full (not hungry)",
+    "level": 3
+  },
+  {
+    "id": 315,
+    "hanzi": "北方",
+    "pinyin": "běifāng",
+    "meaning": "north, northern part",
+    "level": 3
+  },
+  {
+    "id": 316,
+    "hanzi": "被",
+    "pinyin": "bèi",
+    "meaning": "passive marker, by",
+    "level": 3
+  },
+  {
+    "id": 317,
+    "hanzi": "鼻子",
+    "pinyin": "bízi",
+    "meaning": "nose",
+    "level": 3
+  },
+  {
+    "id": 318,
+    "hanzi": "比较",
+    "pinyin": "bǐjiào",
+    "meaning": "comparatively, quite, to compare",
+    "level": 3
+  },
+  {
+    "id": 319,
+    "hanzi": "比赛",
+    "pinyin": "bǐsài",
+    "meaning": "competition, match",
+    "level": 3
+  },
+  {
+    "id": 320,
+    "hanzi": "笔记本",
+    "pinyin": "bǐjìběn",
+    "meaning": "notebook, laptop",
+    "level": 3
+  },
+  {
+    "id": 321,
+    "hanzi": "必须",
+    "pinyin": "bìxū",
+    "meaning": "must, have to",
+    "level": 3
+  },
+  {
+    "id": 322,
+    "hanzi": "变化",
+    "pinyin": "biànhuà",
+    "meaning": "change, variation",
+    "level": 3
+  },
+  {
+    "id": 323,
+    "hanzi": "别人",
+    "pinyin": "biéren",
+    "meaning": "other people, others",
+    "level": 3
+  },
+  {
+    "id": 324,
+    "hanzi": "宾馆",
+    "pinyin": "bīnguǎn",
+    "meaning": "hotel",
+    "level": 3
+  },
+  {
+    "id": 325,
+    "hanzi": "冰箱",
+    "pinyin": "bīngxiāng",
+    "meaning": "refrigerator",
+    "level": 3
+  },
+  {
+    "id": 326,
+    "hanzi": "不但",
+    "pinyin": "búdàn",
+    "meaning": "not only",
+    "level": 3
+  },
+  {
+    "id": 327,
+    "hanzi": "而且",
+    "pinyin": "érqiě",
+    "meaning": "moreover, furthermore",
+    "level": 3
+  },
+  {
+    "id": 328,
+    "hanzi": "才",
+    "pinyin": "cái",
+    "meaning": "only then, just now",
+    "level": 3
+  },
+  {
+    "id": 329,
+    "hanzi": "菜单",
+    "pinyin": "càidān",
+    "meaning": "menu",
+    "level": 3
+  },
+  {
+    "id": 330,
+    "hanzi": "参加",
+    "pinyin": "cānjiā",
+    "meaning": "to participate, to join",
+    "level": 3
+  },
+  {
+    "id": 331,
+    "hanzi": "草",
+    "pinyin": "cǎo",
+    "meaning": "grass, straw",
+    "level": 3
+  },
+  {
+    "id": 332,
+    "hanzi": "层",
+    "pinyin": "céng",
+    "meaning": "floor, layer (measure word)",
+    "level": 3
+  },
+  {
+    "id": 333,
+    "hanzi": "差",
+    "pinyin": "chà",
+    "meaning": "short of, poor, bad",
+    "level": 3
+  },
+  {
+    "id": 334,
+    "hanzi": "超市",
+    "pinyin": "chāoshì",
+    "meaning": "supermarket",
+    "level": 3
+  },
+  {
+    "id": 335,
+    "hanzi": "衬衫",
+    "pinyin": "chènshān",
+    "meaning": "shirt, blouse",
+    "level": 3
+  },
+  {
+    "id": 336,
+    "hanzi": "成绩",
+    "pinyin": "chéngjì",
+    "meaning": "score, grade, achievement",
+    "level": 3
+  },
+  {
+    "id": 337,
+    "hanzi": "城市",
+    "pinyin": "chéngshì",
+    "meaning": "city, town",
+    "level": 3
+  },
+  {
+    "id": 338,
+    "hanzi": "迟到",
+    "pinyin": "chídào",
+    "meaning": "to be late, to arrive late",
+    "level": 3
+  },
+  {
+    "id": 339,
+    "hanzi": "出现",
+    "pinyin": "chūxiàn",
+    "meaning": "to appear, to arise",
+    "level": 3
+  },
+  {
+    "id": 340,
+    "hanzi": "除了",
+    "pinyin": "chúle",
+    "meaning": "except, besides",
+    "level": 3
+  },
+  {
+    "id": 341,
+    "hanzi": "船",
+    "pinyin": "chuán",
+    "meaning": "boat, ship",
+    "level": 3
+  },
+  {
+    "id": 342,
+    "hanzi": "春",
+    "pinyin": "chūn",
+    "meaning": "spring (season)",
+    "level": 3
+  },
+  {
+    "id": 343,
+    "hanzi": "词典",
+    "pinyin": "cídiǎn",
+    "meaning": "dictionary",
+    "level": 3
+  },
+  {
+    "id": 344,
+    "hanzi": "词语",
+    "pinyin": "cíyǔ",
+    "meaning": "word, term, expression",
+    "level": 3
+  },
+  {
+    "id": 345,
+    "hanzi": "聪明",
+    "pinyin": "cōngming",
+    "meaning": "smart, clever",
+    "level": 3
+  },
+  {
+    "id": 346,
+    "hanzi": "打扫",
+    "pinyin": "dǎsǎo",
+    "meaning": "to clean, to sweep",
+    "level": 3
+  },
+  {
+    "id": 347,
+    "hanzi": "打算",
+    "pinyin": "dǎsuàn",
+    "meaning": "to plan, to intend",
+    "level": 3
+  },
+  {
+    "id": 348,
+    "hanzi": "带",
+    "pinyin": "dài",
+    "meaning": "to bring, to take, belt",
+    "level": 3
+  },
+  {
+    "id": 349,
+    "hanzi": "蛋糕",
+    "pinyin": "dàngāo",
+    "meaning": "cake",
+    "level": 3
+  },
+  {
+    "id": 350,
+    "hanzi": "当然",
+    "pinyin": "dāngrán",
+    "meaning": "of course, certainly",
+    "level": 3
+  },
+  {
+    "id": 351,
+    "hanzi": "到处",
+    "pinyin": "dàochù",
+    "meaning": "everywhere",
+    "level": 3
+  },
+  {
+    "id": 352,
+    "hanzi": "地",
+    "pinyin": "de",
+    "meaning": "structural particle (adverbial)",
+    "level": 3
+  },
+  {
+    "id": 353,
+    "hanzi": "灯",
+    "pinyin": "dēng",
+    "meaning": "lamp, light",
+    "level": 3
+  },
+  {
+    "id": 354,
+    "hanzi": "地方",
+    "pinyin": "dìfang",
+    "meaning": "place, area",
+    "level": 3
+  },
+  {
+    "id": 355,
+    "hanzi": "地铁",
+    "pinyin": "dìtiě",
+    "meaning": "subway, metro",
+    "level": 3
+  },
+  {
+    "id": 356,
+    "hanzi": "地图",
+    "pinyin": "dìtú",
+    "meaning": "map",
+    "level": 3
+  },
+  {
+    "id": 357,
+    "hanzi": "电梯",
+    "pinyin": "diàntī",
+    "meaning": "elevator",
+    "level": 3
+  },
+  {
+    "id": 358,
+    "hanzi": "电子邮件",
+    "pinyin": "diànzǐ yóujiàn",
+    "meaning": "email",
+    "level": 3
+  },
+  {
+    "id": 359,
+    "hanzi": "东",
+    "pinyin": "dōng",
+    "meaning": "east",
+    "level": 3
+  },
+  {
+    "id": 360,
+    "hanzi": "冬",
+    "pinyin": "dōng",
+    "meaning": "winter",
+    "level": 3
+  },
+  {
+    "id": 361,
+    "hanzi": "动物",
+    "pinyin": "dòngwù",
+    "meaning": "animal",
+    "level": 3
+  },
+  {
+    "id": 362,
+    "hanzi": "短",
+    "pinyin": "duǎn",
+    "meaning": "short (length)",
+    "level": 3
+  },
+  {
+    "id": 363,
+    "hanzi": "段",
+    "pinyin": "duàn",
+    "meaning": "paragraph, section, segment",
+    "level": 3
+  },
+  {
+    "id": 364,
+    "hanzi": "锻炼",
+    "pinyin": "duànliàn",
+    "meaning": "to exercise, workout",
+    "level": 3
+  },
+  {
+    "id": 365,
+    "hanzi": "多么",
+    "pinyin": "duōme",
+    "meaning": "how, what (exclamatory)",
+    "level": 3
+  },
+  {
+    "id": 366,
+    "hanzi": "饿",
+    "pinyin": "è",
+    "meaning": "hungry",
+    "level": 3
+  },
+  {
+    "id": 367,
+    "hanzi": "耳朵",
+    "pinyin": "ěrduo",
+    "meaning": "ear",
+    "level": 3
+  },
+  {
+    "id": 368,
+    "hanzi": "发烧",
+    "pinyin": "fāshāo",
+    "meaning": "to have a fever",
+    "level": 3
+  },
+  {
+    "id": 369,
+    "hanzi": "发现",
+    "pinyin": "fāxiàn",
+    "meaning": "to discover, to find",
+    "level": 3
+  },
+  {
+    "id": 370,
+    "hanzi": "方便",
+    "pinyin": "fāngbiàn",
+    "meaning": "convenient",
+    "level": 3
+  },
+  {
+    "id": 371,
+    "hanzi": "放",
+    "pinyin": "fàng",
+    "meaning": "to put, to place, to release",
+    "level": 3
+  },
+  {
+    "id": 372,
+    "hanzi": "放心",
+    "pinyin": "fàngxīn",
+    "meaning": "to feel relieved, don't worry",
+    "level": 3
+  },
+  {
+    "id": 373,
+    "hanzi": "分",
+    "pinyin": "fēn",
+    "meaning": "minute, point, to divide",
+    "level": 3
+  },
+  {
+    "id": 374,
+    "hanzi": "复习",
+    "pinyin": "fùxí",
+    "meaning": "to review, to revise",
+    "level": 3
+  },
+  {
+    "id": 375,
+    "hanzi": "附近",
+    "pinyin": "fùjìn",
+    "meaning": "nearby, vicinity",
+    "level": 3
+  },
+  {
+    "id": 376,
+    "hanzi": "干净",
+    "pinyin": "gānjìng",
+    "meaning": "clean, neat",
+    "level": 3
+  },
+  {
+    "id": 377,
+    "hanzi": "敢",
+    "pinyin": "gǎn",
+    "meaning": "to dare",
+    "level": 3
+  },
+  {
+    "id": 378,
+    "hanzi": "感冒",
+    "pinyin": "gǎnmào",
+    "meaning": "to catch a cold",
+    "level": 3
+  },
+  {
+    "id": 379,
+    "hanzi": "刚才",
+    "pinyin": "gāngcái",
+    "meaning": "just now, a moment ago",
+    "level": 3
+  },
+  {
+    "id": 380,
+    "hanzi": "跟",
+    "pinyin": "gēn",
+    "meaning": "with, to follow",
+    "level": 3
+  },
+  {
+    "id": 381,
+    "hanzi": "根据",
+    "pinyin": "gēnjù",
+    "meaning": "according to, based on",
+    "level": 3
+  },
+  {
+    "id": 382,
+    "hanzi": "更",
+    "pinyin": "gèng",
+    "meaning": "even more, further",
+    "level": 3
+  },
+  {
+    "id": 383,
+    "hanzi": "公园",
+    "pinyin": "gōngyuán",
+    "meaning": "park",
+    "level": 3
+  },
+  {
+    "id": 384,
+    "hanzi": "故事",
+    "pinyin": "gùshi",
+    "meaning": "story, tale",
+    "level": 3
+  },
+  {
+    "id": 385,
+    "hanzi": "刮风",
+    "pinyin": "guāfēng",
+    "meaning": "windy, to blow wind",
+    "level": 3
+  },
+  {
+    "id": 386,
+    "hanzi": "关",
+    "pinyin": "guān",
+    "meaning": "to close, to turn off",
+    "level": 3
+  },
+  {
+    "id": 387,
+    "hanzi": "关系",
+    "pinyin": "guānxì",
+    "meaning": "relation, relationship",
+    "level": 3
+  },
+  {
+    "id": 388,
+    "hanzi": "关心",
+    "pinyin": "guānxīn",
+    "meaning": "to care about, to be concerned with",
+    "level": 3
+  },
+  {
+    "id": 389,
+    "hanzi": "关于",
+    "pinyin": "guānyú",
+    "meaning": "about, regarding",
+    "level": 3
+  },
+  {
+    "id": 390,
+    "hanzi": "国家",
+    "pinyin": "guójiā",
+    "meaning": "country, nation",
+    "level": 3
+  },
+  {
+    "id": 391,
+    "hanzi": "果汁",
+    "pinyin": "guǒzhī",
+    "meaning": "fruit juice",
+    "level": 3
+  },
+  {
+    "id": 392,
+    "hanzi": "过去",
+    "pinyin": "guòqù",
+    "meaning": "past, previous, in the past",
+    "level": 3
+  },
+  {
+    "id": 393,
+    "hanzi": "过",
+    "pinyin": "guò",
+    "meaning": "to pass, to spend (time)",
+    "level": 3
+  },
+  {
+    "id": 394,
+    "hanzi": "害怕",
+    "pinyin": "hàipà",
+    "meaning": "to be afraid, to fear",
+    "level": 3
+  },
+  {
+    "id": 395,
+    "hanzi": "河",
+    "pinyin": "hé",
+    "meaning": "river",
+    "level": 3
+  },
+  {
+    "id": 396,
+    "hanzi": "黑板",
+    "pinyin": "hēibǎn",
+    "meaning": "blackboard",
+    "level": 3
+  },
+  {
+    "id": 397,
+    "hanzi": "护照",
+    "pinyin": "hùzhào",
+    "meaning": "passport",
+    "level": 3
+  },
+  {
+    "id": 398,
+    "hanzi": "花",
+    "pinyin": "huā",
+    "meaning": "flower, to spend (money/time)",
+    "level": 3
+  },
+  {
+    "id": 399,
+    "hanzi": "画",
+    "pinyin": "huà",
+    "meaning": "to draw, painting, picture",
+    "level": 3
+  },
+  {
+    "id": 400,
+    "hanzi": "坏",
+    "pinyin": "huài",
+    "meaning": "bad, broken, spoiled",
+    "level": 3
+  },
+  {
+    "id": 401,
+    "hanzi": "环境",
+    "pinyin": "huánjìng",
+    "meaning": "environment, surroundings",
+    "level": 3
+  },
+  {
+    "id": 402,
+    "hanzi": "换",
+    "pinyin": "huàn",
+    "meaning": "to change, to exchange",
+    "level": 3
+  },
+  {
+    "id": 403,
+    "hanzi": "黄河",
+    "pinyin": "Huáng Hé",
+    "meaning": "Yellow River",
+    "level": 3
+  },
+  {
+    "id": 404,
+    "hanzi": "回答",
+    "pinyin": "huídá",
+    "meaning": "to answer, reply",
+    "level": 3
+  },
+  {
+    "id": 405,
+    "hanzi": "会议",
+    "pinyin": "huìyì",
+    "meaning": "meeting, conference",
+    "level": 3
+  },
+  {
+    "id": 406,
+    "hanzi": "或者",
+    "pinyin": "huòzhě",
+    "meaning": "or (in statements)",
+    "level": 3
+  },
+  {
+    "id": 407,
+    "hanzi": "几乎",
+    "pinyin": "jīhū",
+    "meaning": "almost, nearly",
+    "level": 3
+  },
+  {
+    "id": 408,
+    "hanzi": "机会",
+    "pinyin": "jīhuì",
+    "meaning": "opportunity, chance",
+    "level": 3
+  },
+  {
+    "id": 409,
+    "hanzi": "极",
+    "pinyin": "jí",
+    "meaning": "extremely, pole",
+    "level": 3
+  },
+  {
+    "id": 410,
+    "hanzi": "记得",
+    "pinyin": "jìde",
+    "meaning": "to remember",
+    "level": 3
+  },
+  {
+    "id": 411,
+    "hanzi": "季节",
+    "pinyin": "jìjié",
+    "meaning": "season",
+    "level": 3
+  },
+  {
+    "id": 412,
+    "hanzi": "检查",
+    "pinyin": "jiǎnchá",
+    "meaning": "to inspect, to check",
+    "level": 3
+  },
+  {
+    "id": 413,
+    "hanzi": "简单",
+    "pinyin": "jiǎndān",
+    "meaning": "simple, uncomplicated",
+    "level": 3
+  },
+  {
+    "id": 414,
+    "hanzi": "见面",
+    "pinyin": "jiànmiàn",
+    "meaning": "to meet, to see each other",
+    "level": 3
+  },
+  {
+    "id": 415,
+    "hanzi": "健康",
+    "pinyin": "jiànkāng",
+    "meaning": "healthy, health",
+    "level": 3
+  },
+  {
+    "id": 416,
+    "hanzi": "讲",
+    "pinyin": "jiǎng",
+    "meaning": "to speak, to explain, to tell",
+    "level": 3
+  },
+  {
+    "id": 417,
+    "hanzi": "降落",
+    "pinyin": "jiàngluò",
+    "meaning": "to land, descend",
+    "level": 3
+  },
+  {
+    "id": 418,
+    "hanzi": "角",
+    "pinyin": "jiǎo",
+    "meaning": "horn, corner, 0.1 yuan",
+    "level": 3
+  },
+  {
+    "id": 419,
+    "hanzi": "脚",
+    "pinyin": "jiǎo",
+    "meaning": "foot",
+    "level": 3
+  },
+  {
+    "id": 420,
+    "hanzi": "教",
+    "pinyin": "jiāo",
+    "meaning": "to teach",
+    "level": 3
+  },
+  {
+    "id": 421,
+    "hanzi": "接",
+    "pinyin": "jiē",
+    "meaning": "to receive, to pick up (someone)",
+    "level": 3
+  },
+  {
+    "id": 422,
+    "hanzi": "街道",
+    "pinyin": "jiēdào",
+    "meaning": "street",
+    "level": 3
+  },
+  {
+    "id": 423,
+    "hanzi": "节目",
+    "pinyin": "jiémù",
+    "meaning": "program, show",
+    "level": 3
+  },
+  {
+    "id": 424,
+    "hanzi": "节日",
+    "pinyin": "jiérì",
+    "meaning": "holiday, festival",
+    "level": 3
+  },
+  {
+    "id": 425,
+    "hanzi": "结婚",
+    "pinyin": "jiéhūn",
+    "meaning": "to get married",
+    "level": 3
+  },
+  {
+    "id": 426,
+    "hanzi": "结束",
+    "pinyin": "jiéshù",
+    "meaning": "to end, to finish",
+    "level": 3
+  },
+  {
+    "id": 427,
+    "hanzi": "解决",
+    "pinyin": "jiějué",
+    "meaning": "to solve, to resolve",
+    "level": 3
+  },
+  {
+    "id": 428,
+    "hanzi": "借",
+    "pinyin": "jiè",
+    "meaning": "to borrow, to lend",
+    "level": 3
+  },
+  {
+    "id": 429,
+    "hanzi": "经常",
+    "pinyin": "jīngcháng",
+    "meaning": "often, frequently",
+    "level": 3
+  },
+  {
+    "id": 430,
+    "hanzi": "经过",
+    "pinyin": "jīngguò",
+    "meaning": "to pass through, course",
+    "level": 3
+  },
+  {
+    "id": 431,
+    "hanzi": "经理",
+    "pinyin": "jīnglǐ",
+    "meaning": "manager",
+    "level": 3
+  },
+  {
+    "id": 432,
+    "hanzi": "久",
+    "pinyin": "jiǔ",
+    "meaning": "long (time)",
+    "level": 3
+  },
+  {
+    "id": 433,
+    "hanzi": "旧",
+    "pinyin": "jiù",
+    "meaning": "old, used, worn",
+    "level": 3
+  },
+  {
+    "id": 434,
+    "hanzi": "句子",
+    "pinyin": "jùzi",
+    "meaning": "sentence",
+    "level": 3
+  },
+  {
+    "id": 435,
+    "hanzi": "决定",
+    "pinyin": "juédìng",
+    "meaning": "to decide, decision",
+    "level": 3
+  },
+  {
+    "id": 436,
+    "hanzi": "可爱",
+    "pinyin": "kě'ài",
+    "meaning": "cute, lovely",
+    "level": 3
+  },
+  {
+    "id": 437,
+    "hanzi": "渴",
+    "pinyin": "kě",
+    "meaning": "thirsty",
+    "level": 3
+  },
+  {
+    "id": 438,
+    "hanzi": "刻",
+    "pinyin": "kè",
+    "meaning": "quarter of an hour, to carve",
+    "level": 3
+  },
+  {
+    "id": 439,
+    "hanzi": "客人",
+    "pinyin": "kèrén",
+    "meaning": "guest, customer",
+    "level": 3
+  },
+  {
+    "id": 440,
+    "hanzi": "空调",
+    "pinyin": "kōngtiáo",
+    "meaning": "air conditioner",
+    "level": 3
+  },
+  {
+    "id": 441,
+    "hanzi": "口",
+    "pinyin": "kǒu",
+    "meaning": "mouth, measure word for family",
+    "level": 3
+  },
+  {
+    "id": 442,
+    "hanzi": "哭",
+    "pinyin": "kū",
+    "meaning": "to cry, to weep",
+    "level": 3
+  },
+  {
+    "id": 443,
+    "hanzi": "裤子",
+    "pinyin": "kùzi",
+    "meaning": "trousers, pants",
+    "level": 3
+  },
+  {
+    "id": 444,
+    "hanzi": "筷子",
+    "pinyin": "kuàizi",
+    "meaning": "chopsticks",
+    "level": 3
+  },
+  {
+    "id": 445,
+    "hanzi": "蓝",
+    "pinyin": "lán",
+    "meaning": "blue",
+    "level": 3
+  },
+  {
+    "id": 446,
+    "hanzi": "老",
+    "pinyin": "lǎo",
+    "meaning": "old, aged",
+    "level": 3
+  },
+  {
+    "id": 447,
+    "hanzi": "离开",
+    "pinyin": "líkāi",
+    "meaning": "to leave, to depart from",
+    "level": 3
+  },
+  {
+    "id": 448,
+    "hanzi": "礼物",
+    "pinyin": "lǐwù",
+    "meaning": "gift, present",
+    "level": 3
+  },
+  {
+    "id": 449,
+    "hanzi": "历史",
+    "pinyin": "lìshǐ",
+    "meaning": "history",
+    "level": 3
+  },
+  {
+    "id": 450,
+    "hanzi": "脸",
+    "pinyin": "liǎn",
+    "meaning": "face",
+    "level": 3
+  },
+  {
+    "id": 451,
+    "hanzi": "练习",
+    "pinyin": "liànxí",
+    "meaning": "to practice, exercise",
+    "level": 3
+  },
+  {
+    "id": 452,
+    "hanzi": "辆",
+    "pinyin": "liàng",
+    "meaning": "measure word for vehicles",
+    "level": 3
+  },
+  {
+    "id": 453,
+    "hanzi": "聊天",
+    "pinyin": "liáotiān",
+    "meaning": "to chat",
+    "level": 3
+  },
+  {
+    "id": 454,
+    "hanzi": "了解",
+    "pinyin": "liǎojiě",
+    "meaning": "to understand, to know well",
+    "level": 3
+  },
+  {
+    "id": 455,
+    "hanzi": "邻居",
+    "pinyin": "línjū",
+    "meaning": "neighbor",
+    "level": 3
+  },
+  {
+    "id": 456,
+    "hanzi": "留学",
+    "pinyin": "liúxué",
+    "meaning": "to study abroad",
+    "level": 3
+  },
+  {
+    "id": 457,
+    "hanzi": "楼",
+    "pinyin": "lóu",
+    "meaning": "building, floor",
+    "level": 3
+  },
+  {
+    "id": 458,
+    "hanzi": "绿",
+    "pinyin": "lǜ",
+    "meaning": "green",
+    "level": 3
+  },
+  {
+    "id": 459,
+    "hanzi": "马",
+    "pinyin": "mǎ",
+    "meaning": "horse",
+    "level": 3
+  },
+  {
+    "id": 460,
+    "hanzi": "马上",
+    "pinyin": "mǎshàng",
+    "meaning": "immediately, right away",
+    "level": 3
+  },
+  {
+    "id": 461,
+    "hanzi": "满意",
+    "pinyin": "mǎnyì",
+    "meaning": "satisfied, pleased",
+    "level": 3
+  },
+  {
+    "id": 462,
+    "hanzi": "帽子",
+    "pinyin": "màozi",
+    "meaning": "hat, cap",
+    "level": 3
+  },
+  {
+    "id": 463,
+    "hanzi": "米",
+    "pinyin": "mǐ",
+    "meaning": "meter, uncooked rice",
+    "level": 3
+  },
+  {
+    "id": 464,
+    "hanzi": "面包",
+    "pinyin": "miànbāo",
+    "meaning": "bread",
+    "level": 3
+  },
+  {
+    "id": 465,
+    "hanzi": "面条",
+    "pinyin": "miàntiáo",
+    "meaning": "noodles",
+    "level": 3
+  },
+  {
+    "id": 466,
+    "hanzi": "明白",
+    "pinyin": "míngbai",
+    "meaning": "to understand, clear",
+    "level": 3
+  },
+  {
+    "id": 467,
+    "hanzi": "拿",
+    "pinyin": "ná",
+    "meaning": "to take, to hold",
+    "level": 3
+  },
+  {
+    "id": 468,
+    "hanzi": "奶奶",
+    "pinyin": "nǎinai",
+    "meaning": "grandmother (paternal)",
+    "level": 3
+  },
+  {
+    "id": 469,
+    "hanzi": "南",
+    "pinyin": "nán",
+    "meaning": "south",
+    "level": 3
+  },
+  {
+    "id": 470,
+    "hanzi": "难",
+    "pinyin": "nán",
+    "meaning": "difficult, hard",
+    "level": 3
+  },
+  {
+    "id": 471,
+    "hanzi": "难过",
+    "pinyin": "nánguò",
+    "meaning": "sad, sorrowful",
+    "level": 3
+  },
+  {
+    "id": 472,
+    "hanzi": "年级",
+    "pinyin": "niánjí",
+    "meaning": "grade, school year",
+    "level": 3
+  },
+  {
+    "id": 473,
+    "hanzi": "年轻",
+    "pinyin": "niánqīng",
+    "meaning": "young",
+    "level": 3
+  },
+  {
+    "id": 474,
+    "hanzi": "鸟",
+    "pinyin": "niǎo",
+    "meaning": "bird",
+    "level": 3
+  },
+  {
+    "id": 475,
+    "hanzi": "努力",
+    "pinyin": "nǔlì",
+    "meaning": "hardworking, to make effort",
+    "level": 3
+  },
+  {
+    "id": 476,
+    "hanzi": "爬山",
+    "pinyin": "páshān",
+    "meaning": "to climb a mountain, hiking",
+    "level": 3
+  },
+  {
+    "id": 477,
+    "hanzi": "盘子",
+    "pinyin": "pánzi",
+    "meaning": "plate, dish",
+    "level": 3
+  },
+  {
+    "id": 478,
+    "hanzi": "胖",
+    "pinyin": "pàng",
+    "meaning": "fat, plump",
+    "level": 3
+  },
+  {
+    "id": 479,
+    "hanzi": "皮鞋",
+    "pinyin": "píxié",
+    "meaning": "leather shoes",
+    "level": 3
+  },
+  {
+    "id": 480,
+    "hanzi": "啤酒",
+    "pinyin": "píjiǔ",
+    "meaning": "beer",
+    "level": 3
+  },
+  {
+    "id": 481,
+    "hanzi": "普通话",
+    "pinyin": "pǔtōnghuà",
+    "meaning": "Mandarin Chinese",
+    "level": 3
+  },
+  {
+    "id": 482,
+    "hanzi": "其实",
+    "pinyin": "qíshí",
+    "meaning": "actually, in fact",
+    "level": 3
+  },
+  {
+    "id": 483,
+    "hanzi": "其他",
+    "pinyin": "qítā",
+    "meaning": "other, else",
+    "level": 3
+  },
+  {
+    "id": 484,
+    "hanzi": "奇怪",
+    "pinyin": "qíguài",
+    "meaning": "strange, weird",
+    "level": 3
+  },
+  {
+    "id": 485,
+    "hanzi": "骑",
+    "pinyin": "qí",
+    "meaning": "to ride (bike, horse)",
+    "level": 3
+  },
+  {
+    "id": 486,
+    "hanzi": "起飞",
+    "pinyin": "qǐfēi",
+    "meaning": "to take off (airplane)",
+    "level": 3
+  },
+  {
+    "id": 487,
+    "hanzi": "清楚",
+    "pinyin": "qīngchu",
+    "meaning": "clear, distinct",
+    "level": 3
+  },
+  {
+    "id": 488,
+    "hanzi": "晴",
+    "pinyin": "qíng",
+    "meaning": "clear, sunny",
+    "level": 3
+  },
+  {
+    "id": 489,
+    "hanzi": "秋",
+    "pinyin": "qiū",
+    "meaning": "autumn, fall",
+    "level": 3
+  },
+  {
+    "id": 490,
+    "hanzi": "裙子",
+    "pinyin": "qúnzi",
+    "meaning": "skirt, dress",
+    "level": 3
+  },
+  {
+    "id": 491,
+    "hanzi": "然后",
+    "pinyin": "ránhòu",
+    "meaning": "then, after that",
+    "level": 3
+  },
+  {
+    "id": 492,
+    "hanzi": "热情",
+    "pinyin": "rèqíng",
+    "meaning": "warm-hearted, enthusiastic",
+    "level": 3
+  },
+  {
+    "id": 493,
+    "hanzi": "认为",
+    "pinyin": "rènwéi",
+    "meaning": "to consider, to deem",
+    "level": 3
+  },
+  {
+    "id": 494,
+    "hanzi": "认真",
+    "pinyin": "rènzhēn",
+    "meaning": "serious, earnest",
+    "level": 3
+  },
+  {
+    "id": 495,
+    "hanzi": "容易",
+    "pinyin": "róngyì",
+    "meaning": "easy, likely",
+    "level": 3
+  },
+  {
+    "id": 496,
+    "hanzi": "如果",
+    "pinyin": "rúguǒ",
+    "meaning": "if, in case",
+    "level": 3
+  },
+  {
+    "id": 497,
+    "hanzi": "伞",
+    "pinyin": "sǎn",
+    "meaning": "umbrella",
+    "level": 3
+  },
+  {
+    "id": 498,
+    "hanzi": "上网",
+    "pinyin": "shàngwǎng",
+    "meaning": "to surf the internet",
+    "level": 3
+  },
+  {
+    "id": 499,
+    "hanzi": "生气",
+    "pinyin": "shēngqì",
+    "meaning": "angry, to get angry",
+    "level": 3
+  },
+  {
+    "id": 500,
+    "hanzi": "声音",
+    "pinyin": "shēngyīn",
+    "meaning": "sound, voice",
+    "level": 3
+  },
+  {
+    "id": 501,
+    "hanzi": "使",
+    "pinyin": "shǐ",
+    "meaning": "to make, to cause",
+    "level": 3
+  },
+  {
+    "id": 502,
+    "hanzi": "世界",
+    "pinyin": "shìjiè",
+    "meaning": "world",
+    "level": 3
+  },
+  {
+    "id": 503,
+    "hanzi": "瘦",
+    "pinyin": "shòu",
+    "meaning": "thin, slim, tight",
+    "level": 3
+  },
+  {
+    "id": 504,
+    "hanzi": "舒服",
+    "pinyin": "shūfu",
+    "meaning": "comfortable",
+    "level": 3
+  },
+  {
+    "id": 505,
+    "hanzi": "叔叔",
+    "pinyin": "shūshu",
+    "meaning": "uncle (paternal)",
+    "level": 3
+  },
+  {
+    "id": 506,
+    "hanzi": "树",
+    "pinyin": "shù",
+    "meaning": "tree",
+    "level": 3
+  },
+  {
+    "id": 507,
+    "hanzi": "数学",
+    "pinyin": "shùxué",
+    "meaning": "mathematics",
+    "level": 3
+  },
+  {
+    "id": 508,
+    "hanzi": "刷牙",
+    "pinyin": "shuāyá",
+    "meaning": "to brush teeth",
+    "level": 3
+  },
+  {
+    "id": 509,
+    "hanzi": "双",
+    "pinyin": "shuāng",
+    "meaning": "pair (measure word)",
+    "level": 3
+  },
+  {
+    "id": 510,
+    "hanzi": "水平",
+    "pinyin": "shuǐpíng",
+    "meaning": "level, standard",
+    "level": 3
+  },
+  {
+    "id": 511,
+    "hanzi": "司机",
+    "pinyin": "sījī",
+    "meaning": "driver, chauffeur",
+    "level": 3
+  },
+  {
+    "id": 512,
+    "hanzi": "太阳",
+    "pinyin": "tàiyáng",
+    "meaning": "sun",
+    "level": 3
+  },
+  {
+    "id": 513,
+    "hanzi": "特别",
+    "pinyin": "tèbié",
+    "meaning": "especially, special",
+    "level": 3
+  },
+  {
+    "id": 514,
+    "hanzi": "疼",
+    "pinyin": "téng",
+    "meaning": "pain, hurt, ache",
+    "level": 3
+  },
+  {
+    "id": 515,
+    "hanzi": "提高",
+    "pinyin": "tígāo",
+    "meaning": "to improve, to increase",
+    "level": 3
+  },
+  {
+    "id": 516,
+    "hanzi": "体育",
+    "pinyin": "tǐyù",
+    "meaning": "physical education, sports",
+    "level": 3
+  },
+  {
+    "id": 517,
+    "hanzi": "甜",
+    "pinyin": "tián",
+    "meaning": "sweet",
+    "level": 3
+  },
+  {
+    "id": 518,
+    "hanzi": "条",
+    "pinyin": "tiáo",
+    "meaning": "measure word for long flexible things",
+    "level": 3
+  },
+  {
+    "id": 519,
+    "hanzi": "同事",
+    "pinyin": "tóngshì",
+    "meaning": "colleague, coworker",
+    "level": 3
+  },
+  {
+    "id": 520,
+    "hanzi": "同意",
+    "pinyin": "tóngyì",
+    "meaning": "to agree, to consent",
+    "level": 3
+  },
+  {
+    "id": 521,
+    "hanzi": "头发",
+    "pinyin": "tóufa",
+    "meaning": "hair (on head)",
+    "level": 3
+  },
+  {
+    "id": 522,
+    "hanzi": "突然",
+    "pinyin": "tūrán",
+    "meaning": "sudden, unexpected",
+    "level": 3
+  },
+  {
+    "id": 523,
+    "hanzi": "图书馆",
+    "pinyin": "túshūguǎn",
+    "meaning": "library",
+    "level": 3
+  },
+  {
+    "id": 524,
+    "hanzi": "腿",
+    "pinyin": "tuǐ",
+    "meaning": "leg",
+    "level": 3
+  },
+  {
+    "id": 525,
+    "hanzi": "完成",
+    "pinyin": "wánchéng",
+    "meaning": "to complete, to finish",
+    "level": 3
+  },
+  {
+    "id": 526,
+    "hanzi": "碗",
+    "pinyin": "wǎn",
+    "meaning": "bowl",
+    "level": 3
+  },
+  {
+    "id": 527,
+    "hanzi": "万",
+    "pinyin": "wàn",
+    "meaning": "ten thousand (10,000)",
+    "level": 3
+  },
+  {
+    "id": 528,
+    "hanzi": "忘记",
+    "pinyin": "wàngjì",
+    "meaning": "to forget",
+    "level": 3
+  },
+  {
+    "id": 529,
+    "hanzi": "为",
+    "pinyin": "wèi",
+    "meaning": "for, because of",
+    "level": 3
+  },
+  {
+    "id": 530,
+    "hanzi": "为了",
+    "pinyin": "wèile",
+    "meaning": "in order to, for the sake of",
+    "level": 3
+  },
+  {
+    "id": 531,
+    "hanzi": "位",
+    "pinyin": "wèi",
+    "meaning": "polite measure word for people",
+    "level": 3
+  },
+  {
+    "id": 532,
+    "hanzi": "文化",
+    "pinyin": "wénhuà",
+    "meaning": "culture",
+    "level": 3
+  },
+  {
+    "id": 533,
+    "hanzi": "西",
+    "pinyin": "xī",
+    "meaning": "west",
+    "level": 3
+  },
+  {
+    "id": 534,
+    "hanzi": "习惯",
+    "pinyin": "xíguàn",
+    "meaning": "habit, to be accustomed to",
+    "level": 3
+  },
+  {
+    "id": 535,
+    "hanzi": "洗手间",
+    "pinyin": "xǐshǒujiān",
+    "meaning": "restroom, toilet",
+    "level": 3
+  },
+  {
+    "id": 536,
+    "hanzi": "洗澡",
+    "pinyin": "xǐzǎo",
+    "meaning": "to take a bath/shower",
+    "level": 3
+  },
+  {
+    "id": 537,
+    "hanzi": "夏",
+    "pinyin": "xià",
+    "meaning": "summer",
+    "level": 3
+  },
+  {
+    "id": 538,
+    "hanzi": "先",
+    "pinyin": "xiān",
+    "meaning": "first, earlier",
+    "level": 3
+  },
+  {
+    "id": 539,
+    "hanzi": "相信",
+    "pinyin": "xiāngxìn",
+    "meaning": "to believe, to trust",
+    "level": 3
+  },
+  {
+    "id": 540,
+    "hanzi": "香蕉",
+    "pinyin": "xiāngjiāo",
+    "meaning": "banana",
+    "level": 3
+  },
+  {
+    "id": 541,
+    "hanzi": "向",
+    "pinyin": "xiàng",
+    "meaning": "towards, direction",
+    "level": 3
+  },
+  {
+    "id": 542,
+    "hanzi": "像",
+    "pinyin": "xiàng",
+    "meaning": "to resemble, like",
+    "level": 3
+  },
+  {
+    "id": 543,
+    "hanzi": "小心",
+    "pinyin": "xiǎoxīn",
+    "meaning": "careful, to take care",
+    "level": 3
+  },
+  {
+    "id": 544,
+    "hanzi": "校长",
+    "pinyin": "xiàozhǎng",
+    "meaning": "school principal, president",
+    "level": 3
+  },
+  {
+    "id": 545,
+    "hanzi": "鞋",
+    "pinyin": "xié",
+    "meaning": "shoe",
+    "level": 3
+  },
+  {
+    "id": 546,
+    "hanzi": "新闻",
+    "pinyin": "xīnwén",
+    "meaning": "news",
+    "level": 3
+  },
+  {
+    "id": 547,
+    "hanzi": "新鲜",
+    "pinyin": "xīnxiān",
+    "meaning": "fresh",
+    "level": 3
+  },
+  {
+    "id": 548,
+    "hanzi": "信",
+    "pinyin": "xìn",
+    "meaning": "letter, mail, trust",
+    "level": 3
+  },
+  {
+    "id": 549,
+    "hanzi": "行李箱",
+    "pinyin": "xínglixiāng",
+    "meaning": "luggage, suitcase",
+    "level": 3
+  },
+  {
+    "id": 550,
+    "hanzi": "兴趣",
+    "pinyin": "xìngqù",
+    "meaning": "interest, hobby",
+    "level": 3
+  },
+  {
+    "id": 551,
+    "hanzi": "熊猫",
+    "pinyin": "xióngmāo",
+    "meaning": "panda",
+    "level": 3
+  },
+  {
+    "id": 552,
+    "hanzi": "需要",
+    "pinyin": "xūyào",
+    "meaning": "to need, requirement",
+    "level": 3
+  },
+  {
+    "id": 553,
+    "hanzi": "选择",
+    "pinyin": "xuǎnzé",
+    "meaning": "to choose, choice",
+    "level": 3
+  },
+  {
+    "id": 554,
+    "hanzi": "眼镜",
+    "pinyin": "yǎnjìng",
+    "meaning": "glasses, spectacles",
+    "level": 3
+  },
+  {
+    "id": 555,
+    "hanzi": "要求",
+    "pinyin": "yāoqiú",
+    "meaning": "to demand, request, requirement",
+    "level": 3
+  },
+  {
+    "id": 556,
+    "hanzi": "爷爷",
+    "pinyin": "yéye",
+    "meaning": "grandfather (paternal)",
+    "level": 3
+  },
+  {
+    "id": 557,
+    "hanzi": "一定",
+    "pinyin": "yídìng",
+    "meaning": "certainly, definite",
+    "level": 3
+  },
+  {
+    "id": 558,
+    "hanzi": "一共",
+    "pinyin": "yígòng",
+    "meaning": "altogether, in total",
+    "level": 3
+  },
+  {
+    "id": 559,
+    "hanzi": "一会儿",
+    "pinyin": "yíhuìr",
+    "meaning": "a little while, a moment",
+    "level": 3
+  },
+  {
+    "id": 560,
+    "hanzi": "一样",
+    "pinyin": "yíyàng",
+    "meaning": "same, alike",
+    "level": 3
+  },
+  {
+    "id": 561,
+    "hanzi": "以前",
+    "pinyin": "yǐqián",
+    "meaning": "before, formerly",
+    "level": 3
+  },
+  {
+    "id": 562,
+    "hanzi": "一般",
+    "pinyin": "yìbān",
+    "meaning": "general, ordinary",
+    "level": 3
+  },
+  {
+    "id": 563,
+    "hanzi": "一边",
+    "pinyin": "yìbiān",
+    "meaning": "one side, simultaneously",
+    "level": 3
+  },
+  {
+    "id": 564,
+    "hanzi": "一直",
+    "pinyin": "yìzhí",
+    "meaning": "always, straight, continuously",
+    "level": 3
+  },
+  {
+    "id": 565,
+    "hanzi": "音乐",
+    "pinyin": "yīnyuè",
+    "meaning": "music",
+    "level": 3
+  },
+  {
+    "id": 566,
+    "hanzi": "银行",
+    "pinyin": "yínháng",
+    "meaning": "bank",
+    "level": 3
+  },
+  {
+    "id": 567,
+    "hanzi": "应该",
+    "pinyin": "yīnggāi",
+    "meaning": "should, ought to",
+    "level": 3
+  },
+  {
+    "id": 568,
+    "hanzi": "影响",
+    "pinyin": "yǐngxiǎng",
+    "meaning": "influence, effect, to affect",
+    "level": 3
+  },
+  {
+    "id": 569,
+    "hanzi": "用",
+    "pinyin": "yòng",
+    "meaning": "to use",
+    "level": 3
+  },
+  {
+    "id": 570,
+    "hanzi": "游戏",
+    "pinyin": "yóuxì",
+    "meaning": "game",
+    "level": 3
+  },
+  {
+    "id": 571,
+    "hanzi": "有名",
+    "pinyin": "yǒumíng",
+    "meaning": "famous, well-known",
+    "level": 3
+  },
+  {
+    "id": 572,
+    "hanzi": "又",
+    "pinyin": "yòu",
+    "meaning": "again (in the past), both...and...",
+    "level": 3
+  },
+  {
+    "id": 573,
+    "hanzi": "遇到",
+    "pinyin": "yùdào",
+    "meaning": "to run into, to meet (unexpectedly)",
+    "level": 3
+  },
+  {
+    "id": 574,
+    "hanzi": "元",
+    "pinyin": "yuán",
+    "meaning": "yuan (Chinese currency unit)",
+    "level": 3
+  },
+  {
+    "id": 575,
+    "hanzi": "愿意",
+    "pinyin": "yuànyì",
+    "meaning": "willing to, ready",
+    "level": 3
+  },
+  {
+    "id": 576,
+    "hanzi": "月亮",
+    "pinyin": "yuèliang",
+    "meaning": "moon",
+    "level": 3
+  },
+  {
+    "id": 577,
+    "hanzi": "越",
+    "pinyin": "yuè",
+    "meaning": "the more...",
+    "level": 3
+  },
+  {
+    "id": 578,
+    "hanzi": "云",
+    "pinyin": "yún",
+    "meaning": "cloud",
+    "level": 3
+  },
+  {
+    "id": 579,
+    "hanzi": "站",
+    "pinyin": "zhàn",
+    "meaning": "station, stop, to stand",
+    "level": 3
+  },
+  {
+    "id": 580,
+    "hanzi": "张",
+    "pinyin": "zhāng",
+    "meaning": "measure word for flat objects (paper, table)",
+    "level": 3
+  },
+  {
+    "id": 581,
+    "hanzi": "照顾",
+    "pinyin": "zhàogù",
+    "meaning": "to take care of, to look after",
+    "level": 3
+  },
+  {
+    "id": 582,
+    "hanzi": "照片",
+    "pinyin": "zhàopiàn",
+    "meaning": "photograph, picture",
+    "level": 3
+  },
+  {
+    "id": 583,
+    "hanzi": "照相机",
+    "pinyin": "zhàoxiàngjī",
+    "meaning": "camera",
+    "level": 3
+  },
+  {
+    "id": 584,
+    "hanzi": "只",
+    "pinyin": "zhǐ",
+    "meaning": "only, merely",
+    "level": 3
+  },
+  {
+    "id": 585,
+    "hanzi": "中间",
+    "pinyin": "zhōngjiān",
+    "meaning": "middle, center",
+    "level": 3
+  },
+  {
+    "id": 586,
+    "hanzi": "中文",
+    "pinyin": "zhōngwén",
+    "meaning": "Chinese language",
+    "level": 3
+  },
+  {
+    "id": 587,
+    "hanzi": "终于",
+    "pinyin": "zhōngyú",
+    "meaning": "at last, finally",
+    "level": 3
+  },
+  {
+    "id": 588,
+    "hanzi": "种",
+    "pinyin": "zhǒng",
+    "meaning": "type, kind, sort",
+    "level": 3
+  },
+  {
+    "id": 589,
+    "hanzi": "重要",
+    "pinyin": "zhòngyào",
+    "meaning": "important",
+    "level": 3
+  },
+  {
+    "id": 590,
+    "hanzi": "周末",
+    "pinyin": "zhōumò",
+    "meaning": "weekend",
+    "level": 3
+  },
+  {
+    "id": 591,
+    "hanzi": "主要",
+    "pinyin": "zhǔyào",
+    "meaning": "main, major, principal",
+    "level": 3
+  },
+  {
+    "id": 592,
+    "hanzi": "注意",
+    "pinyin": "zhùyì",
+    "meaning": "to pay attention to, notice",
+    "level": 3
+  },
+  {
+    "id": 593,
+    "hanzi": "着急",
+    "pinyin": "zháojí",
+    "meaning": "worried, anxious",
+    "level": 3
+  },
+  {
+    "id": 594,
+    "hanzi": "自己",
+    "pinyin": "zìjǐ",
+    "meaning": "oneself",
+    "level": 3
+  },
+  {
+    "id": 595,
+    "hanzi": "总是",
+    "pinyin": "zǒngshì",
+    "meaning": "always",
+    "level": 3
+  },
+  {
+    "id": 596,
+    "hanzi": "嘴",
+    "pinyin": "zuǐ",
+    "meaning": "mouth",
+    "level": 3
+  },
+  {
+    "id": 597,
+    "hanzi": "最后",
+    "pinyin": "zuìhòu",
+    "meaning": "final, last, finally",
+    "level": 3
+  },
+  {
+    "id": 598,
+    "hanzi": "最近",
+    "pinyin": "zuìjìn",
+    "meaning": "recently, lately",
+    "level": 3
+  },
+  {
+    "id": 599,
+    "hanzi": "作业",
+    "pinyin": "zuòyè",
+    "meaning": "homework, assignment",
+    "level": 3
+  },
+  {
+    "id": 600,
+    "hanzi": "作用",
+    "pinyin": "zuòyòng",
+    "meaning": "effect, function, role",
+    "level": 3
+  }
+]
