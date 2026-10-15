@@ -41,6 +41,10 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 - Proje başlangıçta **git deposu değildi**; `git init -b main` ile başlatıldı.
 - Yerel git kimliği: `Olcan Askar` / `developer@localhost` (repoya özel; istersen `git config --local user.email ...`).
 - **Remote (uzak depo) YOK** → commit'ler yalnızca bu diskte. Gerçek yedek için ileride GitHub vb. eklenmeli.
+- **Yerel arşiv yedek:** `C:\Projects\App\ChineseQuizApp-backup-2026-10-15_1532.tar.gz` (2,02 MB, 315 girdi; `.git` + `known-good` dahil, `node_modules`/`android`/`.expo` hariç). Açılıp doğrulandı: 17 commit, temiz çalışma alanı, `known-good` = `297fb18`.
+  - Yeni yedek almak için:
+    `tar -czf C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz -C C:\Projects\App --exclude=ChineseQuizApp/node_modules --exclude=ChineseQuizApp/android --exclude=ChineseQuizApp/.expo ChineseQuizApp`
+  - **Uyarı:** `C:\Projects\App\backup\` klasöründeki eski elle kopya **bozuk ve eksik** (`data\hsk5.json` 0 bayt, `hsk5_examples.js` yok). Yedek sanılıp güvenilmemeli; taze arşiv yukarıdaki dosyadır.
 - `android/` ve `ios/` `.gitignore`'da (Expo prebuild çıktısı; elle düzenleme).
 - **`tsconfig.json` ve ESLint yapılandırması YOK** → `AGENTS.md`'nin istediği `tsc` / `expo lint` çalışmaz (bkz. Faz 3.4).
 - **Test altyapısı VAR** (Faz 2.1 sonrası eklendi): `jest` + `jest-expo`.
