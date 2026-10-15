@@ -1,0 +1,154 @@
+# NOTES — ChineseQuizApp Geliştirme Notları
+
+Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
+Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
+
+Son güncelleme: Faz 1 tamamlandı, Faz 2'ye başlanmadı.
+
+---
+
+## 1. Proje özeti
+
+HSK 1–5 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması.
+2.500 kelimelik sabit kütüphane, 6 soru yönü, yanlışları tekrar etme (Review),
+JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı.
+
+- **Navigasyon:** React Navigation **Stack** (Expo Router DEĞİL — `AGENTS.md` bu konuda yanıltıcı, bkz. Faz 3.4).
+- **Giriş:** `index.js` → `App.js`.
+- **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`.
+- **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, CustomDeckModal, HandwritingModal, FloatingBackground).
+- **Servisler:** `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`.
+- **Veri:** `data/hsk1..5.json` (2.500 kelime, id 1–2500), `data/examples/hsk1..5_examples.js`.
+
+### Önemli sabitler / veri akışı
+
+| AsyncStorage anahtarı | İçerik |
+|---|---|
+| `@hsk_review_pool` | Yanlış yapılan kelimeler (App.js yönetir) |
+| `@hsk_user_stats` | `{ wordStats, dailyStats, streak }` |
+| `@custom_word_decks` | `{ "Deste Adı": [kelimeler] }` |
+
+- Navigasyon parametresi: Home → Quiz `{ initialLevel }` (`QuizScreen` `route.params.initialLevel` okur).
+- DeviceEventEmitter olayları: `onCustomDeckImported`, `onLevelChange`.
+
+---
+
+## 2. Ortam / araç notları
+
+- **Git yeni kuruldu** (winget ile, 2.55.x): `C:\Program Files\Git\cmd\git.exe`.
+  - Shell her açılışta PATH'te olmayabilir → komutlardan önce ekle:
+    `$env:Path += ";C:\Program Files\Git\cmd"`
+- Proje başlangıçta **git deposu değildi**; `git init -b main` ile başlatıldı.
+- Yerel git kimliği: `Olcan Askar` / `developer@localhost` (repoya özel; istersen `git config --local user.email ...`).
+- **Remote (uzak depo) YOK** → commit'ler yalnızca bu diskte. Gerçek yedek için ileride GitHub vb. eklenmeli.
+- `android/` ve `ios/` `.gitignore`'da (Expo prebuild çıktısı; elle düzenleme).
+- **`tsconfig.json` ve ESLint yapılandırması YOK** → `AGENTS.md`'nin istediği `tsc` / `expo lint` çalışmaz (bkz. Faz 3.4).
+- Derleme/emülatör yok → doğrulama statik (Babel parse + mantık simülasyonu) + cihazda elle test.
+- Geçici doğrulama scriptleri: `%TEMP%\opencode\{audit,verify,sim,review_sim}.js`.
+
+---
+
+## 3. Git durumu
+
+```
+e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count   ← HEAD, tag: known-good
+2a7e4e4  fix: P0 quiz bugs (hsk5 examples export, mixed hsk5 pool, review mode lock, missing hint in meaning modes)
+4191644  chore: baseline commit (pre-fix snapshot)
+```
+
+- **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl.
+- Her şey ters giderse dönüş: `git reset --hard known-good`
+- Tek commit geri alma: `git revert <hash>`
+- Kaydedilmemiş dosya geri alma: `git restore <dosya>`
+
+---
+
+## 4. Tamamlananlar
+
+### Faz 0 — Altyapı
+- [x] Git kurulumu + `git init` + baseline commit.
+- [x] Mevcut hataların cihazda gözlemlenmesi (baseline).
+
+### Faz 1 — P0 (kırık işlevler)
+- [x] **HSK5 örnek cümleleri** — `data/examples/hsk5_examples.js` içinde eksik olan `export default hsk5Examples;` eklendi.
+- [x] **Mixed modunda HSK5** — `screens/QuizScreen.js` mixed havuzuna `...hsk5Data` eklendi (artık 2.500 kelime).
+- [x] **Review mod kilidi** — mod sekmeleri artık serbestçe değişiyor (aşağıya bakınız).
+- [x] **Eksik ipucu** — `components/QuestionCard.js` içindeki `includes('en')` → `includes('meaning')`; ölü `startsWith('en')` kontrolleri temizlendi.
+
+### Faz 1 ek / Review davranışı (kullanıcı isteği)
+- **İstenen davranış:** mod bazlı filtreleme kalsın; yanlışı olmayan sekmeye geçilince "No Mistakes in this Mode!" uyarısı görünsün; doğru cevaplanan kelime **sadece o modun** kaydından çıksın.
+- **Yapılan:** `QuizScreen.js` içinde review mod seçimi **tek seferlik init**'e çevrildi (`didInitReviewMode` ref).
+  - Review'a ilk girişte yanlışı olan bir mod otomatik seçilir.
+  - Sonrasında mod asla zorla geri alınmaz; kullanıcı sekmeler arasında serbestçe gezer.
+- **Ek:** Header'daki kalan kelime sayacı artık **o moda özel** (`reviewCountForMode`).
+
+---
+
+## 5. Sıradaki: Faz 2 — Veri bütünlüğü / yarış koşulları
+
+Her maddeyi **ayrı commit** olarak yap.
+
+### 2.1 İstatistik yarış koşulu (P1)
+- **Sorun:** `services/statsManager.js` her cevapta tüm `@hsk_user_stats`'ı okuyup yeniden yazar; `QuizScreen` çağrısı `await` etmez → hızlı ardışık cevaplarda kayıp.
+- **Çözüm:** yazmaları sıraya alan bir kuyruk/mutex (basit) veya in-memory store + periyodik flush (sağlam).
+- **Doğrulama:** hızlı 20 cevap sonrası `dailyStats` toplamı = 20.
+
+### 2.2 UTC / yerel tarih tutarsızlığı (P1)
+- **Sorun:** `statsManager` günlük/streak anahtarlarını `toISOString()` (**UTC**) üretir; `StatsModal` "bugün"ü **yerel** saatle üretir ve 7 günlük listede UTC tarih + yerel hafta günü karışır.
+- **Çözüm:** tek bir `getDateKey(date)` yardımcı fonksiyonu (yerel, `YYYY-MM-DD`) ve her iki dosyada onu kullan.
+- **Doğrulama:** gece 00:00–01:00 arası cevap → takvim ve streak tutarlı.
+
+### 2.3 `importService` regex + default isim (P1)
+- **Sorun:** `/\.[^/.]+\$/` bozuk → uzantı hiç kırpılmıyor; üretilen `defaultName` `CustomDeckModal` tarafından kullanılmıyor.
+- **Çözüm:** regex'i düzelt (`/\.(json)$/i` gibi); `setCustomDeckName(result.defaultName ?? '')`.
+- **Doğrulama:** `kelimeler.json` seçilince isim alanı "kelimeler" ile dolu gelmeli.
+
+### 2.4 Tekrarlanan hanzi / çeldirici tekilliği (P1)
+- **Sorun:** 66 hanzi birden çok seviyede var; çeldiriciler yalnızca `id` ile eleniyor → aynı/çok benzer şık gelebilir.
+- **Çözüm:** çeldiricileri `hanzi|pinyin|meaning` içerik anahtarına göre ele; Meaning modunda `meaning` çakışmasını da dışla.
+- **Doğrulama:** Mixed/Custom'da aynı hanzi iki şıkta görünmemeli.
+
+---
+
+## 6. Faz 3 — Mimari / bakım kolaylığı (refactor, daha yüksek risk)
+
+- [ ] **3.1 Ortak veri katmanı:** `services/wordRepository.js` → `hsk1..5` import'ları, `ALL_WORDS`, `getWordPool(level)`, `getExample(...)` tek yerde. `QuizScreen`, `VocabularyScreen`, `StatsModal`, `FloatingBackground`, `exampleService` bunu kullansın.
+- [ ] **3.2 `reviewPool` veri şekli:** `{ ...currentWord, word, wrongMode }` → `{ wordId, wrongMode }`; açılışta eski şekli normalize eden göç kodu ekle.
+- [ ] **3.3 Mod/kategori tutarlılığı:** istatistik yönleri birleştirirken review yön bazlı ayrı tutuyor; tek bir `MODE_CATEGORY` map'i (`services/modes.js`) ile netleştir. Bilinmeyen mod sessizce varsayılana düşmesin.
+- [ ] **3.4 AGENTS.md + araçlar:** AGENTS.md'yi gerçek yapıya göre güncelle (React Navigation, `src/app` yok). `tsconfig.json` + ESLint ekle; `tsc --noEmit` ve lint çalışsın. (Expo SDK 57 dokümanlarını doğrula: https://docs.expo.dev/llms.txt)
+- [ ] **3.5 Bağımlılık/ölü kod temizliği:** kullanılmayanları kaldır (`expo-notifications`, `expo-file-system`, `expo-status-bar`, `@react-navigation/native-stack`); `words.json` (referanssız), `App.js isLoaded`, `Header.js Dimensions` importu; `app.json` splash yapılandırması (`assets/splash-icon.png` kullanılmıyor).
+- [ ] **3.6 Özel desteler:** aynı isimde üzerine yazmadan önce onay; sanitize edilmiş adı hem anahtar hem ID öneki olarak kullan; özel desteleri istatistiğe ekle.
+
+---
+
+## 7. Faz 4 — Performans / UX
+
+- [ ] **4.1** `StatsModal`: veri yüklenirken `null` dönme (flicker); hesaplamaları `useMemo`.
+- [ ] **4.2** `QuizScreen`: çeldirici havuzunu `useMemo` ile önbelleğe al (her soruda 2.500'lük dizi kopyası + sıralama).
+- [ ] **4.3** `FloatingBackground`: `while` döngüsüne maksimum deneme; `Dimensions` değişimini dinle.
+- [ ] **4.4** Quiz oturumu: soru sayısı/bitiş ekranı, skor sıfırlama, ilerleme göstergesi.
+- [ ] **4.5** Erişilebilirlik: `accessibilityRole/Label`.
+- [ ] **4.6** `HandwritingModal`: fetch zaman aşımı.
+
+---
+
+## 8. Bilinen açık riskler / notlar
+
+- **Remote yedek yok** — tüm geçmiş bu diskte. Uygun olduğunda GitHub (veya benzeri) eklenmeli.
+- **Derleme/emülatör yok** — Faz 1 değişikliklerinin cihazda son teyidi kullanıcıda:
+  1. HSK5 kelimesini yanlış cevapla → örnek cümle görünmeli.
+  2. Mixed modunda HSK5 (id 1201+) gelmeli.
+  3. Review'da sekmeler arasında serbest geçiş; yanlışsız modda uyarı.
+  4. 6 modun hepsinde cevap sonrası ipucu satırı çıkmalı.
+- `hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı (düşük öncelik).
+- `HandwritingModal` harici Google `inputtools` servisine bağımlı (çevrimdışı → hata mesajı).
+
+---
+
+## 9. Yeni oturumda nasıl devam edilir
+
+1. Bu dosyayı oku (`NOTES.md`).
+2. `git log --oneline` ve `git status` ile durumu doğrula.
+3. Çalışılacak maddeyi seç (kural: **her düzeltme ayrı commit**, mesajı açıklayıcı).
+4. Bitince: doğrula → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
+5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
