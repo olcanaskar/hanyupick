@@ -15,6 +15,30 @@ import hsk2Data from '../data/hsk2.json';
 import hsk3Data from '../data/hsk3.json';
 import hsk4Data from '../data/hsk4.json';
 import hsk5Data from '../data/hsk5.json';
+import { buildOptions } from '../services/quizBuilder';
+
+// Seviye -> kelime havuzu eşlemesi (tek yerde).
+const LEVEL_POOLS = {
+  hsk1: hsk1Data,
+  hsk2: hsk2Data,
+  hsk3: hsk3Data,
+  hsk4: hsk4Data,
+  hsk5: hsk5Data,
+};
+
+const ALL_WORDS = [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data, ...hsk5Data];
+
+// Bir kelimenin id'sinden seviyesini çıkarır.
+// hsk5 kayıtlarında `level` alanı yok; id aralıkları ise kesintisiz ve benzersizdir.
+// Not: exampleService'teki aralıklarla aynı — Faz 3.1'de ortak bir modüle taşınacak.
+const getLevelFromWordId = (id) => {
+  if (typeof id !== 'number') return null;
+  if (id <= 150) return 'hsk1';
+  if (id <= 300) return 'hsk2';
+  if (id <= 600) return 'hsk3';
+  if (id <= 1200) return 'hsk4';
+  return 'hsk5';
+};
 
 export default function QuizScreen({ 
   route, 
@@ -60,14 +84,7 @@ export default function QuizScreen({
 
   // Kelime havuzunu seviyeye göre seçer (Standart HSK Seviyeleri)
   const getWordPool = useCallback((targetLevel = level) => {
-    if (targetLevel === 'hsk1') return hsk1Data;
-    if (targetLevel === 'hsk2') return hsk2Data;
-    if (targetLevel === 'hsk3') return hsk3Data;
-    if (targetLevel === 'hsk4') return hsk4Data;
-    if (targetLevel === 'hsk5') return hsk5Data;
-    if (targetLevel === 'mixed')
-      return [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data, ...hsk5Data];
-    return hsk1Data;
+    return LEVEL_POOLS[targetLevel] || ALL_WORDS;
   }, [level]);
 
   // Soru ve şıkları oluşturur (Asenkron destekli)
@@ -98,13 +115,14 @@ export default function QuizScreen({
     const randomIndex = Math.floor(Math.random() * currentPool.length);
     const correctWord = currentPool[randomIndex];
 
-    // Yanlış şıklar (çeldiriciler) için genel kelime havuzunu kullanıyoruz
-    const allWords = [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data, ...hsk5Data];
-    const wrongPool = allWords.filter((w) => w.id !== correctWord.id);
-    const shuffledWrong = [...wrongPool].sort(() => 0.5 - Math.random());
-    const wrongOptions = shuffledWrong.slice(0, 3);
+    // Çeldiriciler önce doğru cevapla AYNI seviyeden seçilir; yeterli benzersiz aday
+    // bulunamazsa tüm kelimelerden tamamlanır. Review'da kelimenin seviyesi id'den bulunur.
+    const sameLevelPool =
+      LEVEL_POOLS[targetLevel] ||
+      (targetLevel === 'review' ? LEVEL_POOLS[getLevelFromWordId(correctWord.id)] : null);
+    const distractorPools = sameLevelPool ? [sameLevelPool, ALL_WORDS] : [ALL_WORDS];
 
-    const combinedOptions = [...wrongOptions, correctWord].sort(() => 0.5 - Math.random());
+    const combinedOptions = buildOptions(correctWord, distractorPools);
 
     setCurrentWord(correctWord);
     setOptions(combinedOptions);
