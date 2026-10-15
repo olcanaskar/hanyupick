@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2.3 (`importService` regex + `defaultName`) tamamlandı; **41 test yeşil**. Sıradaki: Faz 2.4 (çeldirici tekilliği).
+Son güncelleme: Faz 2 tamamlandı (2.1–2.4). **60 test yeşil.** Sıradaki: cihazda Faz 1–2 doğrulaması, sonra Faz 3 (mimari).
 
 ---
 
@@ -55,6 +55,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 ## 3. Git durumu
 
 ```
+e69fb33  fix(quiz): prevent duplicate/ambiguous options and pick same-level distractors
 91d3597  fix(import): strip file extension for default deck name and prefill it
 0ea3c62  docs: mark Faz 2.2 done in NOTES.md
 c2de580  fix(date): use local date keys for daily stats and calendar
@@ -107,7 +108,7 @@ e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mo
 
 ---
 
-## 5. Sıradaki: Faz 2 — Veri bütünlüğü / yarış koşulları
+## 5. Faz 2 — Veri bütünlüğü / yarış koşulları (2.1–2.4 tamamlandı)
 
 Her maddeyi **ayrı commit** olarak yap.
 
@@ -137,10 +138,22 @@ Her maddeyi **ayrı commit** olarak yap.
 - **Doğrulama:** `test.failing` normal teste çevrildi; uzantısız ad ve çok noktalı ad senaryoları eklendi. Suite: **41 test yeşil**.
 - **Commit:** `91d3597`
 
-### 2.4 Tekrarlanan hanzi / çeldirici tekilliği (P1)
-- **Sorun:** 66 hanzi birden çok seviyede var; çeldiriciler yalnızca `id` ile eleniyor → aynı/çok benzer şık gelebilir.
-- **Çözüm:** çeldiricileri `hanzi|pinyin|meaning` içerik anahtarına göre ele; Meaning modunda `meaning` çakışmasını da dışla.
-- **Doğrulama:** Mixed/Custom'da aynı hanzi iki şıkta görünmemeli.
+### 2.4 ✅ TAMAMLANDI — Çeldirici tekilliği + seviye bazlı çeldirici (P1)
+- **Sorun:** Çeldiriciler yalnızca `id` ile eleniyordu ve **her zaman 2.500 kelimelik genel havuzdan** seçiliyordu. Sonuç:
+  - (a) `id` farklı ama içeriği aynı kayıtlar (66 ikiz hanzi, 126 ikiz pinyin, 50 ikiz anlam) yan yana gelip soruyu **cevaplanamaz** yapabiliyordu (örn. iki tane `bā`, iki tane `morning`).
+  - (b) HSK 1 çalışırken şıkların **~%83'ü** HSK 3–5 kelimesiydi → cevap bedava veriliyordu.
+- **Ölçüm (eski kod, Mixed, 20.000 soru/mod):** aynı şık iki kez → **%0,01–0,06** (kabaca 1.700–10.000 soruda bir). Özel destelerde doğru cevabın ikizi havuzda **garantili** olduğu için oran daha yüksek.
+- **Yapıldı:**
+  - Yeni `services/quizBuilder.js` (**saf, test edilebilir**): `buildOptions(correctWord, pools, count)`. Bir kelime doğru cevapla **hanzi VEYA pinyin VEYA anlam** alanlarından birini paylaşıyorsa çeldirici olamaz; çeldiriciler kendi aralarında da benzersiz. Karıştırma adil hale getirildi (Fisher-Yates).
+  - `screens/QuizScreen.js`: çeldirici havuzları `[aynı seviye, tüm kelimeler]` — yeterli aday yoksa genelden tamamlanır. **Review**'da kelimenin seviyesi `id` aralığından bulunur; Mixed ve özel deste tüm havuzu kullanır. `getWordPool` da sadeleşti.
+- **Doğrulama:**
+  - `__tests__/quizBuilder.test.js`: fixture + **gerçek veri** (tüm ikiz hanzi/pinyin/anlam grupları ve her seviye için 200 soru) → hiçbir şıkta çakışma yok.
+  - Önce/sonra simülasyonu: bozuk şık **%0,01–0,06 → %0,00**; hsk1 modunda çeldiricilerin seviyesi **%9 → %100 hsk1**.
+  - Suite: **60 test yeşil**.
+- **Bilinçli sınırlama:** Eleme **string** eşitliğine dayanır; `"sun, day"` ↔ `"day, sun"` gibi farklı yazılmış eş anlamlılar yakalanmaz (bkz. §8 veri notu).
+- **Commit:** `e69fb33`
+
+> **Faz 2 kapandı.** Sıradaki adım için öneri: Faz 1–2.4 değişikliklerini cihazda bir kez dene (§8'deki kontrol listesi), sonra Faz 3 (mimari) veya Faz 4 (performans).
 
 ---
 
@@ -158,7 +171,7 @@ Her maddeyi **ayrı commit** olarak yap.
 ## 7. Faz 4 — Performans / UX
 
 - [ ] **4.1** `StatsModal`: veri yüklenirken `null` dönme (flicker); hesaplamaları `useMemo`.
-- [ ] **4.2** `QuizScreen`: çeldirici havuzunu `useMemo` ile önbelleğe al (her soruda 2.500'lük dizi kopyası + sıralama).
+- [ ] **4.2** `services/quizBuilder.js` / `QuizScreen`: havuz kopyalama + karıştırmayı önbelleğe al veya örnekleme (O(k)) ile değiştir — şu an her soruda seçilen havuz kopyalanıp karıştırılıyor.
 - [ ] **4.3** `FloatingBackground`: `while` döngüsüne maksimum deneme; `Dimensions` değişimini dinle.
 - [ ] **4.4** Quiz oturumu: soru sayısı/bitiş ekranı, skor sıfırlama, ilerleme göstergesi.
 - [ ] **4.5** Erişilebilirlik: `accessibilityRole/Label`.
@@ -174,7 +187,9 @@ Her maddeyi **ayrı commit** olarak yap.
   2. Mixed modunda HSK5 (id 1201+) gelmeli.
   3. Review'da sekmeler arasında serbest geçiş; yanlışsız modda uyarı.
   4. 6 modun hepsinde cevap sonrası ipucu satırı çıkmalı.
-- `hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı (düşük öncelik).
+- `hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı (düşük öncelik). Seviye tespiti bu yüzden `id` aralığından yapılıyor (§5, 2.4).
+- **`hsk5.json`'da 17 ikiz kayıt** var (aynı hanzi iki kez, farklı id): 2'si birebir aynı (`财产` 1237/2002, `插` 1242/2024), 15'i yalnızca anlam yazımı farklı (`包含` 1206/1889). Kod artık bu ikizleri şık olarak göstermiyor ama istatistikler iki ayrı id'de birikiyor; veri temizliği ayrı bir iş.
+- `exampleService` ile `QuizScreen`'deki `id`→seviye aralıkları **iki yerde tekrar ediyor** → Faz 3.1'de ortak modüle taşınmalı.
 - `HandwritingModal` harici Google `inputtools` servisine bağımlı (çevrimdışı → hata mesajı).
 
 ---
