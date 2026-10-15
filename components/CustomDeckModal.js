@@ -11,6 +11,7 @@ import {
   DeviceEventEmitter,
   Pressable,
   Animated,
+  Platform,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import {
@@ -581,7 +582,7 @@ const styles = StyleSheet.create({
     paddingBottom: 42,
   },
   codeText: {
-    fontFamily: 'Platform' === 'ios' ? 'Courier' : 'monospace',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     fontSize: 11,
     color: '#F8FAFC',
     lineHeight: 16,
