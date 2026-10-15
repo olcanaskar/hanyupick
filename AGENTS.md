@@ -19,7 +19,7 @@ This project uses npm (`package-lock.json`; there is no `bun.lock`) — use `npx
 ```bash
 npx expo install <package>          # ALWAYS use instead of npm/yarn/pnpm add — resolves SDK-compatible versions
 npm run lint                        # ESLint over the whole project (flat config) — 0 errors expected
-npm test                            # jest (jest-expo preset) — 115 tests, 8 suites
+npm test                            # jest (jest-expo preset) — 130 tests, 8 suites
 npm run tsc                         # tsc --noEmit over the JS (checkJs) — 0 errors expected
 npx expo start --go --clear         # dev server for Expo Go (no native build needed)
 npx expo-doctor                     # dependency/config diagnosis — 21/21 clean (needs git on PATH)
@@ -49,6 +49,7 @@ Single sources of truth — never duplicate these elsewhere:
 - `services/reviewPool.js` — the mistake pool's single record shape (`{ wordId, wrongMode }`; `snapshot` only for custom-deck words) plus its helpers.
 - `services/modes.js` — the 6 quiz directions and their 3 categories. Everything (`MODES`, `CATEGORIES`, `MODE_CATEGORY`, `MODES_BY_CATEGORY`, `MODE_LABELS`, `DEFAULT_MODE`, `getCategory()`, `getCategoryIndex()`, `getPromptType()`, `getAnswerType()`, `getReverseMode()`, `getHintField()`) is derived from ONE table at the top of the file. Never parse a mode name with `startsWith`/`endsWith` and never hardcode a category key elsewhere.
 - `services/dateUtils.js` — the only place that builds day keys (local time, never UTC).
+- `services/statsManager.js` — the stats record shape plus the mastery rules (`MASTERY_STREAK`, `isMastered`, `isProblematic`, `getMastery`). They apply to HSK ids (numbers) and custom-deck ids (`custom_…` strings) alike; never re-implement them in a component (they lived in `StatsModal` until 3.6b, where they were untestable).
 
 AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`.
 
