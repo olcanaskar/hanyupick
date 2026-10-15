@@ -134,24 +134,50 @@ export default function CustomDeckModal({ visible, onClose }) {
     }
   };
 
-  // Verilen özel isimle kaydet
-  const handleConfirmSave = async () => {
+  // Kaydetmeyi dener. `overwrite` yalnızca kullanıcı onayından SONRA true olur:
+  // aynı adla var olan bir deste sessizce ezilmez.
+  const performSave = async (overwrite) => {
     const trimmedName = customDeckName.trim();
     if (!trimmedName) {
       Alert.alert('Invalid Name', 'Please enter a valid name for your deck.');
       return;
     }
 
-    const saveResult = await saveCustomDeck(trimmedName, pendingDeck.validWords);
+    const saveResult = await saveCustomDeck(trimmedName, pendingDeck.validWords, { overwrite });
+
     if (saveResult.success) {
       setPendingDeck(null);
       setCustomDeckName('');
       await loadDecks();
       DeviceEventEmitter.emit('onCustomDeckImported');
-    } else {
-      Alert.alert('Save Error', saveResult.error || 'Failed to save deck.');
+      return;
     }
+
+    if (saveResult.reason === 'exists') {
+      Alert.alert(
+        'Deck Already Exists',
+        `A deck named "${saveResult.deckName}" already exists. Do you want to replace it?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Replace', style: 'destructive', onPress: () => performSave(true) },
+        ]
+      );
+      return;
+    }
+
+    if (saveResult.reason === 'id-conflict') {
+      Alert.alert(
+        'Name Not Available',
+        `This name generates the same word IDs as the deck "${saveResult.conflictWith}", which would mix the two decks' statistics. Please choose a different name.`
+      );
+      return;
+    }
+
+    Alert.alert('Save Error', saveResult.error || 'Failed to save deck.');
   };
+
+  // Butonun doğrudan çağırdığı sarmalayıcı: `onPress` olayı `overwrite` sanılmasın.
+  const handleConfirmSave = () => performSave(false);
 
   // Silme Onayı
   const handleConfirmDelete = async () => {

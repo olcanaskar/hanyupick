@@ -3,6 +3,55 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CUSTOM_DECKS_KEY = '@custom_word_decks';
 
+// Deste adından kelime id öneki üretir (alfanümerik olmayan her karakter '_').
+//
+// UYARI: Bu kural BİLEREK değiştirilmiyor. Üretilen id diskteki kayıtların
+// kimliğidir; kural değişirse mevcut destelerin id'leri de değişir ve o destelere
+// ait review-pool kayıtları (wordId ile aranır) çözülemez hale gelir → kullanıcının
+// biriktirdiği yanlışlar sessizce düşer. Bu yüzden iki farklı adın aynı öneki
+// ürettiği durum (örn. "Ders 1" ve "Ders_1", ya da Latin dışı adlar) sessizce
+// kabul edilmez; aşağıdaki çakışma kontrolüyle reddedilir.
+export const getDeckIdPrefix = (deckName) => String(deckName).replace(/[^a-zA-Z0-9]/g, '_');
+
+// Yeni kelimelerin id'lerini üretir. `item.id` yalnızca kullanılabilir bir sayı ya da
+// boş olmayan bir metin ise kullanılır, aksi halde dosyadaki sıraya düşer — yoksa
+// id'si boş olan birden çok kelime `custom_X_` id'sini PAYLAŞIRDI.
+const formatDeckWords = (deckName, validWords) => {
+  const prefix = getDeckIdPrefix(deckName);
+
+  return validWords.map((item, index) => {
+    const rawId = item.id;
+    const itemId =
+      typeof rawId === 'number' || (typeof rawId === 'string' && rawId.trim() !== '')
+        ? rawId
+        : index;
+
+    return {
+      id: `custom_${prefix}_${itemId}`,
+      hanzi: item.hanzi,
+      pinyin: item.pinyin,
+      meaning: item.meaning,
+      level: item.level || 'custom',
+    };
+  });
+};
+
+// Yeni id'ler mevcut BAŞKA bir desteyle çakışıyor mu? (aynı ad hariç)
+// Çakışma olursa iki deste aynı kelime id'lerini paylaşır; istatistik ve review
+// kayıtları hangi desteye ait olduğu bilinmeden karışır.
+const findIdConflict = (customDecks, words, ignoreName) => {
+  const newIds = new Set(words.map((word) => word.id));
+
+  return (
+    Object.keys(customDecks).find(
+      (name) =>
+        name !== ignoreName &&
+        Array.isArray(customDecks[name]) &&
+        customDecks[name].some((word) => newIds.has(word.id))
+    ) || null
+  );
+};
+
 // 1. JSON dosyasını seçme ve okuma
 export const pickAndParseJSON = async () => {
   try {
@@ -51,26 +100,36 @@ export const pickAndParseJSON = async () => {
 };
 
 // 2. Özel isimle kaydetme
-export const saveCustomDeck = async (deckName, validWords) => {
+//
+// Sessiz üzerine yazma YOKTUR: aynı adla bir deste varsa kaydetmez, `{ reason: 'exists' }`
+// döner; çağıran (CustomDeckModal) kullanıcıdan onay alıp `{ overwrite: true }` ile
+// tekrar çağırır. `overwrite: true` iken bile BAŞKA bir desteyle id çakışması olursa
+// kayıt `{ reason: 'id-conflict' }` ile reddedilir.
+export const saveCustomDeck = async (deckName, validWords, { overwrite = false } = {}) => {
   try {
-    const sanitizedDeckName = deckName.replace(/[^a-zA-Z0-9]/g, '_');
-
-    const formattedWords = validWords.map((item, index) => ({
-      id: `custom_${sanitizedDeckName}_${item.id ?? index}`,
-      hanzi: item.hanzi,
-      pinyin: item.pinyin,
-      meaning: item.meaning,
-      level: item.level || 'custom',
-    }));
+    const name = String(deckName ?? '').trim();
+    if (!name) return { success: false, reason: 'invalid-name' };
 
     const existingData = await AsyncStorage.getItem(CUSTOM_DECKS_KEY);
     const customDecks = existingData ? JSON.parse(existingData) : {};
+    const alreadyExists = Object.prototype.hasOwnProperty.call(customDecks, name);
 
-    customDecks[deckName] = formattedWords;
+    if (alreadyExists && !overwrite) {
+      return { success: false, reason: 'exists', deckName: name };
+    }
+
+    const formattedWords = formatDeckWords(name, validWords);
+
+    const conflictWith = findIdConflict(customDecks, formattedWords, name);
+    if (conflictWith) {
+      return { success: false, reason: 'id-conflict', deckName: name, conflictWith };
+    }
+
+    customDecks[name] = formattedWords;
 
     await AsyncStorage.setItem(CUSTOM_DECKS_KEY, JSON.stringify(customDecks));
 
-    return { success: true, deckName, count: formattedWords.length };
+    return { success: true, deckName: name, count: formattedWords.length };
   } catch (error) {
     console.error('Save deck error:', error);
     return { success: false, error: error.message };

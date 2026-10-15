@@ -5,6 +5,7 @@ import {
   saveCustomDeck,
   getCustomDecks,
   deleteCustomDeck,
+  getDeckIdPrefix,
 } from '../services/importService';
 
 jest.mock('expo-document-picker', () => ({ getDocumentAsync: jest.fn() }));
@@ -144,5 +145,86 @@ describe('özel desteler (custom decks)', () => {
     await AsyncStorage.setItem(DECKS_KEY, '{ bozuk');
 
     await expect(getCustomDecks()).resolves.toEqual({});
+  });
+});
+
+// Faz 3.6: sessiz üzerine yazma ve kelime id çakışması.
+describe('özel deste kaydetme — onay ve id çakışması', () => {
+  const WORDS_A = [{ hanzi: '爱', pinyin: 'ài', meaning: 'to love' }];
+  const WORDS_B = [{ hanzi: '八', pinyin: 'bā', meaning: 'eight' }];
+
+  test('önek kuralı: alfanümerik olmayan karakterler "_" olur (eski kural korunuyor)', () => {
+    expect(getDeckIdPrefix('Ders 1!')).toBe('Ders_1_');
+    expect(getDeckIdPrefix('中文')).toBe('__');
+  });
+
+  test('aynı adla ikinci kayıt onay olmadan üzerine YAZMAZ', async () => {
+    await saveCustomDeck('Ders', WORDS_A);
+
+    const second = await saveCustomDeck('Ders', WORDS_B);
+
+    expect(second).toEqual({ success: false, reason: 'exists', deckName: 'Ders' });
+
+    const decks = await getCustomDecks();
+    expect(decks.Ders[0].hanzi).toBe('爱'); // ilk içerik korunur
+  });
+
+  test('overwrite: true ile üzerine yazılır; id öneki aynı kaldığı için geçmiş korunur', async () => {
+    await saveCustomDeck('Ders', WORDS_A);
+
+    const second = await saveCustomDeck('Ders', WORDS_B, { overwrite: true });
+
+    expect(second).toEqual({ success: true, deckName: 'Ders', count: 1 });
+
+    const decks = await getCustomDecks();
+    expect(decks.Ders[0].hanzi).toBe('八');
+    expect(decks.Ders[0].id).toBe('custom_Ders_0');
+  });
+
+  test('ad boş/yalnızca boşluksa kaydedilmez', async () => {
+    await expect(saveCustomDeck('   ', WORDS_A)).resolves.toEqual({
+      success: false,
+      reason: 'invalid-name',
+    });
+    await expect(getCustomDecks()).resolves.toEqual({});
+  });
+
+  test('farklı ad aynı id önekini üretiyorsa kayıt reddedilir', async () => {
+    await saveCustomDeck('Ders 1', WORDS_A);
+
+    const second = await saveCustomDeck('Ders_1', WORDS_B);
+
+    expect(second).toEqual({
+      success: false,
+      reason: 'id-conflict',
+      deckName: 'Ders_1',
+      conflictWith: 'Ders 1',
+    });
+    await expect(getCustomDecks()).resolves.toEqual({ 'Ders 1': [expect.any(Object)] });
+  });
+
+  test('aynı önek ama çakışmayan id\'ler birlikte var olabilir', async () => {
+    await saveCustomDeck('Ders 1', [{ id: 1, hanzi: '爱', pinyin: 'ài', meaning: 'to love' }]);
+
+    const second = await saveCustomDeck('Ders_1', [
+      { id: 99, hanzi: '八', pinyin: 'bā', meaning: 'eight' },
+    ]);
+
+    expect(second.success).toBe(true);
+
+    const decks = await getCustomDecks();
+    expect(Object.keys(decks).sort()).toEqual(['Ders 1', 'Ders_1']);
+    expect(decks['Ders_1'][0].id).toBe('custom_Ders_1_99');
+  });
+
+  test('boş/geçersiz id indekse düşer (birden çok kelime aynı id\'yi paylaşmaz)', async () => {
+    await saveCustomDeck('Ders', [
+      { id: '', hanzi: '爱', pinyin: 'ài', meaning: 'to love' },
+      { id: {}, hanzi: '八', pinyin: 'bā', meaning: 'eight' },
+    ]);
+
+    const decks = await getCustomDecks();
+    expect(decks.Ders[0].id).toBe('custom_Ders_0');
+    expect(decks.Ders[1].id).toBe('custom_Ders_1');
   });
 });
