@@ -123,6 +123,8 @@ export default function VocabularyScreen({ navigation }) {
         style={styles.soundBtn}
         onPress={() => speakHanzi(item.hanzi)}
         activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`Play pronunciation of ${item.hanzi}`}
       >
         <Text style={styles.soundIcon}>🔊</Text>
       </TouchableOpacity>
@@ -142,11 +144,13 @@ export default function VocabularyScreen({ navigation }) {
             style={styles.backBtn}
             onPress={() => navigation.goBack()}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
           >
             <Text style={styles.backBtnText}>←</Text>
           </TouchableOpacity>
           <View>
-            <Text style={styles.headerTitle}>VOCABULARY</Text>
+            <Text style={styles.headerTitle} accessibilityRole="header">VOCABULARY</Text>
             <Text style={styles.headerSubtitle}>{allWordsPool.length} words in library</Text>
           </View>
         </View>
@@ -163,7 +167,7 @@ export default function VocabularyScreen({ navigation }) {
             clearButtonMode="while-editing"
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')} style={{ marginRight: 6 }}>
+            <TouchableOpacity onPress={() => setSearchQuery('')} style={{ marginRight: 6 }} accessibilityRole="button" accessibilityLabel="Clear search">
               <Text style={styles.clearIcon}>✕</Text>
             </TouchableOpacity>
           )}
@@ -173,6 +177,8 @@ export default function VocabularyScreen({ navigation }) {
             style={styles.drawBtn}
             onPress={() => setIsHandwritingVisible(true)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Search by handwriting"
           >
             <Text style={styles.drawBtnIcon}>✍️</Text>
             <Text style={styles.drawBtnText}>Draw</Text>
@@ -194,6 +200,8 @@ export default function VocabularyScreen({ navigation }) {
                   style={[styles.categoryChip, isSelected && styles.categoryChipSelected]}
                   onPress={() => setSelectedCategory(item.id)}
                   activeOpacity={0.75}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label}
                 >
                   <Text
                     style={[

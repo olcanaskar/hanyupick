@@ -132,11 +132,11 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
   return (
     <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+        <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()} accessibilityViewIsModal={true}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Draw Chinese Character</Text>
-            <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Text style={styles.title} accessibilityRole="header">Draw Chinese Character</Text>
+            <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Close">
               <Text style={styles.closeBtn}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -155,6 +155,8 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
                     key={index}
                     style={styles.candidateChip}
                     onPress={() => handleSelect(char)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Candidate ${char}`}
                   >
                     <Text style={styles.candidateText}>{char}</Text>
                   </TouchableOpacity>
@@ -201,10 +203,10 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
 
           {/* Aksiyon Butonları */}
           <View style={styles.actionsRow}>
-            <TouchableOpacity style={styles.actionBtn} onPress={handleUndo}>
+            <TouchableOpacity style={styles.actionBtn} onPress={handleUndo} accessibilityRole="button" accessibilityLabel="Undo">
               <Text style={styles.actionBtnText}>↩ Undo</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtn, styles.clearBtn]} onPress={handleClear}>
+            <TouchableOpacity style={[styles.actionBtn, styles.clearBtn]} onPress={handleClear} accessibilityRole="button" accessibilityLabel="Clear">
               <Text style={styles.clearBtnText}>🗑 Clear</Text>
             </TouchableOpacity>
           </View>

@@ -221,6 +221,8 @@ export default function Header({
             style={styles.toggleBtn}
             onPress={() => handleTabPress(index)}
             activeOpacity={0.85}
+            accessibilityRole="tab"
+            accessibilityLabel={MODE_LABELS[getTabMode(category)]}
           >
             <Animated.View style={currentIndex === index ? flipStyle : null}>
               <Text
@@ -252,6 +254,8 @@ export default function Header({
             style={[styles.dropdownButton, isDropdownOpen && styles.dropdownButtonActive]}
             onPress={handleOpenDropdown}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={`Current level: ${currentLevelObj.label}. Opens the level list`}
           >
             <View style={styles.dropdownButtonLeft}>
               <Text style={styles.dropdownPrefix}>Level:</Text>
@@ -283,6 +287,7 @@ export default function Header({
               },
             ]}
             onPress={(e) => e.stopPropagation()}
+            accessibilityViewIsModal={true}
           >
             <ScrollView
               nestedScrollEnabled={true}
@@ -305,6 +310,8 @@ export default function Header({
                     ]}
                     onPress={() => handleSelectLevel(item.id)}
                     activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={item.label}
                   >
                     <View style={styles.dropdownItemContent}>
                       <Text

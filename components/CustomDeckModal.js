@@ -204,20 +204,21 @@ export default function CustomDeckModal({ visible, onClose }) {
               transform: [{ scale: scaleAnim }, { translateY: translateYAnim }],
             },
           ]}
+          accessibilityViewIsModal={true}
         >
           {/* Header */}
           <View style={styles.header}>
             <View>
-              <Text style={styles.title}>CUSTOM WORD DECKS</Text>
+              <Text style={styles.title} accessibilityRole="header">CUSTOM WORD DECKS</Text>
               {!pendingDeck && !deckToDelete && (
-                <TouchableOpacity onPress={() => setShowGuide((prev) => !prev)}>
+                <TouchableOpacity onPress={() => setShowGuide((prev) => !prev)} accessibilityRole="button" accessibilityLabel={showGuide ? 'Back to decks' : 'How to format JSON'}>
                   <Text style={styles.guideToggleText}>
                     {showGuide ? '← Back to Decks' : 'ℹ️ How to format JSON?'}
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
-            <TouchableOpacity onPress={handleClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <TouchableOpacity onPress={handleClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Close">
               <Text style={styles.closeBtn}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -233,12 +234,16 @@ export default function CustomDeckModal({ visible, onClose }) {
                 <TouchableOpacity
                   style={styles.cancelBtn}
                   onPress={() => setDeckToDelete(null)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancel"
                 >
                   <Text style={styles.cancelBtnText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.deleteConfirmBtn}
                   onPress={handleConfirmDelete}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Delete deck ${deckToDelete}`}
                 >
                   <Text style={styles.deleteConfirmBtnText}>Delete</Text>
                 </TouchableOpacity>
@@ -265,6 +270,8 @@ export default function CustomDeckModal({ visible, onClose }) {
                 <TouchableOpacity
                   style={styles.cancelBtn}
                   onPress={() => setSaveNotice(null)}
+                  accessibilityRole="button"
+                  accessibilityLabel={saveNotice.kind === 'overwrite' ? 'Cancel' : 'OK'}
                 >
                   <Text style={styles.cancelBtnText}>
                     {saveNotice.kind === 'overwrite' ? 'Cancel' : 'OK'}
@@ -277,6 +284,8 @@ export default function CustomDeckModal({ visible, onClose }) {
                       setSaveNotice(null);
                       performSave(true);
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Replace"
                   >
                     <Text style={styles.saveBtnText}>Replace</Text>
                   </TouchableOpacity>
@@ -298,17 +307,22 @@ export default function CustomDeckModal({ visible, onClose }) {
                 placeholderTextColor="#9CA3AF"
                 autoFocus={true}
                 maxLength={30}
+                accessibilityLabel="Deck name"
               />
               <View style={styles.nameStepActions}>
                 <TouchableOpacity
                   style={styles.cancelBtn}
                   onPress={() => setPendingDeck(null)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancel"
                 >
                   <Text style={styles.cancelBtnText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.saveBtn}
                   onPress={handleConfirmSave}
+                  accessibilityRole="button"
+                  accessibilityLabel="Save deck"
                 >
                   <Text style={styles.saveBtnText}>Save Deck</Text>
                 </TouchableOpacity>
@@ -331,6 +345,8 @@ export default function CustomDeckModal({ visible, onClose }) {
                   style={[styles.copyBtn, copied && styles.copyBtnSuccess]}
                   onPress={handleCopyCode}
                   activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Copy JSON format"
                 >
                   <Text style={[styles.copyBtnText, copied && styles.copyBtnTextSuccess]}>
                     {copied ? '✓ Copied!' : '📋 Copy Format'}
@@ -375,6 +391,8 @@ export default function CustomDeckModal({ visible, onClose }) {
                     <TouchableOpacity
                       onPress={() => setDeckToDelete(name)}
                       style={styles.deleteBtn}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Delete deck ${name}`}
                     >
                       <Text style={styles.deleteBtnText}>🗑</Text>
                     </TouchableOpacity>
@@ -386,7 +404,7 @@ export default function CustomDeckModal({ visible, onClose }) {
 
           {/* Footer Import Button */}
           {!pendingDeck && !deckToDelete && (
-            <TouchableOpacity style={styles.importBtn} onPress={handlePickFile} activeOpacity={0.85}>
+            <TouchableOpacity style={styles.importBtn} onPress={handlePickFile} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel="Import JSON deck">
               <Text style={styles.importBtnText}>+ Import JSON Deck</Text>
             </TouchableOpacity>
           )}

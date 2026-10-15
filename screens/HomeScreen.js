@@ -174,7 +174,7 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
             <View style={styles.topRow}>
               <Text style={styles.badge}>HSK FLASHCARDS</Text>
             </View>
-            <Text style={styles.title}>中文 Learning</Text>
+            <Text style={styles.title} accessibilityRole="header">中文 Learning</Text>
             <Text style={styles.subtitle}>Choose your level and start practicing</Text>
           </View>
 
@@ -193,6 +193,8 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
               style={styles.levelSelectArea}
               onPress={() => setIsMenuVisible(true)}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`Select level: ${currentLevel.label}. Opens the level list`}
             >
               <Text style={styles.selectorLabel}>LEVEL</Text>
               <View style={styles.levelRow}>
@@ -215,6 +217,8 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
               style={styles.startArrowArea}
               onPress={() => startQuiz(currentLevel.id)}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`Start quiz: ${currentLevel.label}`}
             >
               <Text style={styles.arrowIcon}>➔</Text>
             </TouchableOpacity>
@@ -246,8 +250,9 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
                     ],
                   },
                 ]}
+                accessibilityViewIsModal={true}
               >
-                <Text style={styles.menuHeaderTitle}>Select Level</Text>
+                <Text style={styles.menuHeaderTitle} accessibilityRole="header">Select Level</Text>
                 <ScrollView style={{ maxHeight: 360 }} showsVerticalScrollIndicator={false}>
                   {levels.map((lvl, index) => {
                     const isSelected = selectedLevelIndex === index;
@@ -257,6 +262,8 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
                         style={[styles.menuItem, isSelected && styles.menuItemSelected]}
                         onPress={() => handleSelectLevel(index)}
                         activeOpacity={0.7}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${lvl.label}, ${lvl.desc}`}
                       >
                         <View style={{ flex: 1 }}>
                           <View style={styles.levelRow}>
@@ -301,6 +308,8 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
             onPress={() => hasWrongs && startQuiz('review')}
             activeOpacity={hasWrongs ? 0.8 : 1}
             disabled={!hasWrongs}
+            accessibilityRole="button"
+            accessibilityLabel="Review the wrongs"
           >
             <View style={{ flex: 1, marginRight: 10 }}>
               <View style={styles.reviewHeaderRow}>
@@ -327,6 +336,8 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
             style={styles.customDeckCard}
             onPress={() => setIsCustomDeckVisible(true)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Custom word decks"
           >
             <View style={{ flex: 1, marginRight: 10 }}>
               <View style={styles.reviewHeaderRow}>
@@ -347,6 +358,8 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
             style={styles.vocabCard}
             onPress={() => navigation.navigate('Vocabulary')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Vocabulary and search"
           >
             <View style={{ flex: 1, marginRight: 10 }}>
               <View style={styles.reviewHeaderRow}>
@@ -367,6 +380,8 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
             style={styles.statsCard}
             onPress={() => setIsStatsVisible(true)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Statistics and progress"
           >
             <View style={{ flex: 1, marginRight: 10 }}>
               <View style={styles.reviewHeaderRow}>

@@ -172,6 +172,14 @@ export default function QuestionCard({
         onPress={handleCardPress}
         disabled={!isAnswered}
         style={styles.card}
+        // Erişilebilirlik (Faz 4.5): `TouchableOpacity` varsayılan olarak bir erişilebilirlik
+        // ÖĞESİDİR ve öğe olduğunda içindeki her şey (şıklar + hoparlör) ekran okuyucudan
+        // gizlenir. Kart bu yüzden yalnızca CEVAPLANDIKTAN sonra tek öğe olur (o an asıl işi
+        // "sonraki soru"); cevaplanmadan önce `accessible={false}` kalır ve şıklar tek tek
+        // odaklanabilir.
+        accessible={isAnswered}
+        accessibilityRole="button"
+        accessibilityLabel="Continue to the next question"
       >
         {/* Hoparlör Butonu */}
         {showSpeaker && (
@@ -179,6 +187,8 @@ export default function QuestionCard({
             onPress={playAudio} 
             style={styles.speakerButton}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Play pronunciation"
           >
             <Text style={styles.speakerIcon}>🔊</Text>
           </TouchableOpacity>
@@ -233,6 +243,8 @@ export default function QuestionCard({
                   disabled={isAnswered}
                   onPress={() => onSelectOption(option)}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={renderOptionContent(option)}
                 >
                   <Text style={[styles.optionText, textDynamicStyle]}>
                     {renderOptionContent(option)}

@@ -326,10 +326,11 @@ export default function StatsModal({ visible, onClose }) {
             if (selectedDay) setSelectedDay(null);
             return false;
           }}
+          accessibilityViewIsModal={true}
         >
           <View style={styles.headerRow}>
-            <Text style={styles.title}>STATISTICS</Text>
-            <TouchableOpacity onPress={handleClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Text style={styles.title} accessibilityRole="header">STATISTICS</Text>
+            <TouchableOpacity onPress={handleClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Close">
               <Text style={styles.closeBtn}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -412,6 +413,8 @@ export default function StatsModal({ visible, onClose }) {
                       style={styles.monthNavBtn}
                       onPress={handlePrevMonth}
                       activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel="Previous month"
                     >
                       <Text style={styles.monthNavText}>‹</Text>
                     </TouchableOpacity>
@@ -427,6 +430,8 @@ export default function StatsModal({ visible, onClose }) {
                       onPress={handleNextMonth}
                       disabled={isCurrentMonth}
                       activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel="Next month"
                     >
                       <Text style={[styles.monthNavText, isCurrentMonth && styles.monthNavTextDisabled]}>
                         ›
@@ -472,6 +477,12 @@ export default function StatsModal({ visible, onClose }) {
                                 ]}
                                 onPress={() => handleDayPress(cell)}
                                 activeOpacity={0.75}
+                                accessibilityRole="button"
+                                accessibilityLabel={
+                                  cell.total > 0
+                                    ? `${cell.dayShort}, ${cell.correct} correct, ${cell.wrong} wrong`
+                                    : `${cell.dayShort}, no activity`
+                                }
                               >
                                 <Text
                                   style={[
