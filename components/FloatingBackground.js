@@ -1,83 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Animated, Dimensions } from 'react-native';
-import { LEVEL_POOLS } from '../services/wordRepository';
+import { StyleSheet, View, Animated, useWindowDimensions } from 'react-native';
+import { PARTICLE_COUNT, createParticle } from '../services/floatingParticles';
 
-const { width, height } = Dimensions.get('window');
-
-const PARTICLE_COUNT = 18;
-const MARGIN = 45; // Ekran dışı sınır mesafesi
-
-// Kaynak: wordRepository (hsk1 havuzu). Yalnızca tek karakterlik Hanzi'ler.
-const HSK1_WORDS = LEVEL_POOLS.hsk1 || [];
-const SINGLE_HANZI_LIST = HSK1_WORDS.length > 0
-  ? HSK1_WORDS.filter(item => item.hanzi && item.hanzi.length === 1)
-  : [{ hanzi: '字' }];
-
-// Alt kenar ağırlıklı (%40 Alt, %20 Üst, %20 Sağ, %20 Sol) doğuş noktası seçimi
-function getRandomBoundaryPoint() {
-  const rand = Math.random();
-  if (rand < 0.40) {
-    return { x: Math.random() * width, y: height + MARGIN }; // Alt kenar (%40)
-  } else if (rand < 0.60) {
-    return { x: Math.random() * width, y: -MARGIN }; // Üst kenar (%20)
-  } else if (rand < 0.80) {
-    return { x: width + MARGIN, y: Math.random() * height }; // Sağ kenar (%20)
-  } else {
-    return { x: -MARGIN, y: Math.random() * height }; // Sol kenar (%20)
-  }
-}
-
-function createParticle(isInitial = false) {
-  const randomItem = SINGLE_HANZI_LIST[Math.floor(Math.random() * SINGLE_HANZI_LIST.length)] || { hanzi: '字' };
-  const size = Math.floor(Math.random() * 14) + 32; // 32px - 46px
-
-  let startX, startY, endX, endY;
-
-  if (isInitial) {
-    // İlk açılış: Karakterler ekranın geneline dağıtılır
-    startX = Math.random() * (width - 60) + 30;
-    startY = Math.random() * (height - 60) + 30;
-
-    const target = getRandomBoundaryPoint();
-    endX = target.x;
-    endY = target.y;
-  } else {
-    // Sonraki doğuşlar: Ağırlıklı olarak alttan doğar
-    const start = getRandomBoundaryPoint();
-    startX = start.x;
-    startY = start.y;
-
-    let target = getRandomBoundaryPoint();
-    // Karakterin doğduğu kenara yakın bir yere gitmesini engeller
-    while (Math.abs(target.x - startX) < 120 && Math.abs(target.y - startY) < 120) {
-      target = getRandomBoundaryPoint();
-    }
-    endX = target.x;
-    endY = target.y;
-  }
-
-  // Sabit hız mantığı (20-28 px/saniye akıcı yavaşlık)
-  const dx = endX - startX;
-  const dy = endY - startY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  const speed = Math.random() * 8 + 20; 
-  const duration = (distance / speed) * 1000;
-
-  return {
-    id: Math.random().toString(),
-    char: randomItem.hanzi,
-    size,
-    duration,
-    startX,
-    startY,
-    endX,
-    endY,
-  };
-}
-
-function FloatingParticle() {
+// Konum/hareket matematiği `services/floatingParticles.js`'te (test edilebilir, sınırlı
+// hedef denemesi ve canlı pencere ölçüsü orada). Burada yalnızca animasyon var.
+function FloatingParticle({ width, height }) {
   const progress = useRef(new Animated.Value(0)).current;
-  const [particle, setParticle] = useState(() => createParticle(true));
+  const [particle, setParticle] = useState(() => createParticle(true, { width, height }));
 
   useEffect(() => {
     let isMounted = true;
@@ -89,7 +18,7 @@ function FloatingParticle() {
       useNativeDriver: true,
     }).start(({ finished }) => {
       if (finished && isMounted) {
-        setParticle(createParticle(false));
+        setParticle(createParticle(false, { width, height }));
       }
     });
 
@@ -97,7 +26,9 @@ function FloatingParticle() {
       isMounted = false;
       progress.stopAnimation();
     };
-  }, [particle]);
+    // `width`/`height` bağımlılık: pencere ölçüsü değişirse (bölünmüş ekran) uçuş yeni
+    // ölçüye göre kurulur; bir sonraki doğuş da canlı ölçüyle konumlanır.
+  }, [particle, width, height]);
 
   const translateX = progress.interpolate({
     inputRange: [0, 1],
@@ -125,12 +56,14 @@ function FloatingParticle() {
 }
 
 export default function FloatingBackground() {
+  // Modül yüklenirken bir kez okunan `Dimensions.get` yerine canlı ölçü (Faz 4.3).
+  const { width, height } = useWindowDimensions();
   const particles = Array.from({ length: PARTICLE_COUNT });
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {particles.map((_, index) => (
-        <FloatingParticle key={index} />
+        <FloatingParticle key={index} width={width} height={height} />
       ))}
     </View>
   );
