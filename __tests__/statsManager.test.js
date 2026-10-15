@@ -1,13 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getStats, recordAnswer } from '../services/statsManager';
+import { getDateKey, addDays } from '../services/dateUtils';
 
 const STATS_KEY = '@hsk_user_stats';
 
-// statsManager tarihleri UTC üzerinden (toISOString) üretir; testte de aynı yöntemi kullanıyoruz.
-const dayKey = (date) => date.toISOString().split('T')[0];
-const today = dayKey(new Date());
-const yesterday = dayKey(new Date(Date.now() - 86400000));
-const fourDaysAgo = dayKey(new Date(Date.now() - 4 * 86400000));
+// Gün anahtarları artık yerel saatle ve tek yerden (services/dateUtils.js) üretilir (Faz 2.2).
+const today = getDateKey();
+const yesterday = getDateKey(addDays(new Date(), -1));
+const fourDaysAgo = getDateKey(addDays(new Date(), -4));
 
 const seedStats = (stats) => AsyncStorage.setItem(STATS_KEY, JSON.stringify(stats));
 const readStats = async () => JSON.parse(await AsyncStorage.getItem(STATS_KEY));
@@ -138,5 +138,21 @@ describe('recordAnswer — günlük sayaçlar', () => {
 
     const data = await readStats();
     expect(data.dailyStats[today]).toEqual({ correct: 1, wrong: 2 });
+  });
+});
+
+describe('recordAnswer — yerel gün anahtarı (Faz 2.2)', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('yerel gece yarısından sonra verilen cevap o yerel güne yazılır', async () => {
+    // Yerel saat 11 Mart 00:30. Eski (UTC) kod UTC+ pozitif dilimlerde bunu 10 Mart'a yazardı.
+    jest.useFakeTimers({ now: new Date(2026, 2, 11, 0, 30, 0) });
+
+    await recordAnswer({ wordId: 42, level: 'hsk1', mode: 'hanzi-to-pinyin', isCorrect: true });
+
+    const data = await readStats();
+    expect(Object.keys(data.dailyStats)).toEqual(['2026-03-11']);
   });
 });

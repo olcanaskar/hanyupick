@@ -10,6 +10,7 @@ import {
   Animated,
 } from 'react-native';
 import { getStats } from '../services/statsManager';
+import { getDateKey, addDays } from '../services/dateUtils';
 import hsk1Data from '../data/hsk1.json';
 import hsk2Data from '../data/hsk2.json';
 import hsk3Data from '../data/hsk3.json';
@@ -147,8 +148,8 @@ export default function StatsModal({ visible, onClose }) {
 
   // 3. Son 7 Günlük Aktivite Listesi
   const recentDays = Array.from({ length: 7 }).map((_, i) => {
-    const d = new Date(Date.now() - (6 - i) * 86400000);
-    const dateStr = d.toISOString().split('T')[0];
+    const d = addDays(new Date(), -(6 - i));
+    const dateStr = getDateKey(d);
     const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short' });
     const dayData = dailyStats[dateStr] || { correct: 0, wrong: 0 };
     return { dateStr, dayLabel, ...dayData };
@@ -163,7 +164,7 @@ export default function StatsModal({ visible, onClose }) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const todayObj = new Date();
-  const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+  const todayStr = getDateKey(todayObj);
   const isCurrentMonth =
     selectedMonthDate.getFullYear() === todayObj.getFullYear() &&
     selectedMonthDate.getMonth() === todayObj.getMonth();
@@ -177,15 +178,13 @@ export default function StatsModal({ visible, onClose }) {
 
   // Ayın günleri
   for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
-    const monthStr = String(month + 1).padStart(2, '0');
-    const dayStr = String(dayNum).padStart(2, '0');
-    const dateStr = `${year}-${monthStr}-${dayStr}`;
+    const d = new Date(year, month, dayNum);
+    const dateStr = getDateKey(d);
 
     const dayData = dailyStats[dateStr] || { correct: 0, wrong: 0 };
     const total = dayData.correct + dayData.wrong;
     const isToday = dateStr === todayStr;
 
-    const d = new Date(year, month, dayNum);
     const dayShort = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 
     gridCells.push({

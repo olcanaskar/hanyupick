@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getDateKey, addDays } from './dateUtils';
 
 const STATS_STORAGE_KEY = '@hsk_user_stats';
 
@@ -24,8 +25,7 @@ const getCategoryFromMode = (mode) => {
   return 'hanzi_pinyin';
 };
 
-// Bugünün tarih formatı: YYYY-MM-DD
-const getTodayDateString = () => new Date().toISOString().split('T')[0];
+// Not: gün anahtarları artık yerel saatle ve tek yerden (services/dateUtils.js) üretilir.
 
 // 1. Tüm İstatistik Verisini Getir
 export const getStats = async () => {
@@ -42,7 +42,7 @@ export const getStats = async () => {
 const performRecordAnswer = async ({ wordId, level, mode, isCorrect }) => {
   const data = await getStats();
   const category = getCategoryFromMode(mode);
-  const today = getTodayDateString();
+  const today = getDateKey();
 
   // Kelime objesi yoksa başlat
   if (!data.wordStats[wordId]) {
@@ -78,7 +78,7 @@ const performRecordAnswer = async ({ wordId, level, mode, isCorrect }) => {
     data.streak.current = 1;
     data.streak.lastDate = today;
   } else if (data.streak.lastDate !== today) {
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    const yesterday = getDateKey(addDays(new Date(), -1));
     if (data.streak.lastDate === yesterday) {
       data.streak.current += 1;
     } else {
