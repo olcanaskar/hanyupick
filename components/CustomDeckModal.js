@@ -48,6 +48,10 @@ export default function CustomDeckModal({ visible, onClose }) {
   const [customDeckName, setCustomDeckName] = useState('');
   const [deckToDelete, setDeckToDelete] = useState(null);
 
+  // Kaydetme akışının bildirimi: sistem Alert'i yerine, modalın kendi temasıyla
+  // çizilen bir ekran. `null | { kind: 'overwrite', deckName } | { kind: 'id-conflict', conflictWith }`
+  const [saveNotice, setSaveNotice] = useState(null);
+
   // Animasyon Değerleri
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
   const translateYAnim = useRef(new Animated.Value(35)).current;
@@ -69,6 +73,7 @@ export default function CustomDeckModal({ visible, onClose }) {
       setPendingDeck(null);
       setCustomDeckName('');
       setDeckToDelete(null);
+      setSaveNotice(null);
       loadDecks();
 
       Animated.parallel([
@@ -154,22 +159,13 @@ export default function CustomDeckModal({ visible, onClose }) {
     }
 
     if (saveResult.reason === 'exists') {
-      Alert.alert(
-        'Deck Already Exists',
-        `A deck named "${saveResult.deckName}" already exists. Do you want to replace it?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Replace', style: 'destructive', onPress: () => performSave(true) },
-        ]
-      );
+      // Sessiz üzerine yazma yok: onayı modalın kendi temasıyla çizilen ekranda iste.
+      setSaveNotice({ kind: 'overwrite', deckName: saveResult.deckName });
       return;
     }
 
     if (saveResult.reason === 'id-conflict') {
-      Alert.alert(
-        'Name Not Available',
-        `This name generates the same word IDs as the deck "${saveResult.conflictWith}", which would mix the two decks' statistics. Please choose a different name.`
-      );
+      setSaveNotice({ kind: 'id-conflict', conflictWith: saveResult.conflictWith });
       return;
     }
 
@@ -246,6 +242,45 @@ export default function CustomDeckModal({ visible, onClose }) {
                 >
                   <Text style={styles.deleteConfirmBtnText}>Delete</Text>
                 </TouchableOpacity>
+              </View>
+            </View>
+          ) : saveNotice ? (
+            /* Adım 1b: Kaydetme Bildirimi — üzerine yazma onayı / ad reddi (temalı) */
+            <View style={styles.confirmContainer}>
+              <Text style={styles.warnConfirmTitle}>
+                {saveNotice.kind === 'overwrite' ? 'Deck Already Exists' : 'Name Not Available'}
+              </Text>
+              <Text style={styles.confirmDesc}>
+                {saveNotice.kind === 'overwrite' ? (
+                  <>
+                    A deck named <Text style={styles.boldText}>&quot;{saveNotice.deckName}&quot;</Text> already exists. Replacing it overwrites the current word list.
+                  </>
+                ) : (
+                  <>
+                    This name generates the same word IDs as <Text style={styles.boldText}>&quot;{saveNotice.conflictWith}&quot;</Text>, which would mix the statistics of both decks. Please choose a different name.
+                  </>
+                )}
+              </Text>
+              <View style={styles.confirmActions}>
+                <TouchableOpacity
+                  style={styles.cancelBtn}
+                  onPress={() => setSaveNotice(null)}
+                >
+                  <Text style={styles.cancelBtnText}>
+                    {saveNotice.kind === 'overwrite' ? 'Cancel' : 'OK'}
+                  </Text>
+                </TouchableOpacity>
+                {saveNotice.kind === 'overwrite' && (
+                  <TouchableOpacity
+                    style={styles.saveBtn}
+                    onPress={() => {
+                      setSaveNotice(null);
+                      performSave(true);
+                    }}
+                  >
+                    <Text style={styles.saveBtnText}>Replace</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           ) : pendingDeck ? (
@@ -489,7 +524,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
   },
-  /* Custom Delete Confirmation Styles */
+  /* Delete Confirmation / Save Notice Styles */
   confirmContainer: {
     paddingVertical: 12,
   },
@@ -497,6 +532,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#991B1B',
+    marginBottom: 6,
+  },
+  // Silme dışındaki onay/bildirim başlığı: amber, çünkü kırmızı yalnızca silmeye ait.
+  warnConfirmTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#B45309',
     marginBottom: 6,
   },
   confirmDesc: {
