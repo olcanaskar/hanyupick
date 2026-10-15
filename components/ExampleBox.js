@@ -4,8 +4,15 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function ExampleBox({ example }) {
   if (!example) return null;
 
+  // Erişilebilirlik (Faz 4.5b): Android'de düz <Text> odaklanamaz (RN `accessible=false`
+  // verir → `isFocusable=false`), bu yüzden kutu TEK bir erişilebilirlik öğesi olur ve
+  // örnek cümleyi bir bütün olarak okur (görünüm değişmez; metinler a11y ağacında birleşir).
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      accessible={true}
+      accessibilityLabel={`Example sentence: ${example.hanzi}, ${example.pinyin}, ${example.meaning}`}
+    >
       <View style={styles.header}>
         <Text style={styles.headerText}>EXAMPLE SENTENCE</Text>
       </View>

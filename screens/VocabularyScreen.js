@@ -110,13 +110,13 @@ export default function VocabularyScreen({ navigation }) {
     <View style={styles.card}>
       <View style={styles.cardMain}>
         <View style={styles.hanziRow}>
-          <Text style={styles.hanziText}>{item.hanzi}</Text>
+          <Text style={styles.hanziText} accessible={true}>{item.hanzi}</Text>
           <View style={styles.tagBadge}>
             <Text style={styles.tagText}>{item.sourceTag}</Text>
           </View>
         </View>
-        <Text style={styles.pinyinText}>{item.pinyin}</Text>
-        <Text style={styles.meaningText}>{item.meaning}</Text>
+        <Text style={styles.pinyinText} accessible={true}>{item.pinyin}</Text>
+        <Text style={styles.meaningText} accessible={true}>{item.meaning}</Text>
       </View>
 
       <TouchableOpacity

@@ -198,7 +198,12 @@ export default function StatsModal({ visible, onClose }) {
 
   // Ustalık satırı iki bölümde de (HSK + özel deste) aynı görünsün diye tek yerde üretilir.
   const renderMasteryRow = (row) => (
-    <View key={row.id} style={styles.masteryRow}>
+    <View
+      key={row.id}
+      style={styles.masteryRow}
+      accessible={true}
+      accessibilityLabel={`${row.name}: ${row.stat.count} of ${row.total} mastered (${row.stat.percent}%)`}
+    >
       <View style={styles.masteryLabels}>
         <Text style={styles.masteryName} numberOfLines={1}>
           {row.name}
@@ -309,9 +314,14 @@ export default function StatsModal({ visible, onClose }) {
   return (
     <Modal visible={visible} transparent={true} animationType="none" onRequestClose={handleClose}>
       <View style={styles.modalContainer}>
+        {/* Kapatma alanı dekoratiftir: ekran okuyucu ağacının DIŞINDA tutulur, yoksa
+            odaklanıp "etiketsiz" diye okunur (kapatma için ✕ ve donanım geri tuşu var). */}
         <AnimatedPressable
           style={[styles.overlay, { opacity: opacityAnim }]}
           onPress={handleClose}
+          accessible={false}
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no"
         />
 
         <Animated.View
@@ -339,7 +349,11 @@ export default function StatsModal({ visible, onClose }) {
             {statsData ? (
               <>
                 {/* Streak & Günlük Durum */}
-                <View style={styles.streakCard}>
+                <View
+                  style={styles.streakCard}
+                  accessible={true}
+                  accessibilityLabel={`Streak: ${streak.current} ${streak.current === 1 ? 'day' : 'days'}`}
+                >
                   <Text
                     style={[
                       styles.streakFire,
@@ -361,7 +375,9 @@ export default function StatsModal({ visible, onClose }) {
                 {/* Mastery Oranları: HSK seviyeleri ve (varsa) özel desteler AYNI bölümde.
                     Özel desteler ayrı bir bölüm başlığı değil, bölüm içi bir alt grup:
                     satırların arasına ince bir ayraç konur (bkz. masteryDivider). */}
-                <Text style={styles.sectionHeader}>MASTERY LEVEL (3 STREAKS IN ALL MODES)</Text>
+                <Text style={styles.sectionHeader} accessible={true} accessibilityRole="header">
+                  MASTERY LEVEL (3 STREAKS IN ALL MODES)
+                </Text>
                 <View style={styles.masteryList}>
                   {masteryRows.map(renderMasteryRow)}
 
@@ -377,7 +393,9 @@ export default function StatsModal({ visible, onClose }) {
                 </View>
 
                 {/* 7 Günlük Aktivite Takvimi */}
-                <Text style={styles.sectionHeader}>LAST 7 DAYS ACTIVITY</Text>
+                <Text style={styles.sectionHeader} accessible={true} accessibilityRole="header">
+                  LAST 7 DAYS ACTIVITY
+                </Text>
                 <View style={styles.calendarRow}>
                   {recentDays.map((day) => {
                     const total = day.correct + day.wrong;
@@ -405,7 +423,9 @@ export default function StatsModal({ visible, onClose }) {
                 </View>
 
                 {/* Sabit Aylık Aktivite Takvimi */}
-                <Text style={styles.sectionHeader}>ACTIVITY CALENDAR</Text>
+                <Text style={styles.sectionHeader} accessible={true} accessibilityRole="header">
+                  ACTIVITY CALENDAR
+                </Text>
                 <View style={styles.heatmapContainer}>
                   {/* Ay Başlığı ve Gezinme Butonları */}
                   <View style={styles.calendarMonthHeader}>
@@ -561,15 +581,26 @@ export default function StatsModal({ visible, onClose }) {
                 </View>
 
                 {/* Problematic Words (Kara Liste) */}
-                <Text style={styles.sectionHeader}>
+                <Text style={styles.sectionHeader} accessible={true} accessibilityRole="header">
                   PROBLEMATIC WORDS ({problematicWords.length})
                 </Text>
                 {problematicWords.length === 0 ? (
-                  <Text style={styles.emptyText}>No problematic words right now. Well done!</Text>
+                  <Text
+                    style={styles.emptyText}
+                    accessible={true}
+                    accessibilityLabel="No problematic words right now. Well done!"
+                  >
+                    No problematic words right now. Well done!
+                  </Text>
                 ) : (
                   <View style={styles.problemList}>
                     {problematicWords.map((word) => (
-                      <View key={word.id} style={styles.problemItem}>
+                      <View
+                        key={word.id}
+                        style={styles.problemItem}
+                        accessible={true}
+                        accessibilityLabel={`${word.hanzi}, ${word.pinyin}, ${word.meaning}, repeated wrong`}
+                      >
                         <Text style={styles.problemHanzi}>{word.hanzi}</Text>
                         <View style={styles.problemInfo}>
                           <Text style={styles.problemPinyin}>{word.pinyin}</Text>

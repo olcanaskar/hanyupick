@@ -236,6 +236,9 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
               <AnimatedPressable
                 style={[styles.modalBackdrop, { opacity: menuOpacityAnim }]}
                 onPress={() => closeMenu()}
+                accessible={false}
+                accessibilityElementsHidden={true}
+                importantForAccessibility="no"
               />
 
               {/* Animasyonlu İçerik Kartı */}

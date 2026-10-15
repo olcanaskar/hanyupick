@@ -269,15 +269,15 @@ export default function QuizScreen({
             bounces={true}
           >
             {currentWord && !isAnswered && (
-              <Text style={styles.subText}>{getSubText()}</Text>
+              <Text style={styles.subText} accessible={true}>{getSubText()}</Text>
             )}
 
             {level === 'review' && !currentWord && (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyTitle}>
+                <Text style={styles.emptyTitle} accessible={true}>
                   {reviewPool.length === 0 ? 'All Clear! 🎉' : 'No Mistakes in this Mode! ✨'}
                 </Text>
-                <Text style={styles.emptySubtitle}>
+                <Text style={styles.emptySubtitle} accessible={true}>
                   {reviewPool.length === 0
                     ? "You've cleared all incorrect answers!"
                     : 'Switch to other tabs above to practice mistakes in other question modes.'}

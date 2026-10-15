@@ -110,20 +110,28 @@ export default function QuestionCard({
   const showSpeaker = isAudioCheat ? isAnswered : true;
 
   // 1. Soru Alanı Metni (Prompt)
+  // Erişilebilirlik (Faz 4.5b): Android'de düz bir <Text> ekran okuyucuya KAPALIDIR — RN
+  // varsayılan olarak `accessible=false` verir (Text.js: ios `accessible !== false`,
+  // android `onPress != null || onLongPress != null`) ve Android bunu
+  // `view.isFocusable = accessible` yapar. Bu yüzden soru metni açıkça erişilebilir
+  // yapılır ve "Question: …" olarak okunur; yoksa kullanıcı soruyu hiç duymaz.
   const renderPrompt = () => {
+    let promptText = word.hanzi;
+    let promptStyle = styles.promptHanzi;
+
     if (promptType === 'meaning') {
-      return (
-        <Text style={styles.promptMeaning}>
-          {word.meaning || word.en || word.english}
-        </Text>
-      );
+      promptText = word.meaning || word.en || word.english;
+      promptStyle = styles.promptMeaning;
+    } else if (promptType === 'pinyin') {
+      promptText = word.pinyin;
+      promptStyle = styles.promptPinyin;
     }
 
-    if (promptType === 'pinyin') {
-      return <Text style={styles.promptPinyin}>{word.pinyin}</Text>;
-    }
-
-    return <Text style={styles.promptHanzi}>{word.hanzi}</Text>;
+    return (
+      <Text style={promptStyle} accessible={true} accessibilityLabel={`Question: ${promptText}`}>
+        {promptText}
+      </Text>
+    );
   };
 
   // 2. Seçenek Buton Metni (Options)
@@ -152,7 +160,10 @@ export default function QuestionCard({
 
     return (
       <View style={styles.hintContainer}>
-        <Text style={styles.hintText}>{missingText}</Text>
+        {/* Açıklanan eksik alan (ör. "Pinyin: rì") — Android'de düz metin okunmaz. */}
+        <Text style={styles.hintText} accessible={true}>
+          {missingText}
+        </Text>
       </View>
     );
   };

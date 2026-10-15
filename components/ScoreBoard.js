@@ -2,13 +2,23 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
 export default function ScoreBoard({ correct, wrong }) {
+  // Erişilebilirlik (Faz 4.5b): rozetler tek öğe olur (Android'de düz <Text> okunmaz);
+  // böylece ekran okuyucu "Correct: 3" / "Wrong: 1" diye okur.
   return (
     <View style={styles.scoreRow}>
-      <View style={[styles.badge, styles.correctBadge]}>
+      <View
+        style={[styles.badge, styles.correctBadge]}
+        accessible={true}
+        accessibilityLabel={`Correct: ${correct}`}
+      >
         <Text style={styles.badgeLabel}>Correct</Text>
         <Text style={[styles.badgeValue, styles.correctBadgeValue]}>{correct}</Text>
       </View>
-      <View style={[styles.badge, styles.wrongBadge]}>
+      <View
+        style={[styles.badge, styles.wrongBadge]}
+        accessible={true}
+        accessibilityLabel={`Wrong: ${wrong}`}
+      >
         <Text style={styles.badgeLabel}>Wrong</Text>
         <Text style={[styles.badgeValue, styles.wrongBadgeValue]}>{wrong}</Text>
       </View>

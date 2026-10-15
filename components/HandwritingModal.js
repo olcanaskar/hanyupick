@@ -131,7 +131,13 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
 
   return (
     <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <Pressable
+        style={styles.overlay}
+        onPress={onClose}
+        accessible={false}
+        accessibilityElementsHidden={true}
+        importantForAccessibility="no"
+      >
         <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()} accessibilityViewIsModal={true}>
           {/* Header */}
           <View style={styles.header}>
@@ -146,9 +152,9 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
             {loading && <ActivityIndicator size="small" color="#D97706" style={{ marginRight: 8 }} />}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.candidatesContent}>
               {errorMessage ? (
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text style={styles.errorText} accessible={true}>{errorMessage}</Text>
               ) : candidates.length === 0 && !loading ? (
-                <Text style={styles.placeholderText}>Draw a character below...</Text>
+                <Text style={styles.placeholderText} accessible={true}>Draw a character below...</Text>
               ) : (
                 candidates.map((char, index) => (
                   <TouchableOpacity

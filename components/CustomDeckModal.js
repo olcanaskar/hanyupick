@@ -193,6 +193,9 @@ export default function CustomDeckModal({ visible, onClose }) {
         <AnimatedPressable
           style={[styles.overlay, { opacity: opacityAnim }]}
           onPress={handleClose}
+          accessible={false}
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no"
         />
 
         {/* Animasyonlu İçerik Kartı */}

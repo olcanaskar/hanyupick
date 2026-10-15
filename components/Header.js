@@ -275,7 +275,13 @@ export default function Header({
         animationType="none"
         onRequestClose={() => setIsDropdownOpen(false)}
       >
-        <Pressable style={styles.modalBackdrop} onPress={() => setIsDropdownOpen(false)}>
+        <Pressable
+          style={styles.modalBackdrop}
+          onPress={() => setIsDropdownOpen(false)}
+          accessible={false}
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no"
+        >
           <Pressable
             style={[
               styles.dropdownMenuCard,
