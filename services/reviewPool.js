@@ -25,9 +25,11 @@
 // UI'dan bağımsız: React import etmez; tüm fonksiyonlar saf ve test edilebilir.
 
 import { getWordById } from './wordRepository';
+import { DEFAULT_MODE } from './modes';
 
-// Modu belirtilmemiş eski kayıtlar için varsayılan (QuizScreen'deki eski davranış).
-export const DEFAULT_MODE = 'hanzi-to-pinyin';
+// Modu belirtilmemiş eski kayıtlar için varsayılan mod.
+// Tek kaynak: services/modes.js (Faz 3.3).
+export { DEFAULT_MODE };
 
 const CUSTOM_ID_PREFIX = 'custom_';
 

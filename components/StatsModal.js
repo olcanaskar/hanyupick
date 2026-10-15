@@ -12,6 +12,7 @@ import {
 import { getStats } from '../services/statsManager';
 import { getDateKey, addDays } from '../services/dateUtils';
 import { ALL_WORDS, LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
+import { CATEGORIES } from '../services/modes';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -114,19 +115,24 @@ export default function StatsModal({ visible, onClose }) {
 
   const { wordStats = {}, dailyStats = {}, streak = { current: 0 } } = statsData;
 
+  // Kategoriler artık modes.js'ten gelir (Faz 3.3): eskiden üç kategori anahtarı
+  // burada elle yazılıyordu, yeni bir kategori eklenirse sessizce atlanırdı.
+  const MASTERY_STREAK = 3;
+
+  const isMastered = (stat) =>
+    CATEGORIES.every(
+      (category) => (stat?.categories?.[category]?.streak || 0) >= MASTERY_STREAK
+    );
+
+  const hasProblem = (stat) =>
+    CATEGORIES.some(
+      (category) => (stat?.categories?.[category]?.wrongStreak || 0) >= MASTERY_STREAK
+    );
+
   // 1. Mastery Hesaplama
   const calculateMastery = (pool) => {
     if (!pool.length) return { count: 0, percent: 0 };
-    const masteredCount = pool.filter((w) => {
-      const stat = wordStats[w.id];
-      if (!stat?.categories) return false;
-      const { hanzi_pinyin, hanzi_meaning, pinyin_meaning } = stat.categories;
-      return (
-        (hanzi_pinyin?.streak || 0) >= 3 &&
-        (hanzi_meaning?.streak || 0) >= 3 &&
-        (pinyin_meaning?.streak || 0) >= 3
-      );
-    }).length;
+    const masteredCount = pool.filter((w) => isMastered(wordStats[w.id])).length;
     return {
       count: masteredCount,
       percent: Math.round((masteredCount / pool.length) * 100),
@@ -145,16 +151,7 @@ export default function StatsModal({ visible, onClose }) {
   });
 
   // 2. Problematic Words
-  const problematicWords = ALL_WORDS.filter((w) => {
-    const stat = wordStats[w.id];
-    if (!stat?.categories) return false;
-    const { hanzi_pinyin, hanzi_meaning, pinyin_meaning } = stat.categories;
-    return (
-      (hanzi_pinyin?.wrongStreak || 0) >= 3 ||
-      (hanzi_meaning?.wrongStreak || 0) >= 3 ||
-      (pinyin_meaning?.wrongStreak || 0) >= 3
-    );
-  });
+  const problematicWords = ALL_WORDS.filter((w) => hasProblem(wordStats[w.id]));
 
   // 3. Son 7 Günlük Aktivite Listesi
   const recentDays = Array.from({ length: 7 }).map((_, i) => {

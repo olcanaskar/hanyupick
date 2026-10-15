@@ -26,6 +26,7 @@ import {
   removeEntry,
   resolveReviewWord,
 } from '../services/reviewPool';
+import { DEFAULT_MODE, getAnswerType } from '../services/modes';
 
 /**
  * @param {{
@@ -42,7 +43,7 @@ export default function QuizScreen({
   setReviewPool = () => {}
 }) {
   const initialLevel = route?.params?.initialLevel || 'hsk1';
-  const initialMode = route?.params?.initialMode || 'hanzi-to-pinyin';
+  const initialMode = route?.params?.initialMode || DEFAULT_MODE;
 
   const [level, setLevel] = useState(initialLevel);
   const [mode, setMode] = useState(initialMode);
@@ -162,7 +163,6 @@ export default function QuizScreen({
 
     recordAnswer({
       wordId: currentWord.id,
-      level: level,
       mode: mode,
       isCorrect: isCorrect,
     });
@@ -215,8 +215,10 @@ export default function QuizScreen({
     if (level === 'review' && reviewPool.length === 0) {
       return 'No words to review!';
     }
-    if (mode.endsWith('to-pinyin')) return 'Choose the correct pinyin';
-    if (mode.endsWith('to-hanzi')) return 'Choose the correct character';
+    // Mod adı ayrıştırılmaz; cevap tipi modes.js'ten gelir (Faz 3.3).
+    const answerType = getAnswerType(mode);
+    if (answerType === 'pinyin') return 'Choose the correct pinyin';
+    if (answerType === 'hanzi') return 'Choose the correct character';
     return 'Choose the correct English meaning';
   };
 

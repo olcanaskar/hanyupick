@@ -12,6 +12,15 @@ import {
 } from 'react-native';
 import { getCustomDecks } from '../services/importService';
 import { LEVELS, LEVEL_LABELS } from '../services/wordRepository';
+import {
+  CATEGORIES,
+  DEFAULT_MODE,
+  MODES_BY_CATEGORY,
+  MODE_LABELS,
+  getCategory,
+  getCategoryIndex,
+  getReverseMode,
+} from '../services/modes';
 
 const BASE_LEVELS = [
   ...LEVELS.map((level) => ({ id: level, label: LEVEL_LABELS[level] })),
@@ -37,7 +46,7 @@ export default function Header({
   level,
   setLevel,
   onSelectLevel,
-  mode = 'hanzi-to-pinyin',
+  mode = DEFAULT_MODE,
   setMode,
   onToggleMode,
   reviewCount = 0,
@@ -80,14 +89,14 @@ export default function Header({
     return () => subscription.remove();
   }, []);
 
-  // Mod İndeksi (0: Hanzi/Pinyin, 1: Hanzi/Meaning, 2: Pinyin/Meaning)
-  const getModeIndex = () => {
-    if (mode === 'hanzi-to-meaning' || mode === 'meaning-to-hanzi') return 1;
-    if (mode === 'pinyin-to-meaning' || mode === 'meaning-to-pinyin') return 2;
-    return 0;
-  };
+  // Sekme indeksi ve kategori bilgisi artık services/modes.js'ten gelir (Faz 3.3);
+  // eskiden burada mod→indeks eşlemesinin bir KOPYASI tutuluyordu.
+  const currentCategory = getCategory(mode);
+  const currentIndex = getCategoryIndex(mode);
 
-  const currentIndex = getModeIndex();
+  // Sekmede gösterilecek mod: kategori aktifse mevcut yön, değilse ileri yön.
+  const getTabMode = (category) =>
+    category === currentCategory ? mode : MODES_BY_CATEGORY[category][0];
 
   // Kayan Gösterge Animasyonu
   const slideAnim = useRef(new Animated.Value(currentIndex)).current;
@@ -131,26 +140,20 @@ export default function Header({
   const handleTabPress = (targetIndex) => {
     if (isDropdownOpen) setIsDropdownOpen(false);
 
+    const targetCategory = CATEGORIES[targetIndex];
+    if (!targetCategory) return;
+
+    // Aynı sekmeye tekrar basmak: kategori içinde yönü çevirir (字→Pinyin ⇄ Pinyin→字)
     if (currentIndex === targetIndex) {
+      const nextMode = getReverseMode(mode) || MODES_BY_CATEGORY[targetCategory][0];
       animateFlip(() => {
-        let nextMode = mode;
-        if (targetIndex === 0) {
-          nextMode = mode === 'hanzi-to-pinyin' ? 'pinyin-to-hanzi' : 'hanzi-to-pinyin';
-        } else if (targetIndex === 1) {
-          nextMode = mode === 'hanzi-to-meaning' ? 'meaning-to-hanzi' : 'hanzi-to-meaning';
-        } else if (targetIndex === 2) {
-          nextMode = mode === 'pinyin-to-meaning' ? 'meaning-to-pinyin' : 'pinyin-to-meaning';
-        }
         if (handleModeChange) handleModeChange(nextMode);
       });
       return;
     }
 
-    let nextMode = 'hanzi-to-pinyin';
-    if (targetIndex === 1) nextMode = 'hanzi-to-meaning';
-    if (targetIndex === 2) nextMode = 'pinyin-to-meaning';
-
-    if (handleModeChange) handleModeChange(nextMode);
+    // Farklı sekme: o kategorinin ileri yönü
+    if (handleModeChange) handleModeChange(MODES_BY_CATEGORY[targetCategory][0]);
   };
 
   // Butona basıldığında tam konumunu ölçüp menüyü altına yerleştirir
@@ -212,59 +215,26 @@ export default function Header({
           />
         )}
 
-        <TouchableOpacity
-          style={styles.toggleBtn}
-          onPress={() => handleTabPress(0)}
-          activeOpacity={0.85}
-        >
-          <Animated.View style={currentIndex === 0 ? flipStyle : null}>
-            <Text
-              style={[
-                styles.toggleText,
-                currentIndex === 0 ? styles.toggleTextActive : styles.toggleTextInactive,
-              ]}
-              numberOfLines={1}
-            >
-              {mode === 'pinyin-to-hanzi' ? 'Pinyin → 字' : '字 → Pinyin'}
-            </Text>
-          </Animated.View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.toggleBtn}
-          onPress={() => handleTabPress(1)}
-          activeOpacity={0.85}
-        >
-          <Animated.View style={currentIndex === 1 ? flipStyle : null}>
-            <Text
-              style={[
-                styles.toggleText,
-                currentIndex === 1 ? styles.toggleTextActive : styles.toggleTextInactive,
-              ]}
-              numberOfLines={1}
-            >
-              {mode === 'meaning-to-hanzi' ? 'EN → 字' : '字 → EN'}
-            </Text>
-          </Animated.View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.toggleBtn}
-          onPress={() => handleTabPress(2)}
-          activeOpacity={0.85}
-        >
-          <Animated.View style={currentIndex === 2 ? flipStyle : null}>
-            <Text
-              style={[
-                styles.toggleText,
-                currentIndex === 2 ? styles.toggleTextActive : styles.toggleTextInactive,
-              ]}
-              numberOfLines={1}
-            >
-              {mode === 'meaning-to-pinyin' ? 'EN → Pinyin' : 'Pinyin → EN'}
-            </Text>
-          </Animated.View>
-        </TouchableOpacity>
+        {CATEGORIES.map((category, index) => (
+          <TouchableOpacity
+            key={category}
+            style={styles.toggleBtn}
+            onPress={() => handleTabPress(index)}
+            activeOpacity={0.85}
+          >
+            <Animated.View style={currentIndex === index ? flipStyle : null}>
+              <Text
+                style={[
+                  styles.toggleText,
+                  currentIndex === index ? styles.toggleTextActive : styles.toggleTextInactive,
+                ]}
+                numberOfLines={1}
+              >
+                {MODE_LABELS[getTabMode(category)]}
+              </Text>
+            </Animated.View>
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* 2. Seviye Seçim Butonu veya Review Bilgisi */}

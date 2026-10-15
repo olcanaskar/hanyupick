@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from '
 import * as Speech from 'expo-speech';
 import ExampleBox from './ExampleBox';
 import { getExampleByWordId } from '../services/exampleService';
+import { FIELD_LABELS, getAnswerType, getHintField, getPromptType } from '../services/modes';
 
 const { width } = Dimensions.get('window');
 
@@ -105,17 +106,19 @@ export default function QuestionCard({
     });
   };
 
+  // Modun soru/cevap alanları artık services/modes.js'ten gelir (Faz 3.3);
+  // eskiden mod adı `startsWith`/`endsWith` ile ayrıştırılıyordu.
+  const promptType = getPromptType(mode);
+  const answerType = getAnswerType(mode);
+
   // Hoparlör hile koruması: sesli okuma cevabı ele verecek modlarda,
   // cevap verilene kadar hoparlörü gizle.
-  const isAudioCheat =
-    mode?.endsWith('to-pinyin') || mode?.endsWith('to-hanzi');
+  const isAudioCheat = answerType === 'pinyin' || answerType === 'hanzi';
   const showSpeaker = isAudioCheat ? isAnswered : true;
 
   // 1. Soru Alanı Metni (Prompt)
   const renderPrompt = () => {
-    const m = (mode || '').toLowerCase();
-
-    if (m.startsWith('meaning')) {
+    if (promptType === 'meaning') {
       return (
         <Text style={styles.promptMeaning}>
           {word.meaning || word.en || word.english}
@@ -123,7 +126,7 @@ export default function QuestionCard({
       );
     }
 
-    if (m.startsWith('pinyin')) {
+    if (promptType === 'pinyin') {
       return <Text style={styles.promptPinyin}>{word.pinyin}</Text>;
     }
 
@@ -132,13 +135,11 @@ export default function QuestionCard({
 
   // 2. Seçenek Buton Metni (Options)
   const renderOptionContent = (option) => {
-    const m = (mode || '').toLowerCase();
-
-    if (m.endsWith('pinyin') || m.endsWith('to-pinyin')) {
+    if (answerType === 'pinyin') {
       return option.pinyin;
     }
 
-    if (m.endsWith('hanzi') || m.endsWith('to-hanzi') || m.endsWith('char')) {
+    if (answerType === 'hanzi') {
       return option.hanzi;
     }
 
@@ -149,15 +150,10 @@ export default function QuestionCard({
   const renderMissingInfo = () => {
     if (!isAnswered) return <View style={styles.hintPlaceholder} />;
 
-    let missingText = '';
-
-    if (mode?.includes('hanzi') && mode?.includes('pinyin')) {
-      missingText = `Meaning: ${word.meaning}`;
-    } else if (mode?.includes('hanzi') && mode?.includes('meaning')) {
-      missingText = `Pinyin: ${word.pinyin}`;
-    } else if (mode?.includes('pinyin') && mode?.includes('meaning')) {
-      missingText = `Hanzi: ${word.hanzi}`;
-    }
+    // Kategori, soruda/şıklarda gösterilmeyen üçüncü alanı belirler:
+    // hanzi_pinyin → anlam, hanzi_meaning → pinyin, pinyin_meaning → hanzi.
+    const hintField = getHintField(mode);
+    const missingText = hintField ? `${FIELD_LABELS[hintField]}: ${word[hintField]}` : '';
 
     if (!missingText) return <View style={styles.hintPlaceholder} />;
 

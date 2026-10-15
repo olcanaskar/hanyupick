@@ -1,29 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDateKey, addDays } from './dateUtils';
+import { CATEGORIES, getCategory } from './modes';
 
 const STATS_STORAGE_KEY = '@hsk_user_stats';
 
-// Mod eşleştirmesi: Header'dan gelen tüm mod varyasyonlarını yakalar
-const getCategoryFromMode = (mode) => {
-  if (mode === 'hanzi-to-pinyin' || mode === 'pinyin-to-hanzi') return 'hanzi_pinyin';
-  if (
-    mode === 'hanzi-to-meaning' || 
-    mode === 'meaning-to-hanzi' || 
-    mode === 'hanzi-to-en' || 
-    mode === 'en-to-hanzi'
-  ) {
-    return 'hanzi_meaning';
-  }
-  if (
-    mode === 'pinyin-to-meaning' || 
-    mode === 'meaning-to-pinyin' || 
-    mode === 'pinyin-to-en' || 
-    mode === 'en-to-pinyin'
-  ) {
-    return 'pinyin_meaning';
-  }
-  return 'hanzi_pinyin';
-};
+// Yeni kelime kaydı için boş kategori tablosu. Kategoriler artık modes.js'ten gelir
+// (Faz 3.3): eskiden üç anahtar burada elle yazılıyordu ve mod→kategori eşlemesi
+// 4 tanesi var olmayan 10 mod adı içeriyordu.
+const createEmptyCategories = () =>
+  CATEGORIES.reduce((acc, category) => {
+    acc[category] = { streak: 0, wrongStreak: 0 };
+    return acc;
+  }, {});
 
 // Not: gün anahtarları artık yerel saatle ve tek yerden (services/dateUtils.js) üretilir.
 
@@ -39,31 +27,35 @@ export const getStats = async () => {
 
 // 2. Tek bir cevabı istatistiğe işler.
 //    Doğrudan çağrılmaz; aşağıdaki kuyruk üzerinden sıralı çalışır.
-const performRecordAnswer = async ({ wordId, level, mode, isCorrect }) => {
+const performRecordAnswer = async ({ wordId, mode, isCorrect }) => {
   const data = await getStats();
-  const category = getCategoryFromMode(mode);
+  const category = getCategory(mode); // tanınmayan modda __DEV__ uyarısı + null
   const today = getDateKey();
 
-  // Kelime objesi yoksa başlat
-  if (!data.wordStats[wordId]) {
-    data.wordStats[wordId] = {
-      level,
-      categories: {
-        hanzi_pinyin: { streak: 0, wrongStreak: 0 },
-        hanzi_meaning: { streak: 0, wrongStreak: 0 },
-        pinyin_meaning: { streak: 0, wrongStreak: 0 },
-      },
-    };
-  }
+  // Kelime kaydı yalnızca mod TANINIYORSA oluşturulur/güncellenir: tanınmayan bir
+  // modda istatistiği sessizce yanlış kategoriye yazmak ya da boş bir kayıt
+  // bırakmak yerine yalnızca günlük/streak kaydı yapılır (getCategory __DEV__'de uyarır).
+  //
+  // Not: kayda artık `level` yazılmıyor. Alan hiçbir yerde okunmuyordu ve YANLIŞ
+  // veri tutuyordu: QuizScreen oturumun seviyesini geçiyordu ('review', 'mixed',
+  // 'custom_X'). Bir kelimenin gerçek seviyesi gerekiyorsa tek kaynak:
+  // wordRepository.getLevelFromWordId(id).
+  if (category) {
+    if (!data.wordStats[wordId]) {
+      data.wordStats[wordId] = { categories: createEmptyCategories() };
+    }
 
-  const currentCat = data.wordStats[wordId].categories[category];
+    const categories = data.wordStats[wordId].categories;
+    if (!categories[category]) categories[category] = { streak: 0, wrongStreak: 0 };
 
-  if (isCorrect) {
-    currentCat.streak += 1;
-    currentCat.wrongStreak = 0; // Doğru bilinince yanlış serisi kırılır
-  } else {
-    currentCat.wrongStreak += 1;
-    currentCat.streak = 0; // Yanlış yapılınca doğru serisi sıfırlanır
+    const currentCat = categories[category];
+    if (isCorrect) {
+      currentCat.streak += 1;
+      currentCat.wrongStreak = 0; // Doğru bilinince yanlış serisi kırılır
+    } else {
+      currentCat.wrongStreak += 1;
+      currentCat.streak = 0; // Yanlış yapılınca doğru serisi sıfırlanır
+    }
   }
 
   // Günlük aktivite güncelle
