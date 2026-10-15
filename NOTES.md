@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2 tamamlandı (2.1–2.4) ve **cihazda Expo Go ile denendi — sorun yok**. **60 test yeşil.** Sıradaki: Faz 3 (mimari) veya Faz 4 (performans).
+Son güncelleme: Faz 2 tamamlandı (2.1–2.4), **cihazda Expo Go ile denendi — sorun yok**, **GitHub remote kuruldu**. **60 test yeşil.** Sıradaki: Faz 3 (mimari) veya Faz 4 (performans).
 
 ---
 
@@ -40,7 +40,8 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
     `$env:Path += ";C:\Program Files\Git\cmd"`
 - Proje başlangıçta **git deposu değildi**; `git init -b main` ile başlatıldı.
 - Yerel git kimliği: `Olcan Askar` / `developer@localhost` (repoya özel; istersen `git config --local user.email ...`).
-- **Remote (uzak depo) YOK** → commit'ler yalnızca bu diskte. Gerçek yedek için ileride GitHub vb. eklenmeli.
+- **Remote (uzak depo) VAR:** `https://github.com/olcanasqar/ChineseQuizApp.git` (private). Kimlik: HTTPS + Git Credential Manager (`credential.helper=manager`) — anahtar/token yönetimi yok. Push: `git push origin main`; etiket için `git push origin known-good`.
+  - Commit kimliği: `Olcan Askar` / `aabdullaholcan@gmail.com` (global + local). **Not:** ilk 19 commit `developer@localhost` ile atıldı ve geçmiş **yeniden yazılmadı** (hash'ler + `known-good` + yedek bozulmasın diye) → yalnızca bundan sonraki commit'ler GitHub hesabına bağlanır.
 - **Yerel arşiv yedek:** `C:\Projects\App\` altında zaman damgalı `ChineseQuizApp-backup-*.tar.gz` (en yenisini kullan). İçerik: `.git` + `known-good` dahil; `node_modules`/`android`/`.expo` hariç. Doğrulama: açıp `git log -1`, `git tag`, `git status` → commit/etiket HEAD ile aynı ve çalışma alanı temiz olmalı.
   - Yeni yedek almak için:
     `tar -czf C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz -C C:\Projects\App --exclude=ChineseQuizApp/node_modules --exclude=ChineseQuizApp/android --exclude=ChineseQuizApp/.expo ChineseQuizApp`
@@ -191,7 +192,7 @@ Her maddeyi **ayrı commit** olarak yap.
 
 ## 8. Bilinen açık riskler / notlar
 
-- **Remote yedek yok** — tüm geçmiş bu diskte. Uygun olduğunda GitHub (veya benzeri) eklenmeli.
+- **Uzak yedek (remote) KURULDU** — `origin` = GitHub private repo (bkz. §2). Geçmiş artık tek diskte değil; ama **düzenli `git push` unutulmamalı** (yerel commit'ler otomatik gitmez).
 - **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
   - Madde madde tekrar doğrulamak istenirse:
   1. HSK5 kelimesini yanlış cevapla → örnek cümle görünmeli.
