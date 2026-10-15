@@ -40,6 +40,9 @@ export default function QuizScreen({
     reviewPoolRef.current = reviewPool;
   }, [reviewPool]);
 
+  // Review moduna yalnızca İLK girişte yanlışı olan bir modu seçmek için kullanılan bayrak
+  const didInitReviewMode = useRef(false);
+
   // Ana menüden veya harici bir nav değişiminden gelen initialLevel güncellenirse state'i senkronize et
   useEffect(() => {
     if (route?.params?.initialLevel) {
@@ -112,18 +115,26 @@ export default function QuizScreen({
     generateQuestion(level, mode);
   }, [level, mode, generateQuestion]);
 
-  // Review modunda: mevcut modda yanlış yoksa, dolu olan ilk moda geç.
-  // (Modu zorla sabitlemez; kullanıcı dolu modlar arasında serbestçe gezebilir.)
+  // Review modunda mod seçimi:
+  // - Review'a İLK girişte, yanlışı olan bir mod otomatik seçilir (tek seferlik).
+  // - Sonrasında mod sekmeleri SERBESTÇE değiştirilebilir; mod asla zorla geri alınmaz.
+  // - Yanlışı olmayan bir moda geçilirse aşağıdaki "No Mistakes in this Mode!" uyarısı görünür.
   useEffect(() => {
-    if (level !== 'review' || !reviewPool || reviewPool.length === 0) return;
+    if (level !== 'review') {
+      didInitReviewMode.current = false; // Review'dan çıkınca bayrağı sıfırla
+      return;
+    }
+    if (didInitReviewMode.current) return;
+    didInitReviewMode.current = true;
+
+    if (!reviewPool || reviewPool.length === 0) return;
 
     const hasItemsInMode = reviewPool.some(
       (item) => (item.wrongMode || 'hanzi-to-pinyin') === mode
     );
-    if (hasItemsInMode) return;
-
-    const firstWrongMode = reviewPool[0].wrongMode || 'hanzi-to-pinyin';
-    setMode(firstWrongMode);
+    if (!hasItemsInMode) {
+      setMode(reviewPool[0].wrongMode || 'hanzi-to-pinyin');
+    }
   }, [level, reviewPool, mode]);
 
   // Seçenek tıklama mantığı
@@ -213,6 +224,11 @@ export default function QuizScreen({
     return 'Choose the correct English meaning';
   };
 
+  // Review modunda, içinde bulunulan moda ait kalan yanlış sayısı
+  const reviewCountForMode = (reviewPool || []).filter(
+    (item) => (item.wrongMode || 'hanzi-to-pinyin') === mode
+  ).length;
+
   // Seviye değiştiğinde HomeScreen'i bilgilendiren dinleyici tetikleyicisi
   const handleLevelChange = (newLevel) => {
     setLevel(newLevel);
@@ -229,7 +245,7 @@ export default function QuizScreen({
             setLevel={handleLevelChange}
             mode={mode}
             setMode={setMode}
-            reviewCount={reviewPool.length}
+            reviewCount={level === 'review' ? reviewCountForMode : reviewPool.length}
             onBackPress={() => navigation.goBack()}
           />
 
