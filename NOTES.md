@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2 tamamlandı (2.1–2.4), **cihazda Expo Go ile denendi — sorun yok**, **GitHub remote kuruldu**, **geçmiş yeniden yazıldı** (commit e-postaları düzeltildi, tüm hash'ler değişti). **60 test yeşil.** Sıradaki: Faz 3 (mimari) veya Faz 4 (performans).
+Son güncelleme: **Faz 3.1 tamamlandı** (ortak veri katmanı: `services/wordRepository.js` — seviye/pool bilgisi artık tek yerde). Öncesinde: Faz 2 (2.1–2.4), cihazda Expo Go ile denendi — sorun yok, GitHub remote kuruldu, geçmiş yeniden yazıldı (e-postalar düzeltildi), **otomatik push hook'u** eklendi. **70 test yeşil.** Sıradaki: Faz 3.2 (reviewPool şekli) veya Faz 4 (performans).
 
 ---
 
@@ -17,7 +17,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 - **Giriş:** `index.js` → `App.js`.
 - **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`.
 - **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, CustomDeckModal, HandwritingModal, FloatingBackground).
-- **Servisler:** `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`.
+- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`.
 - **Veri:** `data/hsk1..5.json` (2.500 kelime, id 1–2500), `data/examples/hsk1..5_examples.js`.
 
 ### Önemli sabitler / veri akışı
@@ -187,7 +187,13 @@ Her maddeyi **ayrı commit** olarak yap.
 
 ## 6. Faz 3 — Mimari / bakım kolaylığı (refactor, daha yüksek risk)
 
-- [ ] **3.1 Ortak veri katmanı:** `services/wordRepository.js` → `hsk1..5` import'ları, `ALL_WORDS`, `getWordPool(level)`, `getExample(...)` tek yerde. `QuizScreen`, `VocabularyScreen`, `StatsModal`, `FloatingBackground`, `exampleService` bunu kullansın.
+- [x] **3.1 Ortak veri katmanı** — `services/wordRepository.js` oluşturuldu: seviye bilgisinin **tek kaynağı**. Dışa aktarılanlar: `LEVELS`, `LEVEL_LABELS`, `LEVEL_POOLS`, `ALL_WORDS`, `getWordPool(level)`, `getLevelFromWordId(id)`.
+  - Bağlanan tüketiciler: `QuizScreen`, `exampleService`, `VocabularyScreen`, `StatsModal`, `FloatingBackground` **+ `Header` ve `HomeScreen`** (bu ikisi de tam seviye listesini kopyalıyordu). `id`→seviye aralıkları (150/300/600/1200) artık **yalnızca tek yerde**; eskiden `QuizScreen` ve `exampleService`'te ayrı ayrı duruyordu.
+  - Örnek cümle verisi (`data/examples/*`) kavramsal olarak ayrı olduğu için `exampleService`'te kaldı; yalnızca seviye çözümlemesini artık `wordRepository`'den alıyor.
+  - `HomeScreen`'deki "150 words · Beginner" metnindeki kelime sayısı havuzdan türetiliyor; üretilen metinlerin birebir aynı kaldığı doğrulandı (150/150/300/600/1300).
+  - **Doğrulama:** yeni `__tests__/wordRepository.test.js` (10 test) — gerçek verideki her kelimenin `id`'si kendi dosyasının seviyesine çözülüyor mu; `id`'ler 1..2500 kesintisiz ve benzersiz mi; sınır değerler (150/151, 300/301, 600/601, 1200/1201) doğru mu; `getWordPool('mixed')` tüm havuzu mu döndürüyor. Ayrıca 8 dosya babel ile parse edilip doğrulandı. Suite: **70 test yeşil**.
+  - Davranış değişmedi (saf refactor); tek fark: NaN `id` için artık `null` dönüyor (önceden `'hsk5'`).
+  - **Commit:** `816cb2f`
 - [ ] **3.2 `reviewPool` veri şekli:** `{ ...currentWord, word, wrongMode }` → `{ wordId, wrongMode }`; açılışta eski şekli normalize eden göç kodu ekle.
 - [ ] **3.3 Mod/kategori tutarlılığı:** istatistik yönleri birleştirirken review yön bazlı ayrı tutuyor; tek bir `MODE_CATEGORY` map'i (`services/modes.js`) ile netleştir. Bilinmeyen mod sessizce varsayılana düşmesin.
 - [ ] **3.4 AGENTS.md + araçlar:** AGENTS.md'yi gerçek yapıya göre güncelle (React Navigation, `src/app` yok). `tsconfig.json` + ESLint ekle; `tsc --noEmit` ve lint çalışsın. (Expo SDK 57 dokümanlarını doğrula: https://docs.expo.dev/llms.txt)
@@ -219,7 +225,7 @@ Her maddeyi **ayrı commit** olarak yap.
   5. HSK 1'de şıklar aynı seviyeden gelmeli; aynı şık iki kez görünmemeli.
 - `hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı (düşük öncelik). Seviye tespiti bu yüzden `id` aralığından yapılıyor (§5, 2.4).
 - **`hsk5.json`'da 17 ikiz kayıt** var (aynı hanzi iki kez, farklı id): 2'si birebir aynı (`财产` 1237/2002, `插` 1242/2024), 15'i yalnızca anlam yazımı farklı (`包含` 1206/1889). Kod artık bu ikizleri şık olarak göstermiyor ama istatistikler iki ayrı id'de birikiyor; veri temizliği ayrı bir iş.
-- `exampleService` ile `QuizScreen`'deki `id`→seviye aralıkları **iki yerde tekrar ediyor** → Faz 3.1'de ortak modüle taşınmalı.
+- ~~`exampleService` ile `QuizScreen`'deki `id`→seviye aralıkları **iki yerde tekrar ediyor**~~ → **ÇÖZÜLDÜ (Faz 3.1, `816cb2f`)**: aralıklar artık yalnızca `services/wordRepository.js` içinde.
 - `HandwritingModal` harici Google `inputtools` servisine bağımlı (çevrimdışı → hata mesajı).
 
 ---
