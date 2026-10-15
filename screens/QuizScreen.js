@@ -54,6 +54,14 @@ export default function QuizScreen({
   const [isAnswered, setIsAnswered] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
 
+  // Her yeni soruda artan sayaç. QuestionCard'a `key` olarak verilir, böylece kart her
+  // soruda SIFIRDAN kurulur. Kartı yeniden kullanmak güvenli değildi: "sonraki soruya
+  // geç" animasyonu kartı ekranın dışına kaydırıp opaklığını 0 yapıyor, sıfırlama ise
+  // yalnızca kelime id'si DEĞİŞTİĞİNDE çalışıyordu. Aynı kelime arka arkaya gelince
+  // (5 kelimelik bir destede her soruda ~1/5 olasılık) kart bir daha görünmüyordu:
+  // komut satırı çiziliyor ama kart ekranın dışında ve görünmez kalıyordu.
+  const [questionSeq, setQuestionSeq] = useState(0);
+
   // reviewPool'u ref üzerinden tutuyoruz ki generateQuestion dependency'sini kirletmesin
   const reviewPoolRef = useRef(reviewPool);
   useEffect(() => {
@@ -118,6 +126,8 @@ export default function QuizScreen({
     setOptions(combinedOptions);
     setAnswered(false);
     setSelectedOption(null);
+    // Yeni soru: kartın `key`i değişir ve kart temiz animasyon değerleriyle kurulur.
+    setQuestionSeq((prev) => prev + 1);
   }, [level, mode, setAnswered]);
 
   // Ses motorunu arka planda önceden ısıtma (Warm-up)
@@ -271,6 +281,7 @@ export default function QuizScreen({
 
             {currentWord && (
               <QuestionCard
+                key={questionSeq}
                 currentWord={currentWord}
                 level={level}
                 mode={mode}

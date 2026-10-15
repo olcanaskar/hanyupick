@@ -58,20 +58,13 @@ export default function QuestionCard({
     }
   }, [isAnswered, selectedOption]);
 
-  // Yeni soruya geçildiğinde değerleri sıfırla ve içeri gir
-  useEffect(() => {
-    buttonScale.setValue(1);
-    buttonShakeX.setValue(0);
-    translateX.setValue(0);
-    opacity.setValue(1);
-
-    Animated.spring(translateX, {
-      toValue: 0,
-      tension: 50,
-      friction: 8,
-      useNativeDriver: true,
-    }).start();
-  }, [word?.id]);
+  // Not: burada animasyon değerlerini yeni soru için sıfırlayan bir effect YOKTUR ve
+  // olmamalı. QuizScreen bu bileşene her soru için artan bir `key` verir (`questionSeq`),
+  // yani kart her soruda sıfırdan kurulur ve `Animated.Value`'ler başlangıç
+  // değerleriyle (0 / 1) doğar. Eskiden `[word?.id]`e bağlı bir sıfırlama vardı: aynı
+  // kelime arka arkaya gelince hiç çalışmıyor, kart ekranın dışında (translateX
+  // ±width*1.25) ve görünmez (opacity 0) kalıyordu — komut satırı görünüyor ama kart
+  // gelmiyordu.
 
   if (!word) return null;
 
