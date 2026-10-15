@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 3.1 tamamlandı** (ortak veri katmanı: `services/wordRepository.js` — seviye/pool bilgisi artık tek yerde). Öncesinde: Faz 2 (2.1–2.4), cihazda Expo Go ile denendi — sorun yok, GitHub remote kuruldu, geçmiş yeniden yazıldı (e-postalar düzeltildi), **otomatik push hook'u** eklendi. **70 test yeşil.** Sıradaki: Faz 3.2 (reviewPool şekli) veya Faz 4 (performans).
+Son güncelleme: **Faz 3.2 tamamlandı** (review havuzu tek şekle indi: `{ wordId, wrongMode [, snapshot] }` + açılışta tek seferlik göç). Öncesinde: Faz 3.1 (ortak veri katmanı `services/wordRepository.js`), Faz 2 (2.1–2.4) — cihazda Expo Go ile denendi, GitHub remote kuruldu, geçmiş yeniden yazıldı (e-postalar düzeltildi), **otomatik push hook'u** eklendi, SDK uyumsuz paketler `expo install --fix` ile giderildi (**expo-doctor 21/21**). **98 test yeşil.** Sıradaki: Faz 3.3 (mod kategori tutarlılığı) / 3.4 (AGENTS.md + araçlar) / 3.5 (ölü kod) / 3.6 (özel desteler) veya Faz 4 (performans).
 
 ---
 
@@ -17,7 +17,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 - **Giriş:** `index.js` → `App.js`.
 - **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`.
 - **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, CustomDeckModal, HandwritingModal, FloatingBackground).
-- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`.
+- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`.
 - **Veri:** `data/hsk1..5.json` (2.500 kelime, id 1–2500), `data/examples/hsk1..5_examples.js`.
 
 ### Önemli sabitler / veri akışı
@@ -193,7 +193,13 @@ Her maddeyi **ayrı commit** olarak yap.
   - **Doğrulama:** yeni `__tests__/wordRepository.test.js` (10 test) — gerçek verideki her kelimenin `id`'si kendi dosyasının seviyesine çözülüyor mu; `id`'ler 1..2500 kesintisiz ve benzersiz mi; sınır değerler (150/151, 300/301, 600/601, 1200/1201) doğru mu; `getWordPool('mixed')` tüm havuzu mu döndürüyor. Ayrıca 8 dosya babel ile parse edilip doğrulandı. Suite: **70 test yeşil**.
   - Davranış değişmedi (saf refactor); tek fark: NaN `id` için artık `null` dönüyor (önceden `'hsk5'`).
   - **Commit:** `816cb2f`
-- [ ] **3.2 `reviewPool` veri şekli:** `{ ...currentWord, word, wrongMode }` → `{ wordId, wrongMode }`; açılışta eski şekli normalize eden göç kodu ekle.
+- [x] **3.2 `reviewPool` veri şekli** — `services/reviewPool.js` oluşturuldu: havuz kayıtlarının **tek şekli** + tek seferlik göç.
+  - **Yeni şekil:** HSK kelimesi → `{ wordId, wrongMode }`; özel deste → `{ wordId, wrongMode, snapshot }`. Özel id'ler `data/hsk*.json`'da yok ve `index` tabanlı üretilebildiği için (aynı isimle farklı dosya aktarılırsa aynı id BAŞKA kelimeyi gösterir) yalnızca onlar kendi metnini taşır → deste silinse bile doğru kelime görünür. Sayısal id'li kayıtta `snapshot` **asla** yok.
+  - **Kazanç:** kayıt başına ~183 → ~45 bayt (~%75 küçülme). Asıl fayda: kopya veri **bayatlamıyor** (veri düzeltilince Review ve şık çakışma kontrolü kanonik/taze metni kullanır) ve UI'daki `item.word || item` / `item.id || item.word?.id` savunmaları **tamamen kalktı** (QuizScreen'de 7 nokta tek satırlık yardımcılara indi). **Kullanıcıya görünür davranış değişmedi.**
+  - **Göç:** `App.js` açılışta `normalizeReviewPool()` çağırır. Eski iki şekli de (`{...word, wrongMode}` ve `{...word, word, wrongMode}`) kabul eder, idempotenttir, çözülemeyen/bozuk kaydı atlar (böylece "N bekliyor yazıp Review'da soru çıkmaması" olmaz), sırayı korur. Disk **yalnızca içerik gerçekten değiştiyse** yazılır.
+  - **Eklenenler:** `wordRepository.getWordById(id)` (O(1) id → kanonik kelime) + `normalizeReviewPool`, `toCanonicalEntry`, `resolveReviewWord`, `makeReviewEntry`, `filterByMode`, `countForMode`, `addEntry`, `removeEntry`, `getWrongMode`, `isCustomWordId`.
+  - **Doğrulama:** yeni `__tests__/reviewPool.test.js` (21 test) — şekil dönüşümü, bozuk kayıtlar, çözümleme kuralı, göç (sıra korunur · görünür içerik değişmez · bayat kopya yerine kanonik metin · idempotentlik · boyut), havuz yardımcıları. Suite: **98 test yeşil**; 5 dosya babel ile parse edildi; `npx expo export --platform android` hatasız.
+  - **Commit:** `ea48c61`
 - [ ] **3.3 Mod/kategori tutarlılığı:** istatistik yönleri birleştirirken review yön bazlı ayrı tutuyor; tek bir `MODE_CATEGORY` map'i (`services/modes.js`) ile netleştir. Bilinmeyen mod sessizce varsayılana düşmesin.
 - [ ] **3.4 AGENTS.md + araçlar:** AGENTS.md'yi gerçek yapıya göre güncelle (React Navigation, `src/app` yok). `tsconfig.json` + ESLint ekle; `tsc --noEmit` ve lint çalışsın. (Expo SDK 57 dokümanlarını doğrula: https://docs.expo.dev/llms.txt)
 - [ ] **3.5 Bağımlılık/ölü kod temizliği:** kullanılmayanları kaldır (`expo-notifications`, `expo-file-system`, `expo-status-bar`, `@react-navigation/native-stack`); `words.json` (referanssız), `App.js isLoaded`, `Header.js Dimensions` importu; `app.json` splash yapılandırması (`assets/splash-icon.png` kullanılmıyor).
@@ -225,6 +231,7 @@ Her maddeyi **ayrı commit** olarak yap.
 - `hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı (düşük öncelik). Seviye tespiti bu yüzden `id` aralığından yapılıyor (§5, 2.4).
 - **`hsk5.json`'da 17 ikiz kayıt** var (aynı hanzi iki kez, farklı id): 2'si birebir aynı (`财产` 1237/2002, `插` 1242/2024), 15'i yalnızca anlam yazımı farklı (`包含` 1206/1889). Kod artık bu ikizleri şık olarak göstermiyor ama istatistikler iki ayrı id'de birikiyor; veri temizliği ayrı bir iş.
 - ~~`exampleService` ile `QuizScreen`'deki `id`→seviye aralıkları **iki yerde tekrar ediyor**~~ → **ÇÖZÜLDÜ (Faz 3.1, `816cb2f`)**: aralıklar artık yalnızca `services/wordRepository.js` içinde.
+- **`reviewPool` göçü TEK YÖNLÜ (Faz 3.2, `ea48c61`)** — `@hsk_review_pool` artık `{ wordId, wrongMode [, snapshot] }` saklar. 3.2 öncesi bir sürüme dönülürse eski kod bu şekli okuyamaz (`item.word || item` boş kelime üretir). Geri dönüş gerekirse `@hsk_review_pool` temizlenmeli (o ana kadar biriken yanlışlar gider); dönmeden önce `known-good` etiketinin hangi commit'te olduğuna bak.
 - `HandwritingModal` harici Google `inputtools` servisine bağımlı (çevrimdışı → hata mesajı).
 
 ---
