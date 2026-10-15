@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 3.2 tamamlandı** (review havuzu tek şekle indi: `{ wordId, wrongMode [, snapshot] }` + açılışta tek seferlik göç). Öncesinde: Faz 3.1 (ortak veri katmanı `services/wordRepository.js`), Faz 2 (2.1–2.4) — cihazda Expo Go ile denendi, GitHub remote kuruldu, geçmiş yeniden yazıldı (e-postalar düzeltildi), **otomatik push hook'u** eklendi, SDK uyumsuz paketler `expo install --fix` ile giderildi (**expo-doctor 21/21**). **98 test yeşil.** Sıradaki: Faz 3.3 (mod kategori tutarlılığı) / 3.4 (AGENTS.md + araçlar) / 3.5 (ölü kod) / 3.6 (özel desteler) veya Faz 4 (performans).
+Son güncelleme: **Faz 3.4a tamamlandı** (ESLint kuruldu — flat config, tüm projeyi tarar; `AGENTS.md` gerçeğe göre yeniden yazıldı: React Navigation Stack, `screens/`+`services/`, test/lint komutları). Öncesinde: Faz 3.2 (review havuzu tek şekle indi: `{ wordId, wrongMode [, snapshot] }` + açılışta tek seferlik göç), Faz 3.1 (ortak veri katmanı `services/wordRepository.js`), Faz 2 (2.1–2.4) — cihazda Expo Go ile denendi, GitHub remote kuruldu, geçmiş yeniden yazıldı (e-postalar düzeltildi), **otomatik push hook'u** eklendi, SDK uyumsuz paketler `expo install --fix` ile giderildi (**expo-doctor 21/21**). **98 test yeşil, lint 0 hata.** Sıradaki: Faz 3.5 (ölü kod) → 3.4b (`tsconfig`) → 3.3 (mod kategori tutarlılığı) → 3.6 (özel desteler) veya Faz 4 (performans).
 
 ---
 
@@ -56,7 +56,12 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
     `tar -czf C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz -C C:\Projects\App --exclude=ChineseQuizApp/node_modules --exclude=ChineseQuizApp/android --exclude=ChineseQuizApp/.expo ChineseQuizApp`
   - **Uyarı:** `C:\Projects\App\backup\` klasöründeki eski elle kopya **bozuk ve eksik** (`data\hsk5.json` 0 bayt, `hsk5_examples.js` yok). Yedek sanılıp güvenilmemeli.
 - `android/` ve `ios/` `.gitignore`'da (Expo prebuild çıktısı; elle düzenleme).
-- **`tsconfig.json` ve ESLint yapılandırması YOK** → `AGENTS.md`'nin istediği `tsc` / `expo lint` çalışmaz (bkz. Faz 3.4).
+- **ESLint VAR (Faz 3.4a):** `eslint` + `eslint-config-expo` (dev) + flat `eslint.config.js` (SDK 53+ düzeni; kaynak: https://docs.expo.dev/guides/using-eslint/). Komut: **`npm run lint`** (= `eslint .`).
+  - **`npx expo lint` KULLANILMAZ:** o komut yalnızca `/src`, `/app`, `/components` klasörlerini tarar (Expo Router varsayımı) → bu projede `screens/`, `services/`, `__tests__/`, `App.js` **sessizce atlanır** (18 uyarı gösterir, gerçekte 25 var).
+  - Kurulumda: test dosyalarına jest global'leri tanıtıldı (yoksa 330 sahte `no-undef` hatası çıkıyordu); üç kural **bilinçli** gevşetildi — `react-hooks/refs` → **off** (52 yanlış-pozitif: proje RN'in resmî `Animated` ref API'sini kullanıyor, kural bu deseni modelleyemiyor; uzun vadede `react-native`'in `useAnimatedValue()` kancasına geçilirse geri açılabilir), `react-hooks/set-state-in-effect` ve `react/no-unescaped-entities` → **warn**.
+  - Güncel durum: **0 hata, 25 uyarı** (8 `no-unescaped-entities`, 7 `set-state-in-effect`, 7 `exhaustive-deps`, 3 `no-unused-vars` → 3.5'te temizlenecek).
+  - **npm 11 tuzağı:** `expo install <pkg> --dev` artık `--include=dev` demek; Windows'ta `"--"` ayırıcısı `--dev`'i yutuyor → paketler yanlışlıkla `dependencies`'e düşer (başımıza geldi, elle düzeltildi).
+- **`tsconfig.json` YOK** → `tsc --noEmit` çalışmaz; tip denetimi **Faz 3.4b**'ye bırakıldı (proje saf JS olduğundan "anlamlı" bir tsc kapısı karar gerektiriyor).
 - **Bağımlılıklar SDK ile tam uyumlu** (`npx expo install --fix`, 2026-10-15): `expo ~57.0.29`, `expo-notifications ~57.0.23`. Artık `npx expo-doctor` → **21/21 temiz**, `npx expo install --check` → "Dependencies are up to date". Yükseltme sonrası doğrulama: `npm test` 70/70 + `npx expo export --platform android` hatasız.
 - **Test altyapısı VAR** (Faz 2.1 sonrası eklendi): `jest` + `jest-expo`.
   - Komut: `npm test` (tek seferlik) veya `npm run test:watch`.
@@ -201,7 +206,8 @@ Her maddeyi **ayrı commit** olarak yap.
   - **Doğrulama:** yeni `__tests__/reviewPool.test.js` (28 test) — şekil dönüşümü, bozuk kayıtlar, çözümleme kuralı, göç (sıra korunur · görünür içerik değişmez · bayat kopya yerine kanonik metin · idempotentlik · boyut), havuz yardımcıları. Suite: **98 test yeşil**; 5 dosya babel ile parse edildi; `npx expo export --platform android` hatasız.
   - **Commit:** `ea48c61`
 - [ ] **3.3 Mod/kategori tutarlılığı:** istatistik yönleri birleştirirken review yön bazlı ayrı tutuyor; tek bir `MODE_CATEGORY` map'i (`services/modes.js`) ile netleştir. Bilinmeyen mod sessizce varsayılana düşmesin.
-- [ ] **3.4 AGENTS.md + araçlar:** AGENTS.md'yi gerçek yapıya göre güncelle (React Navigation, `src/app` yok). `tsconfig.json` + ESLint ekle; `tsc --noEmit` ve lint çalışsın. (Expo SDK 57 dokümanlarını doğrula: https://docs.expo.dev/llms.txt)
+- [x] **3.4a AGENTS.md + ESLint:** `AGENTS.md` gerçek yapıya göre **yeniden yazıldı** — Expo Router/`src/app` iddiası kaldırıldı (React Navigation **Stack**, ekranlar `screens/`), test/lint komutları, `services/` tek-kaynak listesi, jest'in **ekranları kapsamadığı** uyarısı + babel parse önerisi, git/`known-good`/yedek akışı eklendi. ESLint kuruldu (ayrıntı: §2). **Doğrulama:** `npm run lint` → **0 hata** (25 uyarı), `npm test` → **98/98**, `npx expo-doctor` → **21/21** (git PATH'te değilse `.expo` kontrolü sahte hata verir — 19/21 görünür).
+- [ ] **3.4b `tsconfig` + tip denetimi:** karar bekliyor — `allowJs`+`checkJs` ile **gerçek** denetim mi, yoksa yalnızca editör IntelliSense mi? `checkJs:false` ile `tsc --noEmit` hiçbir şeyi kontrol etmez ("yeşil ama anlamsız"). Uygularken önce hata sayısını ölç, ona göre karar ver.
 - [ ] **3.5 Bağımlılık/ölü kod temizliği:** kullanılmayanları kaldır (`expo-notifications`, `expo-file-system`, `expo-status-bar`, `@react-navigation/native-stack`); `words.json` (referanssız), `App.js isLoaded`, `Header.js Dimensions` importu; `app.json` splash yapılandırması (`assets/splash-icon.png` kullanılmıyor).
 - [ ] **3.6 Özel desteler:** aynı isimde üzerine yazmadan önce onay; sanitize edilmiş adı hem anahtar hem ID öneki olarak kullan; özel desteleri istatistiğe ekle.
 
