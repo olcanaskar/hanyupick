@@ -27,11 +27,19 @@ import {
   resolveReviewWord,
 } from '../services/reviewPool';
 
-export default function QuizScreen({ 
-  route, 
-  navigation, 
-  reviewPool = [], 
-  setReviewPool = () => {} 
+/**
+ * @param {{
+ *   route?: any,
+ *   navigation?: any,
+ *   reviewPool?: any[],
+ *   setReviewPool?: (updater: any) => void,
+ * }} props
+ */
+export default function QuizScreen({
+  route,
+  navigation,
+  reviewPool = [],
+  setReviewPool = () => {}
 }) {
   const initialLevel = route?.params?.initialLevel || 'hsk1';
   const initialMode = route?.params?.initialMode || 'hanzi-to-pinyin';
@@ -232,7 +240,6 @@ export default function QuizScreen({
             mode={mode}
             setMode={setMode}
             reviewCount={level === 'review' ? reviewCountForMode : reviewPool.length}
-            onBackPress={() => navigation.goBack()}
           />
 
           <ScoreBoard correct={score.correct} wrong={score.wrong} />
