@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2 tamamlandı (2.1–2.4), **cihazda Expo Go ile denendi — sorun yok**, **GitHub remote kuruldu**. **60 test yeşil.** Sıradaki: Faz 3 (mimari) veya Faz 4 (performans).
+Son güncelleme: Faz 2 tamamlandı (2.1–2.4), **cihazda Expo Go ile denendi — sorun yok**, **GitHub remote kuruldu**, **geçmiş yeniden yazıldı** (commit e-postaları düzeltildi, tüm hash'ler değişti). **60 test yeşil.** Sıradaki: Faz 3 (mimari) veya Faz 4 (performans).
 
 ---
 
@@ -39,9 +39,14 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
   - Shell her açılışta PATH'te olmayabilir → komutlardan önce ekle:
     `$env:Path += ";C:\Program Files\Git\cmd"`
 - Proje başlangıçta **git deposu değildi**; `git init -b main` ile başlatıldı.
-- Yerel git kimliği: `Olcan Askar` / `developer@localhost` (repoya özel; istersen `git config --local user.email ...`).
+- Git kimliği: `Olcan Askar` / `aabdullaholcan@gmail.com` (global + repo-local).
 - **Remote (uzak depo) VAR:** `https://github.com/olcanasqar/ChineseQuizApp.git` (private). Kimlik: HTTPS + Git Credential Manager (`credential.helper=manager`) — anahtar/token yönetimi yok. Push: `git push origin main`; etiket için `git push origin known-good`.
-  - Commit kimliği: `Olcan Askar` / `aabdullaholcan@gmail.com` (global + local). **Not:** ilk 19 commit `developer@localhost` ile atıldı ve geçmiş **yeniden yazılmadı** (hash'ler + `known-good` + yedek bozulmasın diye) → yalnızca bundan sonraki commit'ler GitHub hesabına bağlanır.
+  - **Geçmiş yeniden yazıldı** (2026-10-15, `git filter-branch --env-filter`): ilk 19 commit'in `developer@localhost` e-postası `aabdullaholcan@gmail.com` yapıldı → **20/20 commit** artık GitHub hesabına bağlı. GitHub'ın dokümanına göre `@localhost` gibi generic adresler hesaba **eklenemez**, bu yüzden tek çözüm buydu.
+    - Kanıt: rewrite öncesi/sonrası **tree hash birebir aynı** (`8ac1a016…`) → dosya içeriği değişmedi; 20 commit mesajı da korundu; `npm test` 60/60 yeşil.
+    - Yan etki: **tüm commit hash'leri değişti** (bkz. §3), `known-good` yeni karşılığına taşındı, uzak tarafa **force push** gerekti.
+    - Yerel emniyet ağı hâlâ duruyor: `refs/original/*` + `pre-rewrite` etiketi **eski geçmişi** tutar. Emin olduktan sonra sil:
+      `git tag -d pre-rewrite` · `git update-ref -d refs/original/refs/heads/main` · `git update-ref -d refs/original/refs/tags/known-good`
+    - ⚠️ `pre-rewrite` silinmeden `git push --tags` yapılırsa eski (yanlış e-postalı) geçmiş de GitHub'a gider.
 - **Yerel arşiv yedek:** `C:\Projects\App\` altında zaman damgalı `ChineseQuizApp-backup-*.tar.gz` (en yenisini kullan). İçerik: `.git` + `known-good` dahil; `node_modules`/`android`/`.expo` hariç. Doğrulama: açıp `git log -1`, `git tag`, `git status` → commit/etiket HEAD ile aynı ve çalışma alanı temiz olmalı.
   - Yeni yedek almak için:
     `tar -czf C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz -C C:\Projects\App --exclude=ChineseQuizApp/node_modules --exclude=ChineseQuizApp/android --exclude=ChineseQuizApp/.expo ChineseQuizApp`
@@ -65,22 +70,28 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 ## 3. Git durumu
 
 ```
-502ff77  docs: mark Faz 2.4 done in NOTES.md
-e69fb33  fix(quiz): prevent duplicate/ambiguous options and pick same-level distractors
-91d3597  fix(import): strip file extension for default deck name and prefill it
-0ea3c62  docs: mark Faz 2.2 done in NOTES.md
-c2de580  fix(date): use local date keys for daily stats and calendar
-6ea6c87  docs: move known-good tag to the verified test-covered state
-610c768  docs: record test setup and green suite in NOTES.md
-163b3f9  test: add unit tests for stats, import and example services
-cf46bbb  chore(test): add jest-expo setup with AsyncStorage mock
-46e3279  docs: mark Faz 2.1 done in NOTES.md
-bc97841  fix(stats): serialize stat writes to prevent lost updates; add ref-based double-tap guard
-f51ebe9  docs: add NOTES.md (phase plan and handoff notes)
-e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count
-2a7e4e4  fix: P0 quiz bugs (hsk5 examples export, mixed hsk5 pool, review mode lock, missing hint in meaning modes)
-4191644  chore: baseline commit (pre-fix snapshot)
+7e9f9c5  docs: record GitHub remote setup in NOTES.md
+85efa40  docs: describe backup archive generically in NOTES.md
+37b4790  docs: record verified local backup archive in NOTES.md
+7e395db  docs: record successful Expo Go device verification in NOTES.md
+a0df1cd  docs: mark Faz 2.4 done in NOTES.md
+8cfe62e  fix(quiz): prevent duplicate/ambiguous options and pick same-level distractors
+8333a74  docs: mark Faz 2.3 done in NOTES.md
+7fbebf7  fix(import): strip file extension for default deck name and prefill it
+8da172a  docs: mark Faz 2.2 done in NOTES.md
+95d7667  fix(date): use local date keys for daily stats and calendar
+a97719f  docs: move known-good tag to the verified test-covered state
+e5bd49f  docs: record test setup and green suite in NOTES.md
+59a0b1a  test: add unit tests for stats, import and example services
+8863a34  chore(test): add jest-expo setup with AsyncStorage mock
+7565348  docs: mark Faz 2.1 done in NOTES.md
+b4b973f  fix(stats): serialize stat writes to prevent lost updates; add ref-based double-tap guard
+3bf63f6  docs: add NOTES.md (phase plan and handoff notes)
+34c8370  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count
+c97b903  fix: P0 quiz bugs (hsk5 examples export, mixed hsk5 pool, review mode lock, missing hint in meaning modes)
+a1af3af  chore: baseline commit (pre-fix snapshot)
 ```
+> **Not:** Bu hash'ler 2026-10-15'teki **geçmiş yeniden yazımından sonradır** (e-posta düzeltmesi); daha eski hash'ler geçersiz. Blok `7e9f9c5` anlık görüntüsüdür — güncel tam liste için `git log --oneline`.
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
@@ -115,7 +126,7 @@ e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mo
 - [x] `jest.setup.js` → AsyncStorage resmi jest mock'u.
 - [x] `__tests__/`: `statsManager.test.js` (10) + `importService.test.js` (10) + `exampleService.test.js` (8) = **28 test**.
 - **Not:** `importService`'te `defaultName` testi `test.failing` olarak işaretli — **Faz 2.3 hatası bilinçli belgeleniyor**. 2.3 düzeltilince bu testi normal `test(...)` yapıp yeşile çevir.
-- **Commit:** `cf46bbb` (altyapı), `163b3f9` (testler)
+- **Commit:** `8863a34` (altyapı), `59a0b1a` (testler)
 
 ---
 
@@ -129,7 +140,7 @@ Her maddeyi **ayrı commit** olarak yap.
   - `recordAnswer`, yazmaları sıralayan bir **kuyruk** üzerinden çalışıyor (`statsWriteQueue` + `performRecordAnswer`). Her yazma bir önceki bitince başlar.
   - `QuizScreen`: çift dokunmayı engelleyen **ref bayrağı** (`isAnsweredRef`) + `setAnswered` yardımcısı eklendi (React state gecikmesinden bağımsız).
 - **Doğrulama:** Mock'lu test — kuyruklu sürüm 20/20 cevabı kaydetti; kuyruksuz (eski) hâl taklidi 20 cevaptan yalnızca 1'ini tuttu.
-- **Commit:** `bc97841`
+- **Commit:** `b4b973f`
 
 ### 2.2 ✅ TAMAMLANDI — UTC / yerel tarih tutarsızlığı (P1)
 - **Sorun:** `statsManager` günlük/streak anahtarlarını `toISOString()` (**UTC**) üretirken `StatsModal` "bugün"ü ve takvimi **yerel** kuruyordu → gece yarısı civarı verilen cevap yanlış güne düşüyor, takvimle uyuşmuyordu.
@@ -139,7 +150,7 @@ Her maddeyi **ayrı commit** olarak yap.
   - `components/StatsModal.js`: 7 günlük şerit ve aylık takvim grid'i aynı yerel anahtarları kullanıyor (hafta günü etiketi de aynı `d`'den).
 - **Doğrulama:** `__tests__/dateUtils.test.js` (10 test) + `statsManager.test.js`'e eklenen **gece yarısı regresyon testi** (sahte saat 11 Mart 00:30 → anahtar `2026-03-11`; eski UTC kod `2026-03-10` yazardı). Suite: **39 test yeşil**.
 - **Not (veri göçü):** Anahtarlar UTC'den yerele geçtiği için eski kayıtlarda akşam saatlerine ait birkaç gün anahtarı kayabilir. Küçük ve tek seferlik; ayrı bir göç kodu eklenmedi.
-- **Commit:** `c2de580`
+- **Commit:** `95d7667`
 
 ### 2.3 ✅ TAMAMLANDI — `importService` regex + default isim (P1)
 - **Sorun:** `/\.[^/.]+\$/` bozuk (sondaki `\$` yüzünden hiç eşleşmiyordu) → dosya uzantısı `defaultName`'den kırpılmıyordu; ayrıca üretilen `defaultName` `CustomDeckModal` tarafından hiç kullanılmıyordu.
@@ -147,7 +158,7 @@ Her maddeyi **ayrı commit** olarak yap.
   - `services/importService.js`: regex `/\.[^/.]+$/` olarak düzeltildi; ad kırpılıp `trim()` edilir, boş kalırsa eski `'Custom Deck'` yedeğine düşer.
   - `components/CustomDeckModal.js`: `handlePickFile` artık isim alanını `result.defaultName` ile önceden doldurur (`setCustomDeckName(result.defaultName || '')`).
 - **Doğrulama:** `test.failing` normal teste çevrildi; uzantısız ad ve çok noktalı ad senaryoları eklendi. Suite: **41 test yeşil**.
-- **Commit:** `91d3597`
+- **Commit:** `7fbebf7`
 
 ### 2.4 ✅ TAMAMLANDI — Çeldirici tekilliği + seviye bazlı çeldirici (P1)
 - **Sorun:** Çeldiriciler yalnızca `id` ile eleniyordu ve **her zaman 2.500 kelimelik genel havuzdan** seçiliyordu. Sonuç:
@@ -162,7 +173,7 @@ Her maddeyi **ayrı commit** olarak yap.
   - Önce/sonra simülasyonu: bozuk şık **%0,01–0,06 → %0,00**; hsk1 modunda çeldiricilerin seviyesi **%9 → %100 hsk1**.
   - Suite: **60 test yeşil**.
 - **Bilinçli sınırlama:** Eleme **string** eşitliğine dayanır; `"sun, day"` ↔ `"day, sun"` gibi farklı yazılmış eş anlamlılar yakalanmaz (bkz. §8 veri notu).
-- **Commit:** `e69fb33`
+- **Commit:** `8cfe62e`
 
 > **Faz 2 kapandı.** Sıradaki adım için öneri: Faz 1–2.4 değişikliklerini cihazda bir kez dene (§8'deki kontrol listesi), sonra Faz 3 (mimari) veya Faz 4 (performans).
 
