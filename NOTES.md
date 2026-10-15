@@ -40,13 +40,18 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
     `$env:Path += ";C:\Program Files\Git\cmd"`
 - Proje başlangıçta **git deposu değildi**; `git init -b main` ile başlatıldı.
 - Git kimliği: `Olcan Askar` / `aabdullaholcan@gmail.com` (global + repo-local).
-- **Remote (uzak depo) VAR:** `https://github.com/olcanasqar/ChineseQuizApp.git` (private). Kimlik: HTTPS + Git Credential Manager (`credential.helper=manager`) — anahtar/token yönetimi yok. Push: `git push origin main`; etiket için `git push origin known-good`.
+- **Remote (uzak depo) VAR:** `https://github.com/olcanasqar/ChineseQuizApp.git` (private). Kimlik: HTTPS + Git Credential Manager (`credential.helper=manager`) — anahtar/token yönetimi yok. Push: `git push origin main`; etiket için `git push origin known-good`. **Normalde bunu hook otomatik yapar (aşağıya bak).**
   - **Geçmiş yeniden yazıldı** (2026-10-15, `git filter-branch --env-filter`): ilk 19 commit'in `developer@localhost` e-postası `aabdullaholcan@gmail.com` yapıldı → **20/20 commit** artık GitHub hesabına bağlı. GitHub'ın dokümanına göre `@localhost` gibi generic adresler hesaba **eklenemez**, bu yüzden tek çözüm buydu.
     - Kanıt: rewrite öncesi/sonrası **tree hash birebir aynı** (`8ac1a016…`) → dosya içeriği değişmedi; 20 commit mesajı da korundu; `npm test` 60/60 yeşil.
     - Yan etki: **tüm commit hash'leri değişti** (bkz. §3), `known-good` yeni karşılığına taşındı, uzak tarafa **force push** gerekti.
     - Yerel emniyet ağı hâlâ duruyor: `refs/original/*` + `pre-rewrite` etiketi **eski geçmişi** tutar. Emin olduktan sonra sil:
       `git tag -d pre-rewrite` · `git update-ref -d refs/original/refs/heads/main` · `git update-ref -d refs/original/refs/tags/known-good`
     - ⚠️ `pre-rewrite` silinmeden `git push --tags` yapılırsa eski (yanlış e-postalı) geçmiş de GitHub'a gider.
+- **Otomatik push hook'u VAR** (`.git/hooks/post-commit`; **yerel** — uzak repoya gitmez, sadece bu makinede çalışır): her commit'ten sonra `main` dalını **ve** `known-good` etiketini GitHub'a gönderir.
+  - Tasarım güvenceleri: **asla `--force` yok** → uzaktaki geçmiş ezilemez, reddedilen push sadece başarısız olur. `post-commit` commit'ten *sonra* çalıştığı için push başarısız olsa bile **commit bozulmaz**. Kimlik istemi açmaz (`credential.interactive=false`) → çevrimdışıysan sadece uyarı basar, takılmaz.
+  - Sadece `main` dalında çalışır → kazara uzakta yeni dal açmaz.
+  - Tek seferlik atlama: `SKIP_AUTOPUSH=1 git commit -m "..."` · kalıcı kaldırma: `rm .git/hooks/post-commit`.
+  - **Elle `git push` hâlâ gerekir:** (1) `amend` / `rebase` / geçmiş yeniden yazımı (hook çalışmaz *ve* force gerekir), (2) `known-good` geriye/yanlış konuma taşınırsa (hook force kullanmadığı için reddedilir), (3) çevrimdışı kalınan commit'ler.
 - **Yerel arşiv yedek:** `C:\Projects\App\` altında zaman damgalı `ChineseQuizApp-backup-*.tar.gz` (en yenisini kullan). İçerik: `.git` + `known-good` dahil; `node_modules`/`android`/`.expo` hariç. Doğrulama: açıp `git log -1`, `git tag`, `git status` → commit/etiket HEAD ile aynı ve çalışma alanı temiz olmalı.
   - Yeni yedek almak için:
     `tar -czf C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz -C C:\Projects\App --exclude=ChineseQuizApp/node_modules --exclude=ChineseQuizApp/android --exclude=ChineseQuizApp/.expo ChineseQuizApp`
