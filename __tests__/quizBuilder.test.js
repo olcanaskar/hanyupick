@@ -242,4 +242,111 @@ describe('pickWord — ardışık tekrar engeli', () => {
     expect(pickWord(pool, 'custom_Liste_0').id).toBe('custom_Liste_1');
     expect(pickWord(pool, 'custom_Liste_1').id).toBe('custom_Liste_0');
   });
+
+  // Faz 4.2: artık `filter` yerine reddetme ile örnekleme var; denemeler hep
+  // önceki kelimeye denk gelse bile kopya çıkarmadan yedek yol devreye girmeli.
+  test('denemeler hep önceki kelimeye denk gelse de onu döndürmez', () => {
+    const pool = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0); // hep 0. indeks (id 1)
+
+    try {
+      expect(pickWord(pool, 1).id).not.toBe(1);
+      expect(pickWord(pool, 1).id).toBe(2); // ilk farklı kelimeye düşer
+    } finally {
+      randomSpy.mockRestore();
+    }
+  });
+
+  test('havuzu kopyalamaz (girdi dizisi değişmez, yeni dizi üretilmez)', () => {
+    const pool = [{ id: 1 }, { id: 2 }, { id: 3 }];
+    const before = [...pool];
+
+    pickWord(pool, 1);
+
+    expect(pool).toEqual(before);
+  });
+});
+
+// Faz 4.2: şık toplarken havuz kopyalanmaz (eskiden `shuffle(pool)` tüm havuzu
+// kopyalayıp karıştırıyordu → her soruda ~2.500 eleman).
+describe('buildOptions — havuz kopyalanmaz (Faz 4.2)', () => {
+  // Havuzdan kaç kez indeks okunduğunu sayar. Eski uygulama havuzu `[...items]` ile
+  // kopyaladığı için TÜM indeksleri okurdu.
+  const countingPool = (words) => {
+    let reads = 0;
+    const proxy = new Proxy(words, {
+      get(target, prop, receiver) {
+        if (typeof prop === 'string' && /^[0-9]+$/.test(prop)) reads += 1;
+        return Reflect.get(target, prop, receiver);
+      },
+    });
+
+    return { proxy, reads: () => reads };
+  };
+
+  const bigPool = (size) =>
+    Array.from({ length: size }, (_, i) => ({
+      id: i + 1,
+      hanzi: `字${i}`,
+      pinyin: `pin${i}`,
+      meaning: `anlam ${i}`,
+    }));
+
+  test('2.500 kelimelik havuzda şıklar için tüm havuz okunmaz', () => {
+    const pool = bigPool(2500);
+    const { proxy, reads } = countingPool(pool);
+
+    for (let t = 0; t < 20; t++) {
+      const options = buildOptions(pool[0], [proxy]);
+
+      expect(options).toHaveLength(4);
+      expect(options).toContain(pool[0]);
+    }
+
+    // 20 soru için toplam okuma, tek bir tam havuz kopyasından (2.500) çok daha az.
+    expect(reads()).toBeGreaterThanOrEqual(20 * 3);
+    expect(reads()).toBeLessThan(20 * 30);
+  });
+
+  test('çakışmalar üst üste olsa da dairesel tarama 4 şık bulur', () => {
+    // Doğru cevabın ikizleri art arda dizili: rastgele başlangıç noktası ne olursa
+    // olsun tarama sona gelince başa döner ve uygun adayları bulur.
+    const pool = [
+      { id: 1, hanzi: '日', pinyin: 'rì', meaning: 'sun' },
+      { id: 2, hanzi: '日', pinyin: 'rì', meaning: 'day' },
+      { id: 3, hanzi: '日', pinyin: 'rì', meaning: 'sunshine' },
+      { id: 4, hanzi: '月', pinyin: 'yuè', meaning: 'moon' },
+      { id: 5, hanzi: '水', pinyin: 'shuǐ', meaning: 'water' },
+      { id: 6, hanzi: '火', pinyin: 'huǒ', meaning: 'fire' },
+    ];
+
+    for (let t = 0; t < 100; t++) {
+      const options = buildOptions(pool[0], [pool]);
+
+      expect(options).toHaveLength(4);
+      expect(findConflicts(options)).toEqual([]);
+    }
+  });
+
+  test('dar havuzda eskisi gibi mümkün olan tüm şıklar toplanır', () => {
+    const pool = [
+      { id: 1, hanzi: '一', pinyin: 'yī', meaning: 'one' },
+      { id: 2, hanzi: '二', pinyin: 'èr', meaning: 'two' },
+      { id: 3, hanzi: '三', pinyin: 'sān', meaning: 'three' },
+    ];
+
+    const options = buildOptions(pool[1], [pool]); // 1 doğru + yalnızca 2 aday var
+
+    expect(options).toHaveLength(3);
+    expect(findConflicts(options)).toEqual([]);
+    expect(options.some((w) => w.id === 2)).toBe(true);
+  });
+
+  test('aynı havuz iki kez verilse de şıklar tekrar etmez', () => {
+    const options = buildOptions(FIXTURE[0], [FIXTURE, FIXTURE]);
+    const ids = options.map((w) => w.id);
+
+    expect(options).toHaveLength(4);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
 });
