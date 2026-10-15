@@ -128,7 +128,7 @@ export default function FloatingBackground() {
   const particles = Array.from({ length: PARTICLE_COUNT });
 
   return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {particles.map((_, index) => (
         <FloatingParticle key={index} />
       ))}
