@@ -13,6 +13,32 @@ const createEmptyCategories = () =>
     return acc;
   }, {});
 
+// --- Ustalık / sorun kuralları (Faz 3.6b) -------------------------------------
+//
+// Bu kurallar eskiden StatsModal içinde yereldi. Özel deste kelimeleri de
+// istatistiğe girdiği için tek kaynağa taşındı: kural id'nin türüne bakmaz,
+// HSK id'leri (sayı) ve özel deste id'leri ('custom_...' metni) aynı `wordStats`
+// tablosunda aynı şekilde tutulur.
+export const MASTERY_STREAK = 3;
+
+// Kelime, TÜM kategorilerde 3'lük doğru seriye ulaştıysa ustalaşılmıştır.
+export const isMastered = (wordStat) =>
+  CATEGORIES.every((category) => (wordStat?.categories?.[category]?.streak || 0) >= MASTERY_STREAK);
+
+// HERHANGİ bir kategoride 3'lük yanlış seri varsa kelime sorunludur.
+export const isProblematic = (wordStat) =>
+  CATEGORIES.some(
+    (category) => (wordStat?.categories?.[category]?.wrongStreak || 0) >= MASTERY_STREAK
+  );
+
+// Bir havuzun (HSK seviyesi ya da özel deste) ustalık oranı.
+export const getMastery = (pool, wordStats = {}) => {
+  if (!pool || pool.length === 0) return { count: 0, percent: 0 };
+
+  const count = pool.filter((word) => isMastered(wordStats[word.id])).length;
+  return { count, percent: Math.round((count / pool.length) * 100) };
+};
+
 // Not: gün anahtarları artık yerel saatle ve tek yerden (services/dateUtils.js) üretilir.
 
 // 1. Tüm İstatistik Verisini Getir

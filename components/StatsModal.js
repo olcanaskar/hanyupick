@@ -9,10 +9,10 @@ import {
   Pressable,
   Animated,
 } from 'react-native';
-import { getStats } from '../services/statsManager';
+import { getStats, getMastery, isProblematic } from '../services/statsManager';
+import { getCustomDecks } from '../services/importService';
 import { getDateKey, addDays } from '../services/dateUtils';
 import { ALL_WORDS, LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
-import { CATEGORIES } from '../services/modes';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -26,6 +26,9 @@ const LEVEL_COLORS = {
   hsk5: '#7C3AED',
 };
 
+// Özel desteler için tek renk: HSK seviye renklerinin hiçbiriyle çakışmaz.
+const CUSTOM_DECK_COLOR = '#0F766E';
+
 const HEAT_COLORS = ['#F1F5F9', '#FEF3C7', '#FCD34D', '#D97706', '#92400E'];
 
 const getHeatColor = (total) => {
@@ -38,6 +41,7 @@ const getHeatColor = (total) => {
 
 export default function StatsModal({ visible, onClose }) {
   const [statsData, setStatsData] = useState(null);
+  const [customDecks, setCustomDecks] = useState({});
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedMonthDate, setSelectedMonthDate] = useState(new Date());
 
@@ -54,8 +58,12 @@ export default function StatsModal({ visible, onClose }) {
       setSelectedDay(null);
       setSelectedMonthDate(new Date());
 
-      getStats().then((data) => {
+      // İstatistiklerin yanında özel desteler de yüklenir: özel kelimelerin
+      // `wordStats` kayıtları zaten vardı (QuizScreen id olarak 'custom_...' yazar),
+      // eksik olan yalnızca gösterimdi (Faz 3.6b).
+      Promise.all([getStats(), getCustomDecks()]).then(([data, decks]) => {
         setStatsData(data);
+        setCustomDecks(decks);
         Animated.parallel([
           Animated.spring(scaleAnim, {
             toValue: 1,
@@ -115,30 +123,8 @@ export default function StatsModal({ visible, onClose }) {
 
   const { wordStats = {}, dailyStats = {}, streak = { current: 0 } } = statsData;
 
-  // Kategoriler artık modes.js'ten gelir (Faz 3.3): eskiden üç kategori anahtarı
-  // burada elle yazılıyordu, yeni bir kategori eklenirse sessizce atlanırdı.
-  const MASTERY_STREAK = 3;
-
-  const isMastered = (stat) =>
-    CATEGORIES.every(
-      (category) => (stat?.categories?.[category]?.streak || 0) >= MASTERY_STREAK
-    );
-
-  const hasProblem = (stat) =>
-    CATEGORIES.some(
-      (category) => (stat?.categories?.[category]?.wrongStreak || 0) >= MASTERY_STREAK
-    );
-
-  // 1. Mastery Hesaplama
-  const calculateMastery = (pool) => {
-    if (!pool.length) return { count: 0, percent: 0 };
-    const masteredCount = pool.filter((w) => isMastered(wordStats[w.id])).length;
-    return {
-      count: masteredCount,
-      percent: Math.round((masteredCount / pool.length) * 100),
-    };
-  };
-
+  // 1. Mastery Hesaplama — kural tek kaynaktan (services/statsManager.js) gelir,
+  //    HSK seviyeleri ve özel desteler aynı kurala tabidir (Faz 3.6b).
   const masteryRows = LEVELS.map((level) => {
     const pool = LEVEL_POOLS[level] || [];
     return {
@@ -146,12 +132,55 @@ export default function StatsModal({ visible, onClose }) {
       name: LEVEL_LABELS[level],
       total: pool.length,
       color: LEVEL_COLORS[level],
-      stat: calculateMastery(pool),
+      stat: getMastery(pool, wordStats),
     };
   });
 
-  // 2. Problematic Words
-  const problematicWords = ALL_WORDS.filter((w) => hasProblem(wordStats[w.id]));
+  // Özel desteler: deste başına bir ustalık satırı (deste yoksa bölüm hiç çizilmez).
+  const customDeckNames = Object.keys(customDecks);
+
+  const customMasteryRows = customDeckNames.map((name) => {
+    const pool = customDecks[name] || [];
+    return {
+      id: `deck_${name}`,
+      name,
+      total: pool.length,
+      color: CUSTOM_DECK_COLOR,
+      stat: getMastery(pool, wordStats),
+    };
+  });
+
+  // 2. Problematic Words — HSK sözlüğü ve özel destelerdeki kelimeler birlikte;
+  //    ikisi de aynı `wordStats` tablosundan okunur.
+  const customWords = customDeckNames.reduce(
+    (acc, name) => acc.concat(customDecks[name] || []),
+    []
+  );
+  const problematicWords = [...ALL_WORDS, ...customWords].filter((w) =>
+    isProblematic(wordStats[w.id])
+  );
+
+  // Ustalık satırı iki bölümde de (HSK + özel deste) aynı görünsün diye tek yerde üretilir.
+  const renderMasteryRow = (row) => (
+    <View key={row.id} style={styles.masteryRow}>
+      <View style={styles.masteryLabels}>
+        <Text style={styles.masteryName} numberOfLines={1}>
+          {row.name}
+        </Text>
+        <Text style={styles.masteryCount}>
+          {row.stat.count}/{row.total} ({row.stat.percent}%)
+        </Text>
+      </View>
+      <View style={styles.progressBarBg}>
+        <View
+          style={[
+            styles.progressBarFill,
+            { width: `${row.stat.percent}%`, backgroundColor: row.color },
+          ]}
+        />
+      </View>
+    </View>
+  );
 
   // 3. Son 7 Günlük Aktivite Listesi
   const recentDays = Array.from({ length: 7 }).map((_, i) => {
@@ -279,28 +308,21 @@ export default function StatsModal({ visible, onClose }) {
               </View>
             </View>
 
-            {/* Mastery Oranları */}
+            {/* Mastery Oranları (HSK seviyeleri) */}
             <Text style={styles.sectionHeader}>MASTERY LEVEL (3 STREAKS IN ALL MODES)</Text>
             <View style={styles.masteryList}>
-              {masteryRows.map((lvl) => (
-                <View key={lvl.id} style={styles.masteryRow}>
-                  <View style={styles.masteryLabels}>
-                    <Text style={styles.masteryName}>{lvl.name}</Text>
-                    <Text style={styles.masteryCount}>
-                      {lvl.stat.count}/{lvl.total} ({lvl.stat.percent}%)
-                    </Text>
-                  </View>
-                  <View style={styles.progressBarBg}>
-                    <View
-                      style={[
-                        styles.progressBarFill,
-                        { width: `${lvl.stat.percent}%`, backgroundColor: lvl.color },
-                      ]}
-                    />
-                  </View>
-                </View>
-              ))}
+              {masteryRows.map(renderMasteryRow)}
             </View>
+
+            {/* Özel Deste Ustalık Oranları (deste yoksa bölüm hiç çizilmez) */}
+            {customMasteryRows.length > 0 && (
+              <>
+                <Text style={styles.sectionHeader}>CUSTOM DECKS (3 STREAKS IN ALL MODES)</Text>
+                <View style={styles.masteryList}>
+                  {customMasteryRows.map(renderMasteryRow)}
+                </View>
+              </>
+            )}
 
             {/* 7 Günlük Aktivite Takvimi */}
             <Text style={styles.sectionHeader}>LAST 7 DAYS ACTIVITY</Text>
@@ -603,6 +625,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   masteryName: {
+    // `flex: 1` + `numberOfLines={1}`: uzun özel deste adları sayaç metnini
+    // ekranın dışına itmesin, ad kısalsın (üç nokta ile).
+    flex: 1,
+    marginRight: 8,
     fontSize: 14,
     fontWeight: '700',
     color: '#374151',

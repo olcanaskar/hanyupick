@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getStats, recordAnswer } from '../services/statsManager';
+import { getStats, recordAnswer, getMastery, isMastered, isProblematic } from '../services/statsManager';
 import { getDateKey, addDays } from '../services/dateUtils';
 
 const STATS_KEY = '@hsk_user_stats';
@@ -173,5 +173,79 @@ describe('recordAnswer — yerel gün anahtarı (Faz 2.2)', () => {
 
     const data = await readStats();
     expect(Object.keys(data.dailyStats)).toEqual(['2026-03-11']);
+  });
+});
+
+// Faz 3.6b: ustalık kuralları StatsModal'dan servise taşındı; özel deste kelimeleri
+// (metin id'ler) de aynı kurala tabidir.
+describe('ustalık / sorun kuralları (Faz 3.6b)', () => {
+  const mastered = {
+    categories: {
+      hanzi_pinyin: { streak: 3, wrongStreak: 0 },
+      hanzi_meaning: { streak: 3, wrongStreak: 0 },
+      pinyin_meaning: { streak: 3, wrongStreak: 0 },
+    },
+  };
+
+  describe('isMastered', () => {
+    test('üç kategoride de 3 doğru seri gerekir', () => {
+      expect(isMastered(mastered)).toBe(true);
+    });
+
+    test('tek kategori geride kalsa bile ustalaşılmış sayılmaz', () => {
+      expect(
+        isMastered({
+          categories: {
+            hanzi_pinyin: { streak: 3 },
+            hanzi_meaning: { streak: 3 },
+            pinyin_meaning: { streak: 2 },
+          },
+        })
+      ).toBe(false);
+    });
+
+    test('kaydı olmayan kelime ya da eksik kategori ustalık saymaz', () => {
+      expect(isMastered(undefined)).toBe(false);
+      expect(isMastered({})).toBe(false);
+      expect(isMastered({ categories: { hanzi_pinyin: { streak: 9 } } })).toBe(false);
+    });
+  });
+
+  describe('isProblematic', () => {
+    test('tek kategoride 3 yanlış seri yeterlidir', () => {
+      expect(
+        isProblematic({ categories: { hanzi_pinyin: { wrongStreak: 3 } } })
+      ).toBe(true);
+    });
+
+    test('3 yanlış serinin altında sorunlu sayılmaz', () => {
+      expect(
+        isProblematic({ categories: { hanzi_pinyin: { wrongStreak: 2 } } })
+      ).toBe(false);
+      expect(isProblematic(undefined)).toBe(false);
+    });
+  });
+
+  describe('getMastery', () => {
+    test('boş havuzda 0/0 döner (sıfıra bölme yok)', () => {
+      expect(getMastery([], {})).toEqual({ count: 0, percent: 0 });
+      expect(getMastery(undefined, {})).toEqual({ count: 0, percent: 0 });
+    });
+
+    test('yüzde yuvarlanır ve istatistiği olmayan kelimeler sayılmaz', () => {
+      const pool = [{ id: 1 }, { id: 2 }, { id: 3 }];
+
+      expect(getMastery(pool, { 1: mastered, 2: mastered })).toEqual({ count: 2, percent: 67 });
+      expect(getMastery(pool, {})).toEqual({ count: 0, percent: 0 });
+    });
+
+    test('özel deste kelimeleri metin id ile aynı şekilde çalışır', () => {
+      const pool = [
+        { id: 'custom_Ders_0', hanzi: '爱' },
+        { id: 'custom_Ders_1', hanzi: '八' },
+      ];
+
+      expect(getMastery(pool, { 'custom_Ders_0': mastered })).toEqual({ count: 1, percent: 50 });
+    });
   });
 });
