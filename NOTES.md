@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 1 tamamlandı, Faz 2'ye başlanmadı.
+Son güncelleme: Faz 2.1 (istatistik yarış koşulu) tamamlandı. Sıradaki: Faz 2.2 (UTC/yerel tarih).
 
 ---
 
@@ -51,12 +51,14 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 ## 3. Git durumu
 
 ```
-e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count   ← HEAD, tag: known-good
+bc97841  fix(stats): serialize stat writes to prevent lost updates; add ref-based double-tap guard   ← HEAD
+f51ebe9  docs: add NOTES.md (phase plan and handoff notes)
+e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count   ← tag: known-good
 2a7e4e4  fix: P0 quiz bugs (hsk5 examples export, mixed hsk5 pool, review mode lock, missing hint in meaning modes)
 4191644  chore: baseline commit (pre-fix snapshot)
 ```
 
-- **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl.
+- **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl (şu an `e6c1d18`; Faz 2 doğrulanınca ileri taşınabilir).
 - Her şey ters giderse dönüş: `git reset --hard known-good`
 - Tek commit geri alma: `git revert <hash>`
 - Kaydedilmemiş dosya geri alma: `git restore <dosya>`
@@ -88,10 +90,13 @@ e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mo
 
 Her maddeyi **ayrı commit** olarak yap.
 
-### 2.1 İstatistik yarış koşulu (P1)
-- **Sorun:** `services/statsManager.js` her cevapta tüm `@hsk_user_stats`'ı okuyup yeniden yazar; `QuizScreen` çağrısı `await` etmez → hızlı ardışık cevaplarda kayıp.
-- **Çözüm:** yazmaları sıraya alan bir kuyruk/mutex (basit) veya in-memory store + periyodik flush (sağlam).
-- **Doğrulama:** hızlı 20 cevap sonrası `dailyStats` toplamı = 20.
+### 2.1 ✅ TAMAMLANDI — İstatistik yarış koşulu (P1)
+- **Sorun:** `services/statsManager.js` her cevapta tüm `@hsk_user_stats`'ı okuyup yeniden yazar; `QuizScreen` çağrısı `await` etmez → hızlı ardışık cevaplarda kayıp (lost update).
+- **Yapıldı:**
+  - `recordAnswer`, yazmaları sıralayan bir **kuyruk** üzerinden çalışıyor (`statsWriteQueue` + `performRecordAnswer`). Her yazma bir önceki bitince başlar.
+  - `QuizScreen`: çift dokunmayı engelleyen **ref bayrağı** (`isAnsweredRef`) + `setAnswered` yardımcısı eklendi (React state gecikmesinden bağımsız).
+- **Doğrulama:** Mock'lu test — kuyruklu sürüm 20/20 cevabı kaydetti; kuyruksuz (eski) hâl taklidi 20 cevaptan yalnızca 1'ini tuttu.
+- **Commit:** `bc97841`
 
 ### 2.2 UTC / yerel tarih tutarsızlığı (P1)
 - **Sorun:** `statsManager` günlük/streak anahtarlarını `toISOString()` (**UTC**) üretir; `StatsModal` "bugün"ü **yerel** saatle üretir ve 7 günlük listede UTC tarih + yerel hafta günü karışır.
