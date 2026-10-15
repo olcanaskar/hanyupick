@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2.1 tamamlandı **ve** `jest`/`jest-expo` test altyapısı kuruldu (28 test yeşil). Sıradaki: Faz 2.2 (UTC/yerel tarih).
+Son güncelleme: Faz 2.2 (UTC→yerel tarih) tamamlandı; **39 test yeşil**. Sıradaki: Faz 2.3 (`importService` regex + `defaultName`).
 
 ---
 
@@ -55,6 +55,8 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 ## 3. Git durumu
 
 ```
+c2de580  fix(date): use local date keys for daily stats and calendar
+6ea6c87  docs: move known-good tag to the verified test-covered state
 610c768  docs: record test setup and green suite in NOTES.md                          ← tag: known-good
 163b3f9  test: add unit tests for stats, import and example services
 cf46bbb  chore(test): add jest-expo setup with AsyncStorage mock
@@ -115,10 +117,15 @@ Her maddeyi **ayrı commit** olarak yap.
 - **Doğrulama:** Mock'lu test — kuyruklu sürüm 20/20 cevabı kaydetti; kuyruksuz (eski) hâl taklidi 20 cevaptan yalnızca 1'ini tuttu.
 - **Commit:** `bc97841`
 
-### 2.2 UTC / yerel tarih tutarsızlığı (P1)
-- **Sorun:** `statsManager` günlük/streak anahtarlarını `toISOString()` (**UTC**) üretir; `StatsModal` "bugün"ü **yerel** saatle üretir ve 7 günlük listede UTC tarih + yerel hafta günü karışır.
-- **Çözüm:** tek bir `getDateKey(date)` yardımcı fonksiyonu (yerel, `YYYY-MM-DD`) ve her iki dosyada onu kullan.
-- **Doğrulama:** gece 00:00–01:00 arası cevap → takvim ve streak tutarlı.
+### 2.2 ✅ TAMAMLANDI — UTC / yerel tarih tutarsızlığı (P1)
+- **Sorun:** `statsManager` günlük/streak anahtarlarını `toISOString()` (**UTC**) üretirken `StatsModal` "bugün"ü ve takvimi **yerel** kuruyordu → gece yarısı civarı verilen cevap yanlış güne düşüyor, takvimle uyuşmuyordu.
+- **Yapıldı:**
+  - Yeni `services/dateUtils.js`: `getDateKey(date)` (yerel `YYYY-MM-DD`) + `addDays(date, n)` (takvim günü; yaz saati/DST güvenli, girdiyi değiştirmez).
+  - `services/statsManager.js`: `today` ve `yesterday` artık yerel ve bu yardımcıdan geliyor.
+  - `components/StatsModal.js`: 7 günlük şerit ve aylık takvim grid'i aynı yerel anahtarları kullanıyor (hafta günü etiketi de aynı `d`'den).
+- **Doğrulama:** `__tests__/dateUtils.test.js` (10 test) + `statsManager.test.js`'e eklenen **gece yarısı regresyon testi** (sahte saat 11 Mart 00:30 → anahtar `2026-03-11`; eski UTC kod `2026-03-10` yazardı). Suite: **39 test yeşil**.
+- **Not (veri göçü):** Anahtarlar UTC'den yerele geçtiği için eski kayıtlarda akşam saatlerine ait birkaç gün anahtarı kayabilir. Küçük ve tek seferlik; ayrı bir göç kodu eklenmedi.
+- **Commit:** `c2de580`
 
 ### 2.3 `importService` regex + default isim (P1)
 - **Sorun:** `/\.[^/.]+\$/` bozuk → uzantı hiç kırpılmıyor; üretilen `defaultName` `CustomDeckModal` tarafından kullanılmıyor.
