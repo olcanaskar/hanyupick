@@ -51,12 +51,13 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
   - Tek seferlik atlama: `SKIP_AUTOPUSH=1 git commit -m "..."` · kalıcı kaldırma: `rm .git/hooks/post-commit`.
   - **Elle `git push` hâlâ gerekir:** (1) `amend` / `rebase` / geçmiş yeniden yazımı → hook çalışmaz *ve* `main` için force gerekir, (2) çevrimdışı kalınan commit'ler (internet gelince `git push origin main`), (3) hook kaldırılmışsa.
   - Doğrulandı (2026-10-15): commit sonrası uzak gerçekten güncellendi (`origin/main` = yerel); `known-good` hem ileri hem geri taşınıp senkronlandı; `SKIP_AUTOPUSH=1` hook'u sessizce atlıyor.
-- **Yerel arşiv yedek:** `C:\Projects\App\` altında zaman damgalı `ChineseQuizApp-backup-*.tar.gz` (en yenisini kullan). İçerik: `.git` + `known-good` dahil; `node_modules`/`android`/`.expo` hariç. Doğrulama: açıp `git log -1`, `git tag`, `git status` → commit/etiket HEAD ile aynı ve çalışma alanı temiz olmalı.
+- **Yerel arşiv yedek:** `C:\Projects\App\` altında zaman damgalı `ChineseQuizApp-backup-*.tar.gz` (en yenisini kullan; **kural: tek arşiv tutulur, yeni alınınca eskisi silinir**). İçerik: `.git` + `known-good` dahil; `node_modules`/`android`/`.expo` hariç. Doğrulama: açıp `git log -1`, `git tag`, `git status` → commit/etiket HEAD ile aynı ve çalışma alanı temiz olmalı.
   - Yeni yedek almak için:
     `tar -czf C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz -C C:\Projects\App --exclude=ChineseQuizApp/node_modules --exclude=ChineseQuizApp/android --exclude=ChineseQuizApp/.expo ChineseQuizApp`
   - **Uyarı:** `C:\Projects\App\backup\` klasöründeki eski elle kopya **bozuk ve eksik** (`data\hsk5.json` 0 bayt, `hsk5_examples.js` yok). Yedek sanılıp güvenilmemeli.
 - `android/` ve `ios/` `.gitignore`'da (Expo prebuild çıktısı; elle düzenleme).
 - **`tsconfig.json` ve ESLint yapılandırması YOK** → `AGENTS.md`'nin istediği `tsc` / `expo lint` çalışmaz (bkz. Faz 3.4).
+- **Bağımlılıklar SDK ile tam uyumlu** (`npx expo install --fix`, 2026-10-15): `expo ~57.0.29`, `expo-notifications ~57.0.23`. Artık `npx expo-doctor` → **21/21 temiz**, `npx expo install --check` → "Dependencies are up to date". Yükseltme sonrası doğrulama: `npm test` 70/70 + `npx expo export --platform android` hatasız.
 - **Test altyapısı VAR** (Faz 2.1 sonrası eklendi): `jest` + `jest-expo`.
   - Komut: `npm test` (tek seferlik) veya `npm run test:watch`.
   - `jest.setup.js` → AsyncStorage'ın resmi jest mock'unu bağlar (`jest.mock(...)`).
