@@ -2,7 +2,7 @@
 
 An Expo/React Native app (**SDK 57**) for studying HSK 1–5 vocabulary: a fixed library of 2,500 words, 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, and a stats screen.
 
-Plain **JavaScript** — JSX lives in `.js` files, there is no TypeScript. Navigation is **React Navigation (Stack)**, not Expo Router.
+Plain **JavaScript** — JSX lives in `.js` files; there is no TypeScript source, but `tsconfig.json` type-checks the JS itself (`checkJs`). Navigation is **React Navigation (Stack)**, not Expo Router.
 
 ## Expo has changed — do not trust your training data
 
@@ -20,13 +20,14 @@ This project uses npm (`package-lock.json`; there is no `bun.lock`) — use `npx
 npx expo install <package>          # ALWAYS use instead of npm/yarn/pnpm add — resolves SDK-compatible versions
 npm run lint                        # ESLint over the whole project (flat config) — 0 errors expected
 npm test                            # jest (jest-expo preset) — 98 tests, 7 suites
+npm run tsc                         # tsc --noEmit over the JS (checkJs) — 0 errors expected
 npx expo start --go --clear         # dev server for Expo Go (no native build needed)
 npx expo-doctor                     # dependency/config diagnosis — 21/21 clean (needs git on PATH)
 npx expo install --fix              # fix incompatible package versions
 npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored) — delete afterwards
 ```
 
-`npm test` and `npm run lint` must both pass before a task is declared done.
+`npm test`, `npm run lint` and `npm run tsc` must all pass before a task is declared done.
 
 > Do **not** use `npx expo lint` here: it only lints `/src`, `/app` and `/components`, while this project keeps its screens in `screens/` and its logic in `services/`, so it silently skips most of the code. Use `npm run lint` (which runs `eslint .`).
 
@@ -40,6 +41,7 @@ npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored
 | `services/` | all logic: `wordRepository`, `reviewPool`, `quizBuilder`, `statsManager`, `importService`, `exampleService`, `dateUtils` |
 | `data/` | `hsk1..5.json` (2,500 words, ids 1–2500) + `examples/hsk*_examples.js` |
 | `__tests__/` | jest tests (services only) |
+| `tsconfig.json`, `eslint.config.js` | the `npm run tsc` and `npm run lint` configs |
 
 Single sources of truth — never duplicate these elsewhere:
 
@@ -55,6 +57,14 @@ AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`.
 - Tests cover **`services/` only**. Screens and components are never imported by a test, so a syntax error there still leaves `npm test` green. Before declaring a change to a `.js`/JSX file done, confirm it parses:
   `node -e "require('@babel/parser').parse(require('fs').readFileSync('screens/QuizScreen.js','utf8'),{sourceType:'module',plugins:['jsx']})"`
 - UI, touch and animation behaviour still has to be checked on the device, in Expo Go.
+
+## Type checking
+
+- `npm run tsc` runs `tsc --noEmit`. `tsconfig.json` extends `expo/tsconfig.base` and sets `checkJs: true`, so the `.js` files themselves are checked — not just syntax.
+- It is deliberately **lenient**: `strict` and `noImplicitAny` are off. On a JS codebase TS 6 turns those on by default and demands JSDoc annotations on every parameter (measured: 161 extra `implicit any` errors on `services/` alone). `types: ["jest"]` is required, otherwise jest globals are unknown in `__tests__/` and `jest.setup.js`.
+- `allowJs` and `noEmit` come from `expo/tsconfig.base` — `tsc` **never** writes `.js` output over the sources. Regenerate with `npx expo customize tsconfig.json`.
+- It catches real API misuse (wrong React/RN calls, mistyped prop contracts — it found real bugs the day it was added). It does **not** cover runtime/device behaviour, JSON data shape, or anything not reachable from `include`.
+- If you add a global type package, add it to `types` too.
 
 ## Navigation
 
@@ -80,7 +90,7 @@ Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submi
 ## Workflow
 
 - Work directly on `main`; **one commit per fix**, with a descriptive message.
-- The `known-good` tag marks the last verified state. Advance it only once `npm test` is green and the user has confirmed the device check; roll back with `git reset --hard known-good`.
+- The `known-good` tag marks the last verified state. Advance it only once `npm test` / `npm run lint` / `npm run tsc` are green and the user has confirmed the device check; roll back with `git reset --hard known-good`.
 - `.git/hooks/post-commit` (local only) pushes `main` and the `known-good` tag after every commit.
 - `NOTES.md` is the handoff document — read it first, update it when a phase lands.
 - Keep exactly one `ChineseQuizApp-backup-*.tar.gz` in `C:\Projects\App`: delete the older archive when taking a new one.
