@@ -19,7 +19,7 @@ This project uses npm (`package-lock.json`; there is no `bun.lock`) — use `npx
 ```bash
 npx expo install <package>          # ALWAYS use instead of npm/yarn/pnpm add — resolves SDK-compatible versions
 npm run lint                        # ESLint over the whole project (flat config) — 0 errors expected
-npm test                            # jest (jest-expo preset) — 130 tests, 8 suites
+npm test                            # jest (jest-expo preset) — 137 tests, 8 suites
 npm run tsc                         # tsc --noEmit over the JS (checkJs) — 0 errors expected
 npx expo start --go --clear         # dev server for Expo Go (no native build needed)
 npx expo-doctor                     # dependency/config diagnosis — 21/21 clean (needs git on PATH)
