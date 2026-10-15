@@ -308,21 +308,23 @@ export default function StatsModal({ visible, onClose }) {
               </View>
             </View>
 
-            {/* Mastery Oranları (HSK seviyeleri) */}
+            {/* Mastery Oranları: HSK seviyeleri ve (varsa) özel desteler AYNI bölümde.
+                Özel desteler ayrı bir bölüm başlığı değil, bölüm içi bir alt grup:
+                satırların arasına ince bir ayraç konur (bkz. masteryDivider). */}
             <Text style={styles.sectionHeader}>MASTERY LEVEL (3 STREAKS IN ALL MODES)</Text>
             <View style={styles.masteryList}>
               {masteryRows.map(renderMasteryRow)}
-            </View>
 
-            {/* Özel Deste Ustalık Oranları (deste yoksa bölüm hiç çizilmez) */}
-            {customMasteryRows.length > 0 && (
-              <>
-                <Text style={styles.sectionHeader}>CUSTOM DECKS (3 STREAKS IN ALL MODES)</Text>
-                <View style={styles.masteryList}>
-                  {customMasteryRows.map(renderMasteryRow)}
+              {customMasteryRows.length > 0 && (
+                <View style={styles.masteryDivider}>
+                  <View style={styles.masteryDividerLine} />
+                  <Text style={styles.masteryDividerLabel}>CUSTOM DECKS</Text>
+                  <View style={styles.masteryDividerLine} />
                 </View>
-              </>
-            )}
+              )}
+
+              {customMasteryRows.map(renderMasteryRow)}
+            </View>
 
             {/* 7 Günlük Aktivite Takvimi */}
             <Text style={styles.sectionHeader}>LAST 7 DAYS ACTIVITY</Text>
@@ -613,6 +615,25 @@ const styles = StyleSheet.create({
   masteryList: {
     gap: 10,
     marginBottom: 18,
+  },
+  // Bölüm içi alt grup ayracı: özel desteler "MASTERY LEVEL" bölümünün parçası gibi
+  // görünsün diye ayrı bir sectionHeader yerine satır arası ince bir ayraç kullanılır.
+  masteryDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 2,
+  },
+  masteryDividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E5E7EB',
+  },
+  masteryDividerLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#9CA3AF',
+    letterSpacing: 1,
   },
   masteryRow: {
     backgroundColor: '#F9FAFB',
