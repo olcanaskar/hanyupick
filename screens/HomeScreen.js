@@ -16,15 +16,27 @@ import StatsModal from '../components/StatsModal';
 import CustomDeckModal from '../components/CustomDeckModal';
 import FloatingBackground from '../components/FloatingBackground';
 import { getCustomDecks } from '../services/importService';
+import { LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+// Seviyeye özgü sunum bilgileri (Çince ad + zorluk seviyesi).
+// Kelime sayısı havuzdan türetilir → veri değişince metin kendiliğinden güncel kalır.
+const LEVEL_PRESENTATION = {
+  hsk1: { hanzi: '一级', difficulty: 'Beginner' },
+  hsk2: { hanzi: '二级', difficulty: 'Elementary' },
+  hsk3: { hanzi: '三级', difficulty: 'Intermediate' },
+  hsk4: { hanzi: '四级', difficulty: 'Upper-Intermediate' },
+  hsk5: { hanzi: '五级', difficulty: 'Advanced' },
+};
+
 const BASE_LEVELS = [
-  { id: 'hsk1', label: 'HSK 1', hanzi: '一级', desc: '150 words · Beginner' },
-  { id: 'hsk2', label: 'HSK 2', hanzi: '二级', desc: '150 words · Elementary' },
-  { id: 'hsk3', label: 'HSK 3', hanzi: '三级', desc: '300 words · Intermediate' },
-  { id: 'hsk4', label: 'HSK 4', hanzi: '四级', desc: '600 words · Upper-Intermediate' },
-  { id: 'hsk5', label: 'HSK 5', hanzi: '五级', desc: '1300 words · Advanced' },
+  ...LEVELS.map((level) => ({
+    id: level,
+    label: LEVEL_LABELS[level],
+    hanzi: LEVEL_PRESENTATION[level].hanzi,
+    desc: `${(LEVEL_POOLS[level] || []).length} words · ${LEVEL_PRESENTATION[level].difficulty}`,
+  })),
   { id: 'mixed', label: 'Mixed', hanzi: '综合', desc: 'All levels combined' },
 ];
 

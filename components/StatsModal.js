@@ -11,14 +11,19 @@ import {
 } from 'react-native';
 import { getStats } from '../services/statsManager';
 import { getDateKey, addDays } from '../services/dateUtils';
-import hsk1Data from '../data/hsk1.json';
-import hsk2Data from '../data/hsk2.json';
-import hsk3Data from '../data/hsk3.json';
-import hsk4Data from '../data/hsk4.json';
-import hsk5Data from '../data/hsk5.json';
+import { ALL_WORDS, LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 
-const ALL_WORDS = [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data, ...hsk5Data];
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+// Seviye renkleri yalnızca bu ekrana özgü sunum bilgisidir; seviye listesi
+// wordRepository'den gelir.
+const LEVEL_COLORS = {
+  hsk1: '#DC2626',
+  hsk2: '#EA580C',
+  hsk3: '#D97706',
+  hsk4: '#2563EB',
+  hsk5: '#7C3AED',
+};
 
 const HEAT_COLORS = ['#F1F5F9', '#FEF3C7', '#FCD34D', '#D97706', '#92400E'];
 
@@ -128,11 +133,16 @@ export default function StatsModal({ visible, onClose }) {
     };
   };
 
-  const hsk1Mastery = calculateMastery(hsk1Data);
-  const hsk2Mastery = calculateMastery(hsk2Data);
-  const hsk3Mastery = calculateMastery(hsk3Data);
-  const hsk4Mastery = calculateMastery(hsk4Data);
-  const hsk5Mastery = calculateMastery(hsk5Data);
+  const masteryRows = LEVELS.map((level) => {
+    const pool = LEVEL_POOLS[level] || [];
+    return {
+      id: level,
+      name: LEVEL_LABELS[level],
+      total: pool.length,
+      color: LEVEL_COLORS[level],
+      stat: calculateMastery(pool),
+    };
+  });
 
   // 2. Problematic Words
   const problematicWords = ALL_WORDS.filter((w) => {
@@ -275,14 +285,8 @@ export default function StatsModal({ visible, onClose }) {
             {/* Mastery Oranları */}
             <Text style={styles.sectionHeader}>MASTERY LEVEL (3 STREAKS IN ALL MODES)</Text>
             <View style={styles.masteryList}>
-              {[
-                { name: 'HSK 1', stat: hsk1Mastery, total: hsk1Data.length, color: '#DC2626' },
-                { name: 'HSK 2', stat: hsk2Mastery, total: hsk2Data.length, color: '#EA580C' },
-                { name: 'HSK 3', stat: hsk3Mastery, total: hsk3Data.length, color: '#D97706' },
-                { name: 'HSK 4', stat: hsk4Mastery, total: hsk4Data.length, color: '#2563EB' },
-                { name: 'HSK 5', stat: hsk5Mastery, total: hsk5Data.length, color: '#7C3AED' },
-              ].map((lvl) => (
-                <View key={lvl.name} style={styles.masteryRow}>
+              {masteryRows.map((lvl) => (
+                <View key={lvl.id} style={styles.masteryRow}>
                   <View style={styles.masteryLabels}>
                     <Text style={styles.masteryName}>{lvl.name}</Text>
                     <Text style={styles.masteryCount}>

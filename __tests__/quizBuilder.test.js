@@ -1,18 +1,8 @@
 import { buildOptions, shuffle } from '../services/quizBuilder';
-import hsk1Data from '../data/hsk1.json';
-import hsk2Data from '../data/hsk2.json';
-import hsk3Data from '../data/hsk3.json';
-import hsk4Data from '../data/hsk4.json';
-import hsk5Data from '../data/hsk5.json';
+import { ALL_WORDS, LEVEL_POOLS } from '../services/wordRepository';
 
-const LEVEL_POOLS = {
-  hsk1: hsk1Data,
-  hsk2: hsk2Data,
-  hsk3: hsk3Data,
-  hsk4: hsk4Data,
-  hsk5: hsk5Data,
-};
-const ALL_WORDS = [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data, ...hsk5Data];
+// Havuzlar artık tek kaynaktan (Faz 3.1) — test kopya tutmaz.
+const hsk1Data = LEVEL_POOLS.hsk1;
 const FIELDS = ['hanzi', 'pinyin', 'meaning'];
 
 // Şıklar arasında hanzi/pinyin/anlam çakışması var mı? Varsa açıklamasını döndürür.

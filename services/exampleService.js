@@ -5,6 +5,7 @@ import hsk2Examples from '../data/examples/hsk2_examples';
 import hsk3Examples from '../data/examples/hsk3_examples';
 import hsk4Examples from '../data/examples/hsk4_examples';
 import hsk5Examples from '../data/examples/hsk5_examples';
+import { getLevelFromWordId } from './wordRepository';
 
 const EXAMPLES_MAP = {
   hsk1: hsk1Examples,
@@ -17,14 +18,9 @@ const EXAMPLES_MAP = {
 export const getExampleByWordId = (level, wordId) => {
   if (!wordId) return null;
 
-  let targetLevel = level;
-  if (level === 'mixed' || level === 'review') {
-    if (wordId <= 150) targetLevel = 'hsk1';
-    else if (wordId <= 300) targetLevel = 'hsk2';
-    else if (wordId <= 600) targetLevel = 'hsk3';
-    else if (wordId <= 1200) targetLevel = 'hsk4';
-    else targetLevel = 'hsk5';
-  }
+  // "mixed"/"review" için seviye, id aralığından çözülür (tek kaynak: Faz 3.1).
+  const targetLevel =
+    level === 'mixed' || level === 'review' ? getLevelFromWordId(wordId) : level;
 
   const currentLevelExamples = EXAMPLES_MAP[targetLevel?.toLowerCase()];
   if (!currentLevelExamples) return null;

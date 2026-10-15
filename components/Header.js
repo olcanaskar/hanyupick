@@ -12,13 +12,10 @@ import {
   Pressable,
 } from 'react-native';
 import { getCustomDecks } from '../services/importService';
+import { LEVELS, LEVEL_LABELS } from '../services/wordRepository';
 
 const BASE_LEVELS = [
-  { id: 'hsk1', label: 'HSK 1' },
-  { id: 'hsk2', label: 'HSK 2' },
-  { id: 'hsk3', label: 'HSK 3' },
-  { id: 'hsk4', label: 'HSK 4' },
-  { id: 'hsk5', label: 'HSK 5' },
+  ...LEVELS.map((level) => ({ id: level, label: LEVEL_LABELS[level] })),
   { id: 'mixed', label: 'Mixed' },
 ];
 

@@ -15,20 +15,12 @@ import FloatingBackground from '../components/FloatingBackground';
 import HandwritingModal from '../components/HandwritingModal';
 import { getCustomDecks } from '../services/importService';
 
-// Dahili HSK Verileri
-import hsk1Data from '../data/hsk1.json';
-import hsk2Data from '../data/hsk2.json';
-import hsk3Data from '../data/hsk3.json';
-import hsk4Data from '../data/hsk4.json';
-import hsk5Data from '../data/hsk5.json';
+// HSK seviye listesi ve kelime havuzları tek kaynaktan (Faz 3.1)
+import { LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 
 const BASE_CATEGORIES = [
   { id: 'all', label: 'All Words' },
-  { id: 'hsk1', label: 'HSK 1' },
-  { id: 'hsk2', label: 'HSK 2' },
-  { id: 'hsk3', label: 'HSK 3' },
-  { id: 'hsk4', label: 'HSK 4' },
-  { id: 'hsk5', label: 'HSK 5' },
+  ...LEVELS.map((level) => ({ id: level, label: LEVEL_LABELS[level] })),
 ];
 
 export default function VocabularyScreen({ navigation }) {
@@ -51,13 +43,13 @@ export default function VocabularyScreen({ navigation }) {
 
   // Tüm kelime havuzunu birleştir ve kaynak etiketi ekle
   const allWordsPool = useMemo(() => {
-    const staticWords = [
-      ...hsk1Data.map((w) => ({ ...w, categoryId: 'hsk1', sourceTag: 'HSK 1' })),
-      ...hsk2Data.map((w) => ({ ...w, categoryId: 'hsk2', sourceTag: 'HSK 2' })),
-      ...hsk3Data.map((w) => ({ ...w, categoryId: 'hsk3', sourceTag: 'HSK 3' })),
-      ...hsk4Data.map((w) => ({ ...w, categoryId: 'hsk4', sourceTag: 'HSK 4' })),
-      ...hsk5Data.map((w) => ({ ...w, categoryId: 'hsk5', sourceTag: 'HSK 5' })),
-    ];
+    const staticWords = LEVELS.flatMap((level) =>
+      (LEVEL_POOLS[level] || []).map((w) => ({
+        ...w,
+        categoryId: level,
+        sourceTag: LEVEL_LABELS[level],
+      }))
+    );
 
     const customWords = [];
     Object.keys(customDecks).forEach((deckName) => {

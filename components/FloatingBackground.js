@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Animated, Dimensions } from 'react-native';
-import hsk1Data from '../data/hsk1.json';
+import { LEVEL_POOLS } from '../services/wordRepository';
 
 const { width, height } = Dimensions.get('window');
 
 const PARTICLE_COUNT = 18;
 const MARGIN = 45; // Ekran dışı sınır mesafesi
 
-// Sadece tek karakterlik Hanzi'ler
-const SINGLE_HANZI_LIST = hsk1Data && hsk1Data.length > 0
-  ? hsk1Data.filter(item => item.hanzi && item.hanzi.length === 1)
+// Kaynak: wordRepository (hsk1 havuzu). Yalnızca tek karakterlik Hanzi'ler.
+const HSK1_WORDS = LEVEL_POOLS.hsk1 || [];
+const SINGLE_HANZI_LIST = HSK1_WORDS.length > 0
+  ? HSK1_WORDS.filter(item => item.hanzi && item.hanzi.length === 1)
   : [{ hanzi: '字' }];
 
 // Alt kenar ağırlıklı (%40 Alt, %20 Üst, %20 Sağ, %20 Sol) doğuş noktası seçimi

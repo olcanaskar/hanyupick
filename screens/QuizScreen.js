@@ -10,35 +10,13 @@ import Header from '../components/Header';
 import QuestionCard from '../components/QuestionCard';
 import ScoreBoard from '../components/ScoreBoard';
 
-import hsk1Data from '../data/hsk1.json';
-import hsk2Data from '../data/hsk2.json';
-import hsk3Data from '../data/hsk3.json';
-import hsk4Data from '../data/hsk4.json';
-import hsk5Data from '../data/hsk5.json';
 import { buildOptions } from '../services/quizBuilder';
-
-// Seviye -> kelime havuzu eşlemesi (tek yerde).
-const LEVEL_POOLS = {
-  hsk1: hsk1Data,
-  hsk2: hsk2Data,
-  hsk3: hsk3Data,
-  hsk4: hsk4Data,
-  hsk5: hsk5Data,
-};
-
-const ALL_WORDS = [...hsk1Data, ...hsk2Data, ...hsk3Data, ...hsk4Data, ...hsk5Data];
-
-// Bir kelimenin id'sinden seviyesini çıkarır.
-// hsk5 kayıtlarında `level` alanı yok; id aralıkları ise kesintisiz ve benzersizdir.
-// Not: exampleService'teki aralıklarla aynı — Faz 3.1'de ortak bir modüle taşınacak.
-const getLevelFromWordId = (id) => {
-  if (typeof id !== 'number') return null;
-  if (id <= 150) return 'hsk1';
-  if (id <= 300) return 'hsk2';
-  if (id <= 600) return 'hsk3';
-  if (id <= 1200) return 'hsk4';
-  return 'hsk5';
-};
+import {
+  ALL_WORDS,
+  LEVEL_POOLS,
+  getLevelFromWordId,
+  getWordPool,
+} from '../services/wordRepository';
 
 export default function QuizScreen({ 
   route, 
@@ -82,11 +60,6 @@ export default function QuizScreen({
     }
   }, [route?.params?.initialLevel]);
 
-  // Kelime havuzunu seviyeye göre seçer (Standart HSK Seviyeleri)
-  const getWordPool = useCallback((targetLevel = level) => {
-    return LEVEL_POOLS[targetLevel] || ALL_WORDS;
-  }, [level]);
-
   // Soru ve şıkları oluşturur (Asenkron destekli)
   const generateQuestion = useCallback(async (targetLevel = level, targetMode = mode) => {
     let currentPool = [];
@@ -128,7 +101,7 @@ export default function QuizScreen({
     setOptions(combinedOptions);
     setAnswered(false);
     setSelectedOption(null);
-  }, [level, mode, getWordPool, setAnswered]);
+  }, [level, mode, setAnswered]);
 
   // Ses motorunu arka planda önceden ısıtma (Warm-up)
   useEffect(() => {
