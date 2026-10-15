@@ -82,14 +82,28 @@ describe('pickAndParseJSON', () => {
     expect(result.error).toMatch(/No valid word/i);
   });
 
-  // BİLİNEN HATA (Faz 2.3): regex yanlış yazılmış (`\$` literal), uzantı kırpılmıyor.
-  // Faz 2.3 düzeltilince bu testi normal `test(...)` yapıp yeşile çevir.
-  test.failing('defaultName dosya uzantısını kırpar', async () => {
+  test('defaultName dosya uzantısını kırpar', async () => {
     mockPickedFile('kelimeler.json', JSON.stringify(VALID_WORDS));
 
     const result = await pickAndParseJSON();
 
     expect(result.defaultName).toBe('kelimeler');
+  });
+
+  test('defaultName uzantısız adda olduğu gibi kalır', async () => {
+    mockPickedFile('kelimeler', JSON.stringify(VALID_WORDS));
+
+    const result = await pickAndParseJSON();
+
+    expect(result.defaultName).toBe('kelimeler');
+  });
+
+  test('defaultName çok noktalı adda yalnızca son uzantıyı kırpar', async () => {
+    mockPickedFile('hsk.1.words.json', JSON.stringify(VALID_WORDS));
+
+    const result = await pickAndParseJSON();
+
+    expect(result.defaultName).toBe('hsk.1.words');
   });
 });
 

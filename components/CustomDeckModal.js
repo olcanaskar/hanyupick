@@ -126,7 +126,8 @@ export default function CustomDeckModal({ visible, onClose }) {
     const result = await pickAndParseJSON();
     if (result.success) {
       setPendingDeck(result);
-      setCustomDeckName('');
+      // Dosya adından türetilen öneriyi (örn. "kelimeler") isim alanına önceden doldur.
+      setCustomDeckName(result.defaultName || '');
     } else if (result.reason !== 'canceled') {
       Alert.alert('Import Error', result.error || 'Failed to parse JSON file.');
     }

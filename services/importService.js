@@ -39,7 +39,9 @@ export const pickAndParseJSON = async () => {
       throw new Error('No valid word entries found. Ensure items contain "hanzi", "pinyin", and "meaning".');
     }
 
-    const defaultName = file.name ? file.name.replace(/\.[^/.]+\$/, '') : 'Custom Deck';
+    // Dosya adından uzantıyı kırp (örn. "kelimeler.json" -> "kelimeler").
+    const rawName = file.name ? file.name.replace(/\.[^/.]+$/, '').trim() : '';
+    const defaultName = rawName || 'Custom Deck';
 
     return { success: true, defaultName, validWords };
   } catch (error) {
