@@ -19,7 +19,7 @@ This project uses npm (`package-lock.json`; there is no `bun.lock`) — use `npx
 ```bash
 npx expo install <package>          # ALWAYS use instead of npm/yarn/pnpm add — resolves SDK-compatible versions
 npm run lint                        # ESLint over the whole project (flat config) — 0 errors expected
-npm test                            # jest (jest-expo preset) — 157 tests, 9 suites
+npm test                            # jest (jest-expo preset) — 167 tests, 10 suites
 npm run tsc                         # tsc --noEmit over the JS (checkJs) — 0 errors expected
 npx expo start --go --clear         # dev server for Expo Go (no native build needed)
 npx expo-doctor                     # dependency/config diagnosis — 21/21 clean (needs git on PATH)
@@ -38,7 +38,7 @@ npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored
 | `index.js` → `App.js` | entry point; owns the review-pool state and the navigator |
 | `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen` |
 | `components/` | `Header`, `QuestionCard`, `ScoreBoard`, `StatsModal`, `CustomDeckModal`, `HandwritingModal`, `ExampleBox`, `FloatingBackground` |
-| `services/` | all logic: `wordRepository`, `reviewPool`, `quizBuilder`, `statsManager`, `importService`, `exampleService`, `handwritingService`, `dateUtils` |
+| `services/` | all logic: `wordRepository`, `reviewPool`, `quizBuilder`, `statsManager`, `importService`, `exampleService`, `handwritingService`, `floatingParticles`, `dateUtils` |
 | `data/` | `hsk1..5.json` (2,500 words, ids 1–2500) + `examples/hsk*_examples.js` |
 | `__tests__/` | jest tests (services only) |
 | `tsconfig.json`, `eslint.config.js` | the `npm run tsc` and `npm run lint` configs |
@@ -51,6 +51,7 @@ Single sources of truth — never duplicate these elsewhere:
 - `services/dateUtils.js` — the only place that builds day keys (local time, never UTC).
 - `services/statsManager.js` — the stats record shape plus the mastery rules (`MASTERY_STREAK`, `isMastered`, `isProblematic`, `getMastery`). They apply to HSK ids (numbers) and custom-deck ids (`custom_…` strings) alike; never re-implement them in a component (they lived in `StatsModal` until 3.6b, where they were untestable).
 - `services/handwritingService.js` — the ONLY place that talks to the external handwriting API (`recognizeHandwriting()`, `buildInk()`). It owns the timeout, so callers never `fetch` directly and must handle its `{ candidates, error }` result (`error` is `null | 'timeout' | 'network'`) instead of catching network errors themselves.
+- `services/floatingParticles.js` — the floating-Hanzi geometry and motion (`getRandomBoundaryPoint`, `pickTargetPoint`, `createParticle`, `PARTICLE_COUNT`, size/speed bounds). Randomness is injectable and the target search is **bounded** (`MAX_TARGET_ATTEMPTS`) — never put this math back into `FloatingBackground`, and never replace the bounded search with a bare `while` (that was an unguarded loop that could freeze the JS thread). The component supplies the live window size (`useWindowDimensions`), never a module-load snapshot of `Dimensions`.
 
 AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`.
 
