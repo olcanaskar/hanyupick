@@ -86,6 +86,7 @@ Do not introduce `expo-router`.
 - Never create or edit `android/` or `ios/` by hand — they are generated (Continuous Native Generation). Configure native behaviour in `app.json` and config plugins. (A stale `android/` folder exists locally; it is gitignored.)
 - Expo Go only ships its bundled native modules. Adding a library with native code requires a development build (`npx expo run:*`, or `eas build --profile development`).
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+- Accessibility: labels are **English** (matching the visible UI text). `TouchableOpacity` is an accessibility element by default (`accessible={this.props.accessible !== false}`) and therefore **hides its children** from screen readers — when a touchable wraps other touchables (the quiz card wrapping the option buttons in `QuestionCard`), keep it `accessible={false}` while those children must stay reachable. The floating-Hanzi background is decorative and must stay out of the accessibility tree (`accessibilityElementsHidden` + `importantForAccessibility="no-hide-descendants"`). `accessibilityState`/hints/announcements are not implemented yet.
 - No emulator or device is attached to the development machine: device verification is done by the user, in Expo Go, on request.
 
 ## Building with EAS
