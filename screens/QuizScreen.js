@@ -43,6 +43,14 @@ export default function QuizScreen({
   // Review moduna yalnızca İLK girişte yanlışı olan bir modu seçmek için kullanılan bayrak
   const didInitReviewMode = useRef(false);
 
+  // Aynı cevabın çok hızlı iki kez işlenmesini (çift dokunma) engelleyen bayrak.
+  // React state güncellemesi gecikmeli olduğundan kontrol için state değil ref kullanılır.
+  const isAnsweredRef = useRef(false);
+  const setAnswered = useCallback((value) => {
+    isAnsweredRef.current = value;
+    setIsAnswered(value);
+  }, []);
+
   // Ana menüden veya harici bir nav değişiminden gelen initialLevel güncellenirse state'i senkronize et
   useEffect(() => {
     if (route?.params?.initialLevel) {
@@ -82,7 +90,7 @@ export default function QuizScreen({
     if (!currentPool || currentPool.length === 0) {
       setCurrentWord(null);
       setOptions([]);
-      setIsAnswered(false);
+      setAnswered(false);
       setSelectedOption(null);
       return;
     }
@@ -100,9 +108,9 @@ export default function QuizScreen({
 
     setCurrentWord(correctWord);
     setOptions(combinedOptions);
-    setIsAnswered(false);
+    setAnswered(false);
     setSelectedOption(null);
-  }, [level, mode, getWordPool]);
+  }, [level, mode, getWordPool, setAnswered]);
 
   // Ses motorunu arka planda önceden ısıtma (Warm-up)
   useEffect(() => {
@@ -139,9 +147,10 @@ export default function QuizScreen({
 
   // Seçenek tıklama mantığı
   const handleSelectOption = (option) => {
-    if (isAnswered || !currentWord) return;
+    // ref bayrağı: state gecikmesinden bağımsız olarak çift dokunmayı engeller
+    if (isAnsweredRef.current || !currentWord) return;
 
-    setIsAnswered(true);
+    setAnswered(true);
     setSelectedOption(option);
 
     const isCorrect = option.id === currentWord.id;
@@ -207,7 +216,7 @@ export default function QuizScreen({
       if (remaining.length === 0) {
         setCurrentWord(null);
         setOptions([]);
-        setIsAnswered(false);
+        setAnswered(false);
         setSelectedOption(null);
         return;
       }
