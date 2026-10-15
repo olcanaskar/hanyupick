@@ -43,9 +43,10 @@ module.exports = defineConfig([
 
       // Aşağıdakiler mevcut (çalışan) desenler için uyarı düzeyinde:
       // hata değil, temizlik adayı — kilitlemez ama görünür kalır.
+      // (`react/no-unescaped-entities` Faz 3.5'te düzeltildiği için varsayılana,
+      // yani "error"a döndürüldü: yeni kaçırılmamış tırnaklar artık hata verir.)
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
-      'react/no-unescaped-entities': 'warn',
     },
   },
 ]);
