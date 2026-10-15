@@ -204,7 +204,7 @@ export default function CustomDeckModal({ visible, onClose }) {
             <View style={styles.confirmContainer}>
               <Text style={styles.confirmTitle}>Delete Deck</Text>
               <Text style={styles.confirmDesc}>
-                Are you sure you want to delete <Text style={styles.boldText}>"{deckToDelete}"</Text>? This action cannot be undone.
+                Are you sure you want to delete <Text style={styles.boldText}>&quot;{deckToDelete}&quot;</Text>? This action cannot be undone.
               </Text>
               <View style={styles.confirmActions}>
                 <TouchableOpacity
@@ -281,13 +281,13 @@ export default function CustomDeckModal({ visible, onClose }) {
                   • <Text style={styles.bold}>id</Text>: Unique number or string
                 </Text>
                 <Text style={styles.fieldItem}>
-                  • <Text style={styles.bold}>hanzi</Text> (Required): Chinese character (e.g. "爱")
+                  • <Text style={styles.bold}>hanzi</Text> (Required): Chinese character (e.g. &quot;爱&quot;)
                 </Text>
                 <Text style={styles.fieldItem}>
-                  • <Text style={styles.bold}>pinyin</Text> (Required): Pronunciation with tones (e.g. "ài")
+                  • <Text style={styles.bold}>pinyin</Text> (Required): Pronunciation with tones (e.g. &quot;ài&quot;)
                 </Text>
                 <Text style={styles.fieldItem}>
-                  • <Text style={styles.bold}>meaning</Text> (Required): English definition (e.g. "to love")
+                  • <Text style={styles.bold}>meaning</Text> (Required): English definition (e.g. &quot;to love&quot;)
                 </Text>
               </View>
             </ScrollView>
