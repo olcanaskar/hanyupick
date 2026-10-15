@@ -55,17 +55,19 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 ## 3. Git durumu
 
 ```
-163b3f9  test: add unit tests for stats, import and example services                    ← HEAD
+610c768  docs: record test setup and green suite in NOTES.md                          ← tag: known-good
+163b3f9  test: add unit tests for stats, import and example services
 cf46bbb  chore(test): add jest-expo setup with AsyncStorage mock
 46e3279  docs: mark Faz 2.1 done in NOTES.md
 bc97841  fix(stats): serialize stat writes to prevent lost updates; add ref-based double-tap guard
 f51ebe9  docs: add NOTES.md (phase plan and handoff notes)
-e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count   ← tag: known-good
+e6c1d18  fix(review): free mode switching in Review (one-shot mode init), per-mode remaining count
 2a7e4e4  fix: P0 quiz bugs (hsk5 examples export, mixed hsk5 pool, review mode lock, missing hint in meaning modes)
 4191644  chore: baseline commit (pre-fix snapshot)
 ```
 
-- **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl (şu an `e6c1d18`; Faz 2 doğrulanınca ileri taşınabilir).
+- **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl (**şu an `610c768`** — Faz 2.1 + test altyapısı yeşil; sonraki doğrulanmış fazda ileri taşınır).
+- Güncel HEAD için: `git log --oneline -1`.
 - Her şey ters giderse dönüş: `git reset --hard known-good`
 - Tek commit geri alma: `git revert <hash>`
 - Kaydedilmemiş dosya geri alma: `git restore <dosya>`
