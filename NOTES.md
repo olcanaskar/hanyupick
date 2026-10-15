@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: Faz 2 tamamlandı (2.1–2.4). **60 test yeşil.** Sıradaki: cihazda Faz 1–2 doğrulaması, sonra Faz 3 (mimari).
+Son güncelleme: Faz 2 tamamlandı (2.1–2.4) ve **cihazda Expo Go ile denendi — sorun yok**. **60 test yeşil.** Sıradaki: Faz 3 (mimari) veya Faz 4 (performans).
 
 ---
 
@@ -47,7 +47,12 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
   - Komut: `npm test` (tek seferlik) veya `npm run test:watch`.
   - `jest.setup.js` → AsyncStorage'ın resmi jest mock'unu bağlar (`jest.mock(...)`).
   - Kapsam: **servisler** (saf iş mantığı, tarih/streak, veri doğrulama). UI/dokunma/animasyon hâlâ cihazda elle test edilir.
-- Derleme/emülatör yok → UI doğrulaması statik (Babel parse) + cihazda elle; **mantık doğrulaması `npm test` ile.**
+- **Çalıştırma yolu (DOĞRULANDI): Expo Go.** Kullanılan tüm native modüller Expo Go'da geliyor; `expo-notifications` kodda hiç kullanılmıyor (tek kısıt oydu). Komut:
+  - `npx expo start --go --clear` → terminalde `a` (emülatör) veya telefonda QR tara.
+  - Tek satır: `npx expo start --go --android`
+  - Bundle ön kontrolü: `npx expo export --platform android` → 1086 modül, hatasız (SDK 57 / RN 0.86).
+- **Yerel native build (`expo run:android`) denenmedi** ve şimdilik gerekmiyor: Java 25 kurulu (AGP genelde Java 17/21 ister) + yerelde eski bir `android/` klasörü var (gitignore'da, üretilen). Expo Go bu risklerin hepsini atlar.
+- UI/dokunma/animasyon cihazda elle; **mantık doğrulaması `npm test` ile.**
 - Geçici doğrulama scriptleri (artık gerekmiyor, duruyor): `%TEMP%\opencode\*.js`.
 
 ---
@@ -55,6 +60,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 ## 3. Git durumu
 
 ```
+502ff77  docs: mark Faz 2.4 done in NOTES.md
 e69fb33  fix(quiz): prevent duplicate/ambiguous options and pick same-level distractors
 91d3597  fix(import): strip file extension for default deck name and prefill it
 0ea3c62  docs: mark Faz 2.2 done in NOTES.md
@@ -182,11 +188,13 @@ Her maddeyi **ayrı commit** olarak yap.
 ## 8. Bilinen açık riskler / notlar
 
 - **Remote yedek yok** — tüm geçmiş bu diskte. Uygun olduğunda GitHub (veya benzeri) eklenmeli.
-- **Derleme/emülatör yok** — Faz 1 değişikliklerinin cihazda son teyidi kullanıcıda:
+- **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
+  - Madde madde tekrar doğrulamak istenirse:
   1. HSK5 kelimesini yanlış cevapla → örnek cümle görünmeli.
   2. Mixed modunda HSK5 (id 1201+) gelmeli.
-  3. Review'da sekmeler arasında serbest geçiş; yanlışsız modda uyarı.
+  3. Review'da sekmeler arasında serbest geçiş; yanlışsız modda `No Mistakes in this Mode!` uyarısı.
   4. 6 modun hepsinde cevap sonrası ipucu satırı çıkmalı.
+  5. HSK 1'de şıklar aynı seviyeden gelmeli; aynı şık iki kez görünmemeli.
 - `hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı (düşük öncelik). Seviye tespiti bu yüzden `id` aralığından yapılıyor (§5, 2.4).
 - **`hsk5.json`'da 17 ikiz kayıt** var (aynı hanzi iki kez, farklı id): 2'si birebir aynı (`财产` 1237/2002, `插` 1242/2024), 15'i yalnızca anlam yazımı farklı (`包含` 1206/1889). Kod artık bu ikizleri şık olarak göstermiyor ama istatistikler iki ayrı id'de birikiyor; veri temizliği ayrı bir iş.
 - `exampleService` ile `QuizScreen`'deki `id`→seviye aralıkları **iki yerde tekrar ediyor** → Faz 3.1'de ortak modüle taşınmalı.
