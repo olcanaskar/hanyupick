@@ -20,7 +20,7 @@ const WORD_FIELDS = ['hanzi', 'pinyin', 'meaning'];
 // Tek kelimelik havuzda (ya da hepsi öncekiyle aynıysa) mecburen o kelime döner.
 //
 // Faz 4.2: eskiden her soruda `pool.filter(...)` ile havuzun tamamının kopyası
-// çıkarılıyordu (hsk5 seviyesinde 1.300 eleman). Artık reddetme ile örnekleme
+// çıkarılıyordu (o gün hsk5 seviyesinde 1.300 eleman). Artık reddetme ile örnekleme
 // yapılır: tipik durumda tek bir rastgele deneme yeter (kabul edilen adaylar
 // üzerinde dağılım yine tekdüzedir), tam tarama yalnızca çok şanssız durumda
 // yedek olarak çalışır.
@@ -60,7 +60,10 @@ const hasConflict = (word, blockedValues) =>
 //
 // Faz 4.2: eskiden havuz `shuffle(pool)` ile TAMAMEN kopyalanıp karıştırılıyordu, yani
 // her soruda havuzun bir kopyası çıkarılıyordu. Ölçülen maliyet (2.000 soru, aynı
-// donanım): hsk5 havuzu (1.300) ~556 µs/soru, `ALL_WORDS` (2.500) ~1.294 µs/soru.
+// donanım; ölçüm HSK 6 eklenmeden önce, o günkü havuz boyutlarıyla): hsk5 havuzu
+// (1.300) ~556 µs/soru, `ALL_WORDS` (2.500) ~1.294 µs/soru. Dairesel tarama ile
+// maliyet havuz boyutundan neredeyse bağımsız hale geldi (~4 µs/soru). Güncel
+// boyutlar: hsk5 1.283, ALL_WORDS 4.983 (HSK 6 eklendi).
 // `ALL_WORDS` tek havuz olarak şu durumlarda kullanılır: özel deste soruları
 // (`sameLevelPool` yok → `[ALL_WORDS]`) ve seviyesi bulunamayan inceleme kelimeleri.
 // Artık rastgele bir noktadan başlanıp DAİRESEL taranıyor: tipik durumda ilk birkaç

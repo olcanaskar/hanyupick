@@ -19,7 +19,7 @@ export const getDeckIdPrefix = (deckName) => String(deckName).replace(/[^a-zA-Z0
 // bir destenin SEVİYE kimliği ise `custom_<önek>` (aynı ad alanının kısası).
 export const CUSTOM_ID_PREFIX = 'custom_';
 
-// Seviye kimliği özel bir desteye mi ait? (Aksi halde 'hsk1'..'hsk5', 'mixed' ya da 'review'.)
+// Seviye kimliği özel bir desteye mi ait? (Aksi halde 'hsk1'..'hsk6', 'mixed' ya da 'review'.)
 export const isCustomDeckLevel = (level) =>
   typeof level === 'string' && level.startsWith(CUSTOM_ID_PREFIX);
 

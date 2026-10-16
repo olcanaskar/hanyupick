@@ -1,6 +1,6 @@
 # ChineseQuizApp — agent guide
 
-An Expo/React Native app (**SDK 57**) for studying HSK 1–5 vocabulary: a fixed library of 2,483 words (2,500 records with 17 duplicate pairs merged — see `services/wordIdMigrations.js`), 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, and a stats screen.
+An Expo/React Native app (**SDK 57**) for studying HSK 1–6 vocabulary: a fixed library of 4,983 words (ids 1–5000 with 17 duplicate pairs merged — see `services/wordIdMigrations.js`), 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, and a stats screen.
 
 Plain **JavaScript** — JSX lives in `.js` files; there is no TypeScript source, but `tsconfig.json` type-checks the JS itself (`checkJs`). Navigation is **React Navigation (Stack)**, not Expo Router.
 
@@ -19,7 +19,7 @@ This project uses npm (`package-lock.json`; there is no `bun.lock`) — use `npx
 ```bash
 npx expo install <package>          # ALWAYS use instead of npm/yarn/pnpm add — resolves SDK-compatible versions
 npm run lint                        # ESLint over the whole project (flat config) — 0 errors expected
-npm test                            # jest (jest-expo preset) — 187 tests, 10 suites
+npm test                            # jest (jest-expo preset) — 188 tests, 10 suites
 npm run tsc                         # tsc --noEmit over the JS (checkJs) — 0 errors expected
 npx expo start --go --clear         # dev server for Expo Go (no native build needed)
 npx expo-doctor                     # dependency/config diagnosis — 21/21 clean (needs git on PATH)
@@ -39,7 +39,7 @@ npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored
 | `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen` |
 | `components/` | `Header`, `QuestionCard`, `ScoreBoard`, `StatsModal`, `CustomDeckModal`, `HandwritingModal`, `ExampleBox`, `FloatingBackground` |
 | `services/` | all logic: `wordRepository`, `reviewPool`, `quizBuilder`, `statsManager`, `importService`, `exampleService`, `handwritingService`, `floatingParticles`, `dateUtils`, `wordIdMigrations` |
-| `data/` | `hsk1..5.json` (2,483 words, ids 1–2500 minus the 17 merged ones) + `examples/hsk*_examples.js` |
+| `data/` | `hsk1..6.json` (4,983 words, ids 1–5000 minus the 17 merged ones) + `examples/hsk*_examples.js` (no HSK 6 examples yet) |
 | `__tests__/` | jest tests (services only) |
 | `tsconfig.json`, `eslint.config.js` | the `npm run tsc` and `npm run lint` configs |
 
