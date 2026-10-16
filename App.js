@@ -71,13 +71,20 @@ export default function App() {
   // 3. Bir özel deste silinince o desteye ait yanlışlar da havuzdan düşsün.
   //    Havuzun sahibi burasıdır (kalıcılığı da yukarıdaki update ile olur); istatistik
   //    tarafındaki temizlik `deleteCustomDeck` içinde yapılır.
+  // 4. "İlerlemeyi sıfırla" da yanlış havuzunu boşaltır (istatistikler StatsModal'da
+  //    silinir, havuz buradadır).
   useEffect(() => {
     const deckDeletedSub = DeviceEventEmitter.addListener('onCustomDeckDeleted', (removedIds) => {
       updateReviewPool((prev) => removeWordIds(prev, removedIds));
     });
 
+    const progressResetSub = DeviceEventEmitter.addListener('onProgressReset', () => {
+      updateReviewPool(() => []);
+    });
+
     return () => {
       deckDeletedSub.remove();
+      progressResetSub.remove();
     };
   }, [updateReviewPool]);
 

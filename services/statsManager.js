@@ -164,3 +164,28 @@ export const removeWordStatsByIds = (wordIds) => {
 
   return statsWriteQueue;
 };
+
+// 5. TÜM ilerlemeyi siler (Faz 4: kalıcı "İlerlemeyi sıfırla" butonu).
+//
+// Kelime istatistikleri, günlük aktivite ve streak birlikte sıfırlanır; diske boş kayıt
+// yazılır (`getStats` varsayılanıyla aynı şekil). Cevap kayıtlarıyla AYNI kuyruk
+// kullanılır: sırada bekleyen bir cevap varsa önce o işlenir, sıfırlama ondan SONRA
+// yazılır → sıfırlama her zaman "en son söz" olur.
+export const clearAllStats = () => {
+  const performClear = async () => {
+    const empty = {
+      wordStats: {},
+      dailyStats: {},
+      streak: { current: 0, lastDate: null },
+    };
+    await AsyncStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(empty));
+    return empty;
+  };
+
+  statsWriteQueue = statsWriteQueue.then(performClear).catch((error) => {
+    console.error('İlerleme sıfırlanamadı:', error);
+    return false;
+  });
+
+  return statsWriteQueue;
+};

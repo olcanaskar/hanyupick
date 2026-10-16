@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getStats, recordAnswer, removeWordStatsByIds, getMastery, isMastered, isProblematic } from '../services/statsManager';
+import { getStats, recordAnswer, removeWordStatsByIds, clearAllStats, getMastery, isMastered, isProblematic } from '../services/statsManager';
 import { getDateKey, addDays } from '../services/dateUtils';
 
 const STATS_KEY = '@hsk_user_stats';
@@ -236,6 +236,45 @@ describe('removeWordStatsByIds — silinen destenin izleri', () => {
     const data = await readStats();
     expect(data.wordStats[6]).toBeDefined();
     expect(data.wordStats.custom_A_0).toBeUndefined();
+  });
+});
+
+// Faz 4: kalıcı "İlerlemeyi sıfırla" butonu (istatistikler; yanlış havuzu App.js'te).
+describe('clearAllStats — tüm ilerlemeyi sıfırla', () => {
+  test('kelime istatistikleri, günlük aktivite ve streak birlikte sıfırlanır', async () => {
+    await seedStats({
+      wordStats: { 5: { categories: {} }, custom_A_0: { categories: {} } },
+      dailyStats: { [today]: { correct: 7, wrong: 3 }, [yesterday]: { correct: 1, wrong: 0 } },
+      streak: { current: 12, lastDate: today },
+    });
+
+    await clearAllStats();
+
+    const data = await readStats();
+    expect(data).toEqual({
+      wordStats: {},
+      dailyStats: {},
+      streak: { current: 0, lastDate: null },
+    });
+    await expect(getStats()).resolves.toEqual({
+      wordStats: {},
+      dailyStats: {},
+      streak: { current: 0, lastDate: null },
+    });
+  });
+
+  test('sıfırlama KUYRUĞUN sonunda çalışır: sırada bekleyen cevap silinmez, sonra silinir', async () => {
+    await seedStats(emptyStats({ current: 0, lastDate: null }));
+
+    // Cevap kaydı ile sıfırlama aynı anda istenirse sıfırlama "en son söz" olur.
+    await Promise.all([
+      recordAnswer({ wordId: 11, mode: 'hanzi-to-pinyin', isCorrect: true }),
+      clearAllStats(),
+    ]);
+
+    const data = await readStats();
+    expect(data.wordStats[11]).toBeUndefined();
+    expect(data.dailyStats).toEqual({});
   });
 });
 
