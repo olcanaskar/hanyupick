@@ -13,6 +13,14 @@ const CUSTOM_DECKS_KEY = '@custom_word_decks';
 // kabul edilmez; aşağıdaki çakışma kontrolüyle reddedilir.
 export const getDeckIdPrefix = (deckName) => String(deckName).replace(/[^a-zA-Z0-9]/g, '_');
 
+// Özel deste kimliklerinin öneki. Kelime id'leri `custom_<önek>_<itemId>` biçimindedir;
+// bir destenin SEVİYE kimliği ise `custom_<önek>` (aynı ad alanının kısası).
+export const CUSTOM_ID_PREFIX = 'custom_';
+
+// Seviye kimliği özel bir desteye mi ait? (Aksi halde 'hsk1'..'hsk5', 'mixed' ya da 'review'.)
+export const isCustomDeckLevel = (level) =>
+  typeof level === 'string' && level.startsWith(CUSTOM_ID_PREFIX);
+
 // Yeni kelimelerin id'lerini üretir. `item.id` yalnızca kullanılabilir bir sayı ya da
 // boş olmayan bir metin ise kullanılır, aksi halde dosyadaki sıraya düşer — yoksa
 // id'si boş olan birden çok kelime `custom_X_` id'sini PAYLAŞIRDI.

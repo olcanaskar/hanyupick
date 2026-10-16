@@ -5,7 +5,7 @@ import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 
 import { recordAnswer } from '../services/statsManager';
-import { getCustomDecks } from '../services/importService';
+import { CUSTOM_ID_PREFIX, getCustomDecks, isCustomDeckLevel } from '../services/importService';
 import Header from '../components/Header';
 import QuestionCard from '../components/QuestionCard';
 import ScoreBoard from '../components/ScoreBoard';
@@ -54,6 +54,13 @@ export default function QuizScreen({
   const [isAnswered, setIsAnswered] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
 
+  // Havuz çözülene kadar geçen süre. Özel desteler AsyncStorage'dan okunduğu için
+  // `generateQuestion` asenkrondur; bayrak olmasaydı ilk karede (henüz kelime yokken)
+  // "bu seviyede kelime yok" ekranı bir an görünüp kaybolurdu. Aynı anda birden çok
+  // istek (hızlı seviye/mod değişimi) olursa yalnızca EN SON isteğin sonucu yazılır.
+  const [isPoolLoading, setIsPoolLoading] = useState(true);
+  const poolRequestRef = useRef(0);
+
   // Her yeni soruda artan sayaç. QuestionCard'a `key` olarak verilir, böylece kart her
   // soruda SIFIRDAN kurulur. Kartı yeniden kullanmak güvenli değildi: "sonraki soruya
   // geç" animasyonu kartı ekranın dışına kaydırıp opaklığını 0 yapıyor, sıfırlama ise
@@ -93,25 +100,33 @@ export default function QuizScreen({
 
   // Soru ve şıkları oluşturur (Asenkron destekli)
   const generateQuestion = useCallback(async (targetLevel = level, targetMode = mode) => {
+    const requestId = poolRequestRef.current + 1;
+    poolRequestRef.current = requestId;
+    setIsPoolLoading(true);
+
     let currentPool = [];
 
     if (targetLevel === 'review') {
       currentPool = filterByMode(reviewPoolRef.current, targetMode)
         .map(resolveReviewWord)
         .filter(Boolean);
-    } else if (targetLevel.startsWith('custom_')) {
-      const deckName = targetLevel.replace('custom_', '');
+    } else if (isCustomDeckLevel(targetLevel)) {
+      const deckName = targetLevel.replace(CUSTOM_ID_PREFIX, '');
       const customDecks = await getCustomDecks();
       currentPool = customDecks[deckName] || [];
     } else {
       currentPool = getWordPool(targetLevel);
     }
 
+    // Bu arada daha yeni bir istek yapıldıysa (seviye/mod değişti) sonucu yazma.
+    if (poolRequestRef.current !== requestId) return;
+
     if (!currentPool || currentPool.length === 0) {
       setCurrentWord(null);
       setOptions([]);
       setAnswered(false);
       setSelectedOption(null);
+      setIsPoolLoading(false);
       return;
     }
 
@@ -132,6 +147,7 @@ export default function QuizScreen({
     setOptions(combinedOptions);
     setAnswered(false);
     setSelectedOption(null);
+    setIsPoolLoading(false);
     // Yeni soru: kartın `key`i değişir ve kart temiz animasyon değerleriyle kurulur.
     setQuestionSeq((prev) => prev + 1);
   }, [level, mode, setAnswered]);
@@ -241,6 +257,16 @@ export default function QuizScreen({
   // Review modunda, içinde bulunulan moda ait kalan yanlış sayısı
   const reviewCountForMode = countForMode(reviewPool, mode);
 
+  // Havuz boşsa gösterilecek metin (seviye 'review' DEĞİLKEN). Özel deste silinmiş ya
+  // da boş olabilir: deste adı seviye listesinden kalkar ama quiz o seviyede kalırsa
+  // havuz boş çözülür. Eskiden bu durumda ekran TAMAMEN BOŞ kalıyordu (boş-durum
+  // ekranı yalnızca review için vardı).
+  const isCustomLevel = isCustomDeckLevel(level);
+  const emptyPoolTitle = isCustomLevel ? 'This deck has no words' : 'No words in this level';
+  const emptyPoolSubtitle = isCustomLevel
+    ? 'It may have been emptied or deleted. Import it again from Home, or pick another level above.'
+    : 'Pick another level from the level menu above.';
+
   // Seviye değiştiğinde HomeScreen'i bilgilendiren dinleyici tetikleyicisi
   const handleLevelChange = (newLevel) => {
     setLevel(newLevel);
@@ -272,16 +298,29 @@ export default function QuizScreen({
               <Text style={styles.subText} accessible={true}>{getSubText()}</Text>
             )}
 
-            {level === 'review' && !currentWord && (
+            {!isPoolLoading && !currentWord && (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyTitle} accessible={true}>
-                  {reviewPool.length === 0 ? 'All Clear! 🎉' : 'No Mistakes in this Mode! ✨'}
-                </Text>
-                <Text style={styles.emptySubtitle} accessible={true}>
-                  {reviewPool.length === 0
-                    ? "You've cleared all incorrect answers!"
-                    : 'Switch to other tabs above to practice mistakes in other question modes.'}
-                </Text>
+                {level === 'review' ? (
+                  <>
+                    <Text style={styles.emptyTitle} accessible={true}>
+                      {reviewPool.length === 0 ? 'All Clear! 🎉' : 'No Mistakes in this Mode! ✨'}
+                    </Text>
+                    <Text style={styles.emptySubtitle} accessible={true}>
+                      {reviewPool.length === 0
+                        ? "You've cleared all incorrect answers!"
+                        : 'Switch to other tabs above to practice mistakes in other question modes.'}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.emptyTitle} accessible={true}>
+                      {emptyPoolTitle}
+                    </Text>
+                    <Text style={styles.emptySubtitle} accessible={true}>
+                      {emptyPoolSubtitle}
+                    </Text>
+                  </>
+                )}
               </View>
             )}
 

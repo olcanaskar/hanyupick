@@ -6,6 +6,7 @@ import {
   getCustomDecks,
   deleteCustomDeck,
   getDeckIdPrefix,
+  isCustomDeckLevel,
 } from '../services/importService';
 
 jest.mock('expo-document-picker', () => ({ getDocumentAsync: jest.fn() }));
@@ -156,6 +157,17 @@ describe('özel deste kaydetme — onay ve id çakışması', () => {
   test('önek kuralı: alfanümerik olmayan karakterler "_" olur (eski kural korunuyor)', () => {
     expect(getDeckIdPrefix('Ders 1!')).toBe('Ders_1_');
     expect(getDeckIdPrefix('中文')).toBe('__');
+  });
+
+  // Faz 4 (boş havuz ekranı): QuizScreen özel deste seviyelerini bu yardımcıyla ayırır.
+  test('isCustomDeckLevel: yalnızca custom_ ile başlayan metin seviyeleri özel destedir', () => {
+    expect(isCustomDeckLevel('custom_Ders_1')).toBe(true);
+    expect(isCustomDeckLevel('custom_')).toBe(true);
+    expect(isCustomDeckLevel('review')).toBe(false);
+    expect(isCustomDeckLevel('mixed')).toBe(false);
+    expect(isCustomDeckLevel('hsk5')).toBe(false);
+    expect(isCustomDeckLevel(undefined)).toBe(false);
+    expect(isCustomDeckLevel(42)).toBe(false);
   });
 
   test('aynı adla ikinci kayıt onay olmadan üzerine YAZMAZ', async () => {
