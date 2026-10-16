@@ -15,6 +15,7 @@ import hsk2Data from '../data/hsk2.json';
 import hsk3Data from '../data/hsk3.json';
 import hsk4Data from '../data/hsk4.json';
 import hsk5Data from '../data/hsk5.json';
+import hsk6Data from '../data/hsk6.json';
 
 const RAW_POOLS = {
   hsk1: hsk1Data,
@@ -22,11 +23,12 @@ const RAW_POOLS = {
   hsk3: hsk3Data,
   hsk4: hsk4Data,
   hsk5: hsk5Data,
+  hsk6: hsk6Data,
 };
 
 describe('wordRepository - seviye tanımları', () => {
   test('LEVELS beklendiği gibi ve sıralı', () => {
-    expect(LEVELS).toEqual(['hsk1', 'hsk2', 'hsk3', 'hsk4', 'hsk5']);
+    expect(LEVELS).toEqual(['hsk1', 'hsk2', 'hsk3', 'hsk4', 'hsk5', 'hsk6']);
   });
 
   test('her seviyenin etiketi ve dolu havuzu var', () => {
@@ -48,7 +50,8 @@ describe('wordRepository - seviye tanımları', () => {
     const expectedLength = LEVELS.reduce((sum, l) => sum + RAW_POOLS[l].length, 0);
     expect(ALL_WORDS.length).toBe(expectedLength);
     // Faz 4 veri temizliği: hsk5'teki 17 ikiz kayıt silindi (2500 → 2483).
-    expect(ALL_WORDS.length).toBe(2483);
+    // HSK 6 eklendi: 2483 + 2500 = 4983.
+    expect(ALL_WORDS.length).toBe(4983);
   });
 
   // Faz 4: veri sağlığı — aynı hanzi bir seviyenin içinde iki kez geçmez. (Seviyeler
@@ -86,6 +89,8 @@ describe('getLevelFromWordId', () => {
     expect(getLevelFromWordId(1200)).toBe('hsk4');
     expect(getLevelFromWordId(1201)).toBe('hsk5');
     expect(getLevelFromWordId(2500)).toBe('hsk5');
+    expect(getLevelFromWordId(2501)).toBe('hsk6');
+    expect(getLevelFromWordId(5000)).toBe('hsk6');
   });
 
   test('sayı olmayan / NaN id için null döner', () => {
@@ -106,17 +111,17 @@ describe('getLevelFromWordId', () => {
     });
   });
 
-  test("id'ler 1..2500 aralığında, benzersiz ve yalnızca birleştirilen 17 id eksik", () => {
+  test("id'ler 1..5000 aralığında, benzersiz ve yalnızca birleştirilen 17 id eksik", () => {
     const ids = ALL_WORDS.map((w) => w.id);
     const unique = new Set(ids);
     expect(unique.size).toBe(ids.length);
-    expect(ids.length).toBe(2483);
+    expect(ids.length).toBe(4983);
     expect(Math.min(...ids)).toBe(1);
-    expect(Math.max(...ids)).toBe(2500);
+    expect(Math.max(...ids)).toBe(5000);
 
     // Veri temizliğinde silinen id'ler TAM OLARAK göç tablosundakilerdir.
     const missing = [];
-    for (let id = 1; id <= 2500; id++) {
+    for (let id = 1; id <= 5000; id++) {
       if (!unique.has(id)) missing.push(id);
     }
     expect(missing.sort((a, b) => a - b)).toEqual(

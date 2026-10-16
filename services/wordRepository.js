@@ -1,6 +1,6 @@
 // HSK kelime verisinin TEK kaynağı (Faz 3.1).
 //
-// Neden ayrı dosya: `data/hsk1..5.json` import'ları, `ALL_WORDS` birleştirmesi ve
+// Neden ayrı dosya: `data/hsk1..6.json` import'ları, `ALL_WORDS` birleştirmesi ve
 // özellikle `id` → seviye eşlemesi (150/300/600/1200 aralıkları) daha önce QuizScreen,
 // VocabularyScreen, StatsModal, FloatingBackground ve exampleService içinde tekrar
 // ediyordu. Birini güncelleyip diğerini unutmak sessiz hataya yol açıyordu
@@ -13,9 +13,10 @@ import hsk2Data from '../data/hsk2.json';
 import hsk3Data from '../data/hsk3.json';
 import hsk4Data from '../data/hsk4.json';
 import hsk5Data from '../data/hsk5.json';
+import hsk6Data from '../data/hsk6.json';
 
 // Seviye kimlikleri (sıra korunur; arayüz listeleri bu sıraya göre kurulur).
-export const LEVELS = ['hsk1', 'hsk2', 'hsk3', 'hsk4', 'hsk5'];
+export const LEVELS = ['hsk1', 'hsk2', 'hsk3', 'hsk4', 'hsk5', 'hsk6'];
 
 // Seviyelerin görünen adları.
 export const LEVEL_LABELS = {
@@ -24,6 +25,7 @@ export const LEVEL_LABELS = {
   hsk3: 'HSK 3',
   hsk4: 'HSK 4',
   hsk5: 'HSK 5',
+  hsk6: 'HSK 6',
 };
 
 // Seviye → kelime havuzu.
@@ -33,6 +35,7 @@ export const LEVEL_POOLS = {
   hsk3: hsk3Data,
   hsk4: hsk4Data,
   hsk5: hsk5Data,
+  hsk6: hsk6Data,
 };
 
 // Tüm seviyelerin birleşik havuzu ("mixed" modu ve çeldirici tamamlama için).
@@ -41,8 +44,9 @@ export const ALL_WORDS = LEVELS.reduce(
   []
 );
 
-// `id` aralıkları kesintisiz ve benzersizdir. `hsk5` kayıtlarında `level` alanı
-// olmadığı için seviye tespiti ZORUNLU olarak bu aralıklardan yapılır.
+// `id` aralıkları kesintisiz ve benzersizdir. Kelime kayıtlarında `level` alanı
+// yoktur (hsk1-6 tek biçim: id/hanzi/pinyin/meaning), bu yüzden seviye tespiti
+// ZORUNLU olarak bu aralıklardan yapılır.
 // TEK KAYNAK: değiştirilirse `__tests__/wordRepository.test.js` içindeki
 // doğrulamalar da bilinçli olarak güncellenmeli.
 const ID_RANGES = [
@@ -50,7 +54,8 @@ const ID_RANGES = [
   { max: 300, level: 'hsk2' },
   { max: 600, level: 'hsk3' },
   { max: 1200, level: 'hsk4' },
-  { max: Infinity, level: 'hsk5' },
+  { max: 2500, level: 'hsk5' },
+  { max: Infinity, level: 'hsk6' },
 ];
 
 // Bir kelimenin id'sinden seviyesini çıkarır. Sayı olmayan / NaN id için null.
