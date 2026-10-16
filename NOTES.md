@@ -3,22 +3,24 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 5 kapandı — HSK 6 entegrasyonu** (cihazda doğrulandı ✅, kullanıcı: "hsk6 kelimeleri gelmiş düzgünce çalışıyor"): **`7d12737`** `data/hsk6.json` (2.500 kelime, id **2501–5000**; kaynak `C:\Projects\App\hsk6\HSK-6-Vocabulary.pdf`, bağımlılıksız kendi CMap çıkarıcımızla üretildi) · **`869e8e9`** kullanılmayan `level` alanı hsk1–4'ten kaldırıldı (tek veri modeli: `{id, hanzi, pinyin, meaning}`) · **`07beb1e`** `HomeScreen`/`StatsModal` HSK 6 sunumu (yoksa açılışta çöküyordu) · **`5a15ec3`** `wordRepository` HSK 6 (`LEVELS`/etiket/havuz + `ID_RANGES` 2501–5000) + testler → **188 test yeşil**, **`tsc` 0 hata**, lint **0 hata / 14 uyarı**, `expo export` hatasız. Kütüphane **2.483 → 4.983 kelime** (bkz. §8). `known-good` bu doğrulamayı kaydeden doküman commit'ine taşındı (doğrulanan kod durumu **`b1bbc5a`**), yeni yedek **`ChineseQuizApp-backup-2026-10-16_1406.tar.gz`** (eskisi silindi).
+Son güncelleme: **Faz 6 — hsk5 resmî 1300 kelimelik listeyle değiştirildi** (`b4e8429`; kod tamam, **cihazda doğrulama ⏳ bekliyor** — kontrol listesi §10, kayıt §9). Kapsam: `data/hsk5.json` id 1201–1801 aynı kaldı, 1802–2500 resmî Hanban 2012 listesinin 602–1300. satırlarıyla doldu → **1300 kelime, kütüphane tam 5000**; ilerleme göçü + örnek cümleler kelimeyle taşındı; göç artık **tek seferlik** (sürüm işareti). **207 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo export` hatasız. `known-good` hâlâ **`e9e881f`** (Faz 6 doğrulanana kadar ilerletilmez).
+
+Önceki faz: **Faz 5 kapandı — HSK 6 entegrasyonu** (cihazda doğrulandı ✅, kullanıcı: "hsk6 kelimeleri gelmiş düzgünce çalışıyor"): **`7d12737`** `data/hsk6.json` (2.500 kelime, id **2501–5000**; kaynak `C:\Projects\App\hsk6\HSK-6-Vocabulary.pdf`, bağımlılıksız kendi CMap çıkarıcımızla üretildi) · **`869e8e9`** kullanılmayan `level` alanı hsk1–4'ten kaldırıldı (tek veri modeli: `{id, hanzi, pinyin, meaning}`) · **`07beb1e`** `HomeScreen`/`StatsModal` HSK 6 sunumu (yoksa açılışta çöküyordu) · **`5a15ec3`** `wordRepository` HSK 6 (`LEVELS`/etiket/havuz + `ID_RANGES` 2501–5000) + testler → **188 test yeşil**, **`tsc` 0 hata**, lint **0 hata / 14 uyarı**, `expo export` hatasız. Kütüphane **2.483 → 4.983 kelime** (bkz. §8). `known-good` bu doğrulamayı kaydeden doküman commit'ine taşındı (doğrulanan kod durumu **`b1bbc5a`**), yeni yedek **`ChineseQuizApp-backup-2026-10-16_1406.tar.gz`** (eskisi silindi).
 
 ---
 
 ## 1. Proje özeti
 
 HSK 1–6 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması.
-4.983 kelimelik sabit kütüphane (1–5000 id aralığından 17 ikiz birleştirildi), 6 soru yönü, yanlışları tekrar etme (Review),
+**5.000 kelimelik** sabit kütüphane (id 1–5000, boşluk yok; **HSK 5 ve 6 resmî Hanban 2012 listeleri** — §9 ve §8), 6 soru yönü, yanlışları tekrar etme (Review),
 JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı.
 
 - **Navigasyon:** React Navigation **Stack** (Expo Router DEĞİL — `AGENTS.md` bu konuda yanıltıcı, bkz. Faz 3.4).
 - **Giriş:** `index.js` → `App.js`.
 - **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`.
 - **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, CustomDeckModal, HandwritingModal, FloatingBackground).
-- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`, `services/handwritingService.js`, `services/floatingParticles.js`, `services/wordIdMigrations.js` (**birleştirilen kelime id'lerinin göç tablosu**, Faz 4 ek).
-- **Veri:** `data/hsk1..6.json` (**4.983 kelime**, id 1–5000 aralığında; hsk5'te birleştirilen 17 id eksik — bkz. §7 "ek temizlikler" ve §8), `data/examples/hsk1..5_examples.js` (HSK 6 için örnek cümle YOK, bkz. §8).
+- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`, `services/handwritingService.js`, `services/floatingParticles.js`, `services/wordIdMigrations.js` (**kelime id'lerinin tüm göç tabloları** — Faz 4 ikiz birleştirme + Faz 6 hsk5 yeniden dengeleme; tek seferlik uygulanır, §9).
+- **Veri:** `data/hsk1..6.json` (**5.000 kelime**, id 1–5000 boşluksuz; hsk5 = resmî 1300, hsk6 = resmî 2500 — §9, §8), `data/examples/hsk1..6_examples.js` (id ile anahtarlı örnek cümleler; hsk1–4 tam, hsk5 662/1300, **hsk6 kısmi 555/2500** — §9).
 
 ### Önemli sabitler / veri akışı
 
@@ -27,6 +29,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 | `@hsk_review_pool` | Yanlış yapılan kelimeler (App.js yönetir) |
 | `@hsk_user_stats` | `{ wordStats, dailyStats, streak }` |
 | `@custom_word_decks` | `{ "Deste Adı": [kelimeler] }` |
+| `@hsk_word_id_migration_version` | Uygulanmış id göçü sürümü (kullanıcı ilerlemesi DEĞİL; §9) |
 
 - Navigasyon parametresi: Home → Quiz `{ initialLevel }` (`QuizScreen` `route.params.initialLevel` okur).
 - DeviceEventEmitter olayları: `onCustomDeckImported`, `onLevelChange`.
@@ -111,6 +114,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
+- **Faz 6 (hsk5 resmî liste) commit'i:** `b4e8429` (veri + göç tabloları + örnekler + App.js + testler + AGENTS.md) — **kod tamam, cihaz doğrulaması ⏳ bekliyor** (bkz. §9, §10). Doğrulanana kadar `known-good` = **`e9e881f`**.
 - **Faz 5 (HSK 6) commit'leri:** `7d12737` (veri) · `869e8e9` (`level` temizliği) · `07beb1e` (sunum) · `5a15ec3` (repo + testler) · `a3d5f01` ve `b1bbc5a` (doküman) — cihazda **doğrulandı ✅**; `known-good` artık bu doğrulamayı kaydeden doküman commit'inde (doğrulanan kod durumu `b1bbc5a`), yedek `ChineseQuizApp-backup-2026-10-16_1406.tar.gz` (bkz. §8, §9).
 - Her şey ters giderse dönüş: `git reset --hard known-good`
 - Tek commit geri alma: `git revert <hash>`
@@ -189,10 +193,10 @@ Her maddeyi **ayrı commit** olarak yap.
   - `__tests__/quizBuilder.test.js`: fixture + **gerçek veri** (tüm ikiz hanzi/pinyin/anlam grupları ve her seviye için 200 soru) → hiçbir şıkta çakışma yok.
   - Önce/sonra simülasyonu: bozuk şık **%0,01–0,06 → %0,00**; hsk1 modunda çeldiricilerin seviyesi **%9 → %100 hsk1**.
   - Suite: **60 test yeşil**.
-- **Bilinçli sınırlama:** Eleme **string** eşitliğine dayanır; `"sun, day"` ↔ `"day, sun"` gibi farklı yazılmış eş anlamlılar yakalanmaz (bkz. §9 veri notu).
+- **Bilinçli sınırlama:** Eleme **string** eşitliğine dayanır; `"sun, day"` ↔ `"day, sun"` gibi farklı yazılmış eş anlamlılar yakalanmaz (bkz. §10 veri notu).
 - **Commit:** `8cfe62e`
 
-> **Faz 2 kapandı.** Sıradaki adım için öneri: Faz 1–2.4 değişikliklerini cihazda bir kez dene (§9'daki kontrol listesi), sonra Faz 3 (mimari) veya Faz 4 (performans).
+> **Faz 2 kapandı.** Sıradaki adım için öneri: Faz 1–2.4 değişikliklerini cihazda bir kez dene (§10'daki kontrol listesi), sonra Faz 3 (mimari) veya Faz 4 (performans).
 
 ---
 
@@ -219,7 +223,7 @@ Her maddeyi **ayrı commit** olarak yap.
   - **Sessiz varsayılan kaldırıldı:** eskiden tanınmayan bir mod istatistikte **sessizce `hanzi_pinyin`** sayılıyordu (fark edilmeden veri bozulması). Şimdi `getCategory()` tanınmayan modda `__DEV__`'de `console.warn` basar ve `null` döner; `statsManager` bu durumda kelime kategorisini **güncellemez** (boş kelime kaydı da açmaz) ama **günlük aktivite ve seri işlenir** → veri kaybı yok.
   - **Birleşen kopyalar:** `statsManager.getCategoryFromMode` (10 modlu map), `Header.getModeIndex` (aynı eşlemenin kopyası) + 3 sekme etiketi ternary'si, `QuestionCard`'daki üç ayrı mod ayrıştırma bloğu (`renderPrompt` / `renderOptionContent` / `renderMissingInfo`), `QuizScreen.getSubText` (`endsWith`), `StatsModal`'daki elle yazılmış 3 kategori anahtarı. Ayrıca `DEFAULT_MODE` artık `reviewPool`'dan değil `modes.js`'ten geliyor.
   - **Ayrıca (aynı dosyada kopya temizliği):** Header'daki 3 kopyala-yapıştır sekme bloğu tek `CATEGORIES.map(...)` döngüsüne indi — **aynı JSX, aynı davranış**.
-  - **Ölü veri alanı silindi:** `wordStats[wordId].level` (ayrıntı §9).
+  - **Ölü veri alanı silindi:** `wordStats[wordId].level` (ayrıntı §10).
   - **Doğrulama:** yeni `__tests__/modes.test.js` (**17 test**: tablo bütünlüğü, hayalet modlar, kategori/sekme indeksi, `getReverseMode` involüsyonu, kategori↔alan tutarlılığı, sekme etiketi türetimi, ipucu alanı, `__DEV__` uyarısı) + `statsManager.test.js`'e "tanınmayan mod" testi. Suite **115 test yeşil** (98 → 115) · `npm run tsc` **0 hata** · lint **0 hata / 14 uyarı** (değişmedi) · `npx expo export --platform android` hatasız · kodda mod string'i yalnızca `services/modes.js`'te kaldı (doğrulandı).
   - **Commit:** `ef10c3a`
 - [x] **3.4a AGENTS.md + ESLint:** `AGENTS.md` gerçek yapıya göre **yeniden yazıldı** — Expo Router/`src/app` iddiası kaldırıldı (React Navigation **Stack**, ekranlar `screens/`), test/lint komutları, `services/` tek-kaynak listesi, jest'in **ekranları kapsamadığı** uyarısı + babel parse önerisi, git/`known-good`/yedek akışı eklendi. ESLint kuruldu (ayrıntı: §2). **Doğrulama:** `npm run lint` → **0 hata** (25 uyarı), `npm test` → **98/98**, `npx expo-doctor` → **21/21** (git PATH'te değilse `.expo` kontrolü sahte hata verir — 19/21 görünür).
@@ -355,14 +359,42 @@ Her maddeyi **ayrı commit** olarak yap.
 - **`869e8e9` — `level` alanı hsk1–4'ten kaldırıldı (tek veri modeli).** Kanıt: alanı **okuyan hiçbir kod yok** (seviye zaten `wordRepository.getLevelFromWordId` ile `id` aralığından çözülür), değerler tutarsızdı (sayı `1..4`, `'hsk1'` bile değil) ve hsk5'te hiç yoktu. Özel destelerin `level: 'custom'` alanı (`importService`, kullanıcı JSON'undan) **etkilenmedi**. Dönüşümde her dosyanın kendi biçimi/satır sonu korundu (hsk3 çok satırlı; kaldırma sırasında `meaning` satırının sonundaki virgül de düşürüldü); tüm dosyalar JSON parse + alan-alan karşılaştırma ile doğrulandı.
 - **`07beb1e` — HSK 6 sunumu:** `screens/HomeScreen.js` `LEVEL_PRESENTATION` (六级 / **Proficient**) ve `components/StatsModal.js` `LEVEL_COLORS` (`#0891B2`). **Kritik:** `LEVEL_PRESENTATION[level].hanzi` zincirleme erişimi vardı → hsk6 girdisi olmadan seviye listesi kurulurken **çökme** olurdu. Seviye menüleri (`HomeScreen` `maxHeight: 360` + `Header`) `ScrollView` olduğu için 7 satır (6 HSK + Mixed) sorunsuz.
   - Bu commit, `wordRepository`'ye HSK 6 eklenmeden **önce** atıldı: böylece **her commit'te uygulama tutarlı** kaldı (aradaki state'te çöken bir sürüm yok).
-- **`5a15ec3` — `wordRepository` + testler:** `data/hsk6.json` import'u, `LEVELS`'e `hsk6`, `LEVEL_LABELS['hsk6'] = 'HSK 6'`, `LEVEL_POOLS.hsk6`, `ID_RANGES` → `hsk5: max 2500`, `hsk6: max Infinity`. Testler: `LEVELS` 6 eleman, `ALL_WORDS.length` **4.983**, aralık testi **1..5000** (eksikler yine TAM OLARAK 17 göç id'si), sınır testleri `2500 → hsk5` / `2501 → hsk6`.
+- **`5a15ec3` — `wordRepository` + testler:** `data/hsk6.json` import'u, `LEVELS`'e `hsk6`, `LEVEL_LABELS['hsk6'] = 'HSK 6'`, `LEVEL_POOLS.hsk6`, `ID_RANGES` → `hsk5: max 2500`, `hsk6: max Infinity`. Testler: `LEVELS` 6 eleman, `ALL_WORDS.length` **4.983**, aralık testi **1..5000** (eksikler yine TAM OLARAK 17 göç id'si), sınır testleri `2500 → hsk5` / `2501 → hsk6`. → **Faz 6 notu (§9):** hsk5 1300'e tamamlandığı için o 17 id yeniden doldu, `ALL_WORDS.length` **5.000** ve "eksikler = göç tablosu" testi kaldırıldı (yerine "id'ler boşluksuz").
 - **Doğrulama:** **188 test yeşil** (artışın nedeni: `quizBuilder.test.js` `test.each(Object.entries(LEVEL_POOLS))` → HSK 6 için bir gerçek-veri testi daha), lint **0 hata / 14 uyarı**, `tsc` **0 hata**, değişen 3 JS dosyası Babel parse OK, `npx expo export --platform android` **hatasız** (3,1 MB bundle; `dist/` silindi).
-- **Bilinçli sınırlama — HSK 6 örnek cümleleri YOK:** `exampleService` `EXAMPLES_MAP`'te hsk6 yok → `getExampleByWordId` `null` döner, `ExampleBox` `null`'da hiç çizilmez. Sonuç: HSK 6'da yanlış cevapta örnek kutusu boş kalır (**çökme yok**). Örnek cümleler ayrı bir kaynak/tel gerektirir; istenirse ayrı iş.
+- **Bilinçli sınırlama — HSK 6 örnek cümleleri YOKTU:** `exampleService` `EXAMPLES_MAP`'te hsk6 yoktu → `getExampleByWordId` `null` döner, `ExampleBox` `null`'da hiç çizilmez. Sonuç: HSK 6'da yanlış cevapta örnek kutusu boş kalır (**çökme yok**). → **Faz 6'da kısmen değişti (§9): eski hsk5 kuyruğundan taşınan 555 örnek artık `data/examples/hsk6_examples.js` içinde** (2500 kelimenin 555'i örnekli); kalanlar için hâlâ kaynak/tel gerekir.
 - **Performans notu:** `ALL_WORDS` 2.500 → **4.983** (Mixed ve çözülemeyen review kelimeleri). Şık üretimi dairesel tarama olduğu için maliyet havuz boyutundan neredeyse bağımsız (bkz. §7 "4.2"); `quizBuilder.js` yorumlarındaki sabit sayılar güncellendi.
 
 ---
 
-## 9. Bilinen açık riskler / notlar
+## 9. Faz 6 — HSK 5 resmî 1300 kelimelik listeyle değiştirildi (kod tamam; cihazda doğrulama ⏳ bekliyor)
+
+**Başlangıç isteği:** "internette araştırıp hsk5 listesini 1300'e tamamlayacak 17 kelimeyi bulup ekleyebilir misin" (17, Faz 4'te birleştirilen ikizlerin bıraktığı boşluktu). Araştırma, sorunun bundan **çok daha büyük** olduğunu gösterdi; kullanıcı onayıyla seviye tamamen resmî listeyle değiştirildi.
+
+**Referans:** resmî **Hanban 2012** listeleri (hskhsk.com'un yayınladığı `HSK Official ... 2012 L1..L6`) + **MandarinBean HSK 5 sayfası** — ikisi HSK 5'te **1300/1300 birebir aynı** (hsk6 dosyamız da resmî L6 ile 2500/2500 aynı ✓). Kaynaklar: `C:\Users\Olcan Askar\AppData\Local\Temp\opencode\hsk5-sources\` (`mb-full.txt`, `hskhsk-L*-def.txt`), üretim betikleri aynı klasörde (`build-hsk5-rebalance.js`, `generate-migration-tables.js`, `audit-all-levels.js`).
+
+**Faz 6 öncesi `data/hsk5.json` (1283 kelime):**
+
+- id **1201–1801** (601 kelime): resmî HSK 5'in ilk 601 satırı — birebir doğruydu ✔
+- id **1802–2500** (682 kelime): **555'i aslında HSK 6 kelimesi** (uygulamanın kendi hsk6 listesinde de var: 执行, 制造, 挨 …), 61'i HSK 5'in sonundaki kelime (执照, 指导, 咨询 …), 17'si Faz 4'te birleştirilen ikizlerin *diğer* kopyası, **66'sı hiçbir resmî listede yok** (ör. `言而喻` = `不言而喻`'in kopmuş hâli, `人人为我，我为人人`, `鼻梯`, `料`).
+- Sonuç: seviyedeki kelimelerin **621'i HSK 5 değildi** ve resmî listeden **638 kelime eksikti** (哎, 安装, 把握, 包括, 病毒, 播放, 脖子, 编辑 …).
+
+**Resmî listelere göre örtüşme (Faz 6 öncesi):** hsk1 %95 · hsk2 %97 · hsk3 %94 · **hsk4 %85** · hsk5 **%51** · hsk6 %100. Kütüphanede resmî 5001 kelimeden **702'si hiç yoktu**; 84 kelime hiçbir resmî listede yoktu. → **hsk1–4 hâlâ farklı bir kaynaktan geliyor; hsk4'ün %85'i (79 resmî kelime eksik) ayrı ve açık bir iştir** (kullanıcıya bildirildi, bu fazın kapsamı dışında bırakıldı).
+
+**Yapılan (`b4e8429`):** resmî HSK 5 satır **602–1300 = tam 699 kelime**, id 1802–2500 ise tam **699 slot** → ilk 601 kelimeye hiç dokunulmadan kuyruk resmî sırayla dolduruldu.
+
+- `data/hsk5.json`: **1300 kelime**, id 1201–2500; Faz 4'te boşalan 17 id (1889, 1894, …) kendiliğinden doldu → kütüphane **5.000 kelime, boşluk yok**. hsk5 artık resmî Hanban 2012 HSK 5 listesinin aynısı (kelime **ve** sıra). İlk 601 kaydın metni birebir korundu (`head deep-equal` doğrulaması).
+- Metin kaynağı MandarinBean (hsk6 ile aynı kaynak). **Tek boş anlam** (`乙`, id 2401) tarafımızdan yazıldı: "second of the ten heavenly stems" (hsk6'daki `丙` ile aynı üslup); ayrıca **tipografik kesme `’` → `'`** normalleştirildi (`bù'ān`, `Ma'am`).
+- `services/wordIdMigrations.js`: **`HSK5_REBALANCE_ID_MAP`** (616 kayıt: eski kuyruk id → kelimenin bugünkü id'si; **555'i hsk6'ya**, **61'i hsk5 içinde başka id'ye**) + **`HSK5_REBALANCE_DROPPED_IDS`** (66 kayıt: kelime artık hiçbir listede yok) + **`WORD_ID_MIGRATIONS`** (Faz 4 + Faz 6 birleşik, anahtarlar ayrık).
+- **Tek seferlik göç:** kaynak id'ler artık **başka** kelimeleri gösteriyor; tablolar ikinci kez uygulanırsa *yeni* ilerleme yanlış kelimeye taşınırdı. Bu yüzden `needsWordIdMigrations()` / `markWordIdMigrationsApplied()` + `@hsk_word_id_migration_version` işareti eklendi ve `App.js` göçü yalnızca işaret eskiyse uygular. Faz 4'ün 17 id'si de aynı kapıdan geçer (Faz 4 öncesinden gelen kullanıcı önce ikiz göçünü alır, sonra tablo bir daha çalışmaz).
+- **Örnek cümleler** id ile anahtarlanır → kelimeyle birlikte taşındı: hsk5 **662/1300** (601 baş + 61 taşınan), yeni **`data/examples/hsk6_examples.js`** (eski kuyruktan gelen **555/2500** — hsk6 artık kısmen örnekli), hedefi olmayan **66** örnek silindi. `exampleService` `EXAMPLES_MAP`'e `hsk6` eklendi. Yeni test **"yetim örnek kaydı yok"** kuralını altı seviyede doğrular.
+- **Kütüphaneden tamamen çıkan 60 kelime** (66 kaybolan − 6'sı app hsk1–4'te zaten var). Bunların **9'u gerçek HSK kelimesi** (至少, 总结, 自信, 戴, 法律, 脾气, 办法 …) ama app'in hsk3/hsk4'ünde yoklar: kaybolma nedenleri hsk1–4'ün kaynağının resmî listelerden farklı olması; hsk4 düzeltilirse geri gelirler. Kalanlar `鼻梯`/`言而喻` gibi yanlış kaynaklı artıklardı.
+- **Testler:** `ALL_WORDS.length` 4.983 → **5.000**, "id'ler boşluksuz" testi (eski "eksikler = göç tablosu" testi geçersiz: o id'ler artık dolu), yeni `__tests__/wordIdMigrations.test.js` (tablo bütünlüğü + örnek pinler + tek seferlik sürüm işareti), `reviewPool` göç testleri güncellendi (haritasız kayıt artık düşmez, **korunur**), `exampleService` testine hsk6 + yetim testi eklendi. **207 test / 11 suite**.
+- **Doğrulama:** `npm test` **207 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · değişen JS/JSX dosyaları Babel parse OK · `npx expo export --platform android` hatasız (3,1 MB; `dist/` silindi).
+- **Geri dönüş notu:** göç geri alınamaz (bkz. §10); `known-good` hâlâ `e9e881f` — cihaz doğrulaması onaylanana kadar ilerletilmez.
+
+---
+
+## 10. Bilinen açık riskler / notlar
 
 - **Uzak yedek (remote) KURULDU** — `origin` = GitHub private repo (bkz. §2). Geçmiş artık tek diskte değil; ama **düzenli `git push` unutulmamalı** (yerel commit'ler otomatik gitmez).
 - **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
@@ -415,20 +447,28 @@ Her maddeyi **ayrı commit** olarak yap.
   6. **Mixed:** Mixed modunda HSK 6 kelimeleri de çıkabilsin (toplam 4.983 kelime).
   7. **Review:** HSK 6'da yanlış yap → Home'daki Review sayacı artsın; Review'da o kelime HSK 6 örnek cümlesi olmadan normal sorulsun.
   8. **Regresyon:** HSK 1–5 soruları, özel desteler, sözlük arama, "İlerlemeyi sıfırla" ve 17 ikiz göçü eskisi gibi çalışsın.
+- **Cihaz testi (Faz 6: hsk5 resmî 1300 listesi, `b4e8429`) ⏳ BEKLİYOR** — geri dönüş gerekirse `known-good` = **`e9e881f`** (§9). Kontrol listesi:
+   1. **HSK 5 içeriği:** resmî listede olup eskiden olmayan kelimeler gelmeli (ör. 安装, 把握, 包括, 病毒, 播放, 脖子, 编辑). Eskiden kuyrukta yanlışlıkla duran **HSK 6 kelimeleri artık HSK 5'te çıkmamalı** (执行, 制造, 挨 …).
+   2. **HSK 6:** o kelimeler HSK 6'da normal sorulsun; HSK 6'da yanlış cevapta **örnek cümle kutusu artık dolu gelebilir** (555 kelimede var).
+   3. **İstatistik göçü:** eski sürümde HSK 5 kuyruğundan bir kelimeyi (ör. 执行) çalıştıysan ilerleme **kaybolmamalı**; kelime HSK 6'ya taşındığı için ustalık HSK 6 satırına geçer.
+   4. **Hata havuzu (Review):** eski yanlışlar yeni id'lere taşınmış olmalı; kütüphaneden çıkan kelimelerin (ör. 言而喻) kayıtları düşmeli.
+   5. **Göçün tekrar çalışmaması (en önemli):** yeni sürümde HSK 5 kuyruğundan bir kelimeyi birkaç kez doğru/yanlış yap, uygulamayı kapatıp aç → ilerleme **aynı kelimede** kalsın (yanlış kelimeye kaymasın). Aynısını 17 eski boş id'den biriyle dene (ör. 包含 artık HSK 5'te başka bir id'de).
+   6. **Örnek kutusu:** HSK 5'te örneği olmayan yeni kelimelerde kutu **hiç çizilmesin** (çökme yok); örneği olanlar eskisi gibi çalışsın.
+   7. **Regresyon:** Mixed / Review / özel desteler / sözlük arama / "İlerlemeyi sıfırla" ve HSK 1–4 soruları eskisi gibi çalışsın.
 - **Bilinçli olarak kapsam dışı (4.5):** `accessibilityState` (seçili sekme/şık), doğru-yanlış **duyurusu** (`announceForAccessibility`) ve modal içinde odak yönetimi eklenmedi. Bunlar istenirse ayrı bir "4.5b" olarak yapılabilir (durum + duyuru katmanı).
 - **Bileşenler için otomatik test yok** (jest yalnızca `services/`'i çalıştırır). Faz 4.1'de `react-test-renderer` ile **geçici** bir render kontrolü yapıldı (yükleme→içerik + aç/kapa) ve dosya silindi — `react-test-renderer` bildirilmiş bir bağımlılık değil ve React 19'da kullanımdan kaldırıldı. Kalıcı istatistiksel kontrol istenirse `@testing-library/react-native` bilinçli olarak eklenip birkaç ekran için duman testi yazılabilir (ayrı karar).
 - ~~**Ölü prop adları** (`Header` `onSelectLevel`/`onToggleMode`)~~ → **ÇÖZÜLDÜ (`e0249c4`)** · ~~**`hsk5.json`'da 17 ikiz kayıt**~~ → **ÇÖZÜLDÜ (`9044490`)**: küçük id korunarak tek kayda indirildi, anlam metni daha açıklayıcı olan seçildi, silinen id'ler için göç yazıldı (§7 "ek temizlikler E").
-- **hsk5 id göçü TEK YÖNLÜ** (`9044490`): birleştirme geri alınamaz. Eski bir sürüme dönülürse 17 kelimenin istatistiği bölünmüş hâline geri DÖNMEZ (hedef id'de birleşik kalır) — kayıp değil, sadece birleşik. Göç idempotent olduğu için ileri/geri geçişte tekrar uygulanması zarar vermez.
+- **Kelime id göçü TEK YÖNLÜ (Faz 4 `9044490` + Faz 6 `b4e8429`)**: ne ikiz birleştirme ne de hsk5 yeniden dengelemesi geri alınabilir. Faz 6'dan sonra **eski bir sürüme dönülürse**: (1) hsk5 kuyruğu eski (yanlış) kelimeleri gösterir, göç haritası olmadığı için yeni id'lerdeki ilerleme orada kalır; (2) **Faz 4 sürümündeki kapısız göç** (her açılışta çalışırdı) 17 id'nin *yeni* kelimelerinin ilerlemesini baş kısımdaki id'lere taşır → geri dönüş gerekirse kullanıcı verisi de (`@hsk_user_stats` + `@hsk_review_pool`) geri alınmalı ya da sıfırlanmalı. Faz 6'dan sonra göç bir daha çalışmaz: `@hsk_word_id_migration_version` = **2** işareti tutulur (§9).
 - **`wordStats[].level` alanı SİLİNDİ (Faz 3.3, `ef10c3a`)** — iki sorunluydu: (1) **hiç okunmuyordu** (`StatsModal` yalnızca `categories` kullanır), (2) **yanlış veri** tutuyordu: `QuizScreen` oturumun seviyesini geçiyordu, yani değer `hsk1` değil `'review'` / `'mixed'` / `'custom_X'` olabiliyordu. Bir kelimenin gerçek seviyesi gerekiyorsa **tek kaynak** `wordRepository.getLevelFromWordId(id)`. Diskteki eski kayıtlarda alan duruyor ama artık yazılmıyor ve hiçbir yerde okunmuyor (zararsız); göç gerekmez.
 - ~~`hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı~~ → **ÇÖZÜLDÜ (`869e8e9`, §8)**: alan **hsk1–4'ten kaldırıldı** (hiçbir kod okumuyordu; değerler `1..4` sayıydı), artık altı dosya da tek biçim: `{id, hanzi, pinyin, meaning}`. Seviye tespiti tek kaynaktan (`id` aralığı, `wordRepository`) yapılır (§5, 2.4).
-- **`hsk5.json`'da 17 ikiz kayıt** var (aynı hanzi iki kez, farklı id): 2'si birebir aynı (`财产` 1237/2002, `插` 1242/2024), 15'i yalnızca anlam yazımı farklı (`包含` 1206/1889). Kod artık bu ikizleri şık olarak göstermiyor ama istatistikler iki ayrı id'de birikiyor; veri temizliği ayrı bir iş.
+- ~~**`hsk5.json`'da 17 ikiz kayıt** var (aynı hanzi iki kez, farklı id): 2'si birebir aynı (`财产` 1237/2002, `插` 1242/2024), 15'i yalnızca anlam yazımı farklı (`包含` 1206/1889). Kod artık bu ikizleri şık olarak göstermiyor ama istatistikler iki ayrı id'de birikiyor; veri temizliği ayrı bir iş.~~ → **ÇÖZÜLDÜ (`9044490` + `b4e8429`, §9)**: Faz 4'te tek kayda indirildi, Faz 6'da o 17 id resmî HSK 5 kelimeleriyle yeniden doldu.
 - ~~`exampleService` ile `QuizScreen`'deki `id`→seviye aralıkları **iki yerde tekrar ediyor**~~ → **ÇÖZÜLDÜ (Faz 3.1, `816cb2f`)**: aralıklar artık yalnızca `services/wordRepository.js` içinde.
 - **`reviewPool` göçü TEK YÖNLÜ (Faz 3.2, `ea48c61`)** — `@hsk_review_pool` artık `{ wordId, wrongMode [, snapshot] }` saklar. 3.2 öncesi bir sürüme dönülürse eski kod bu şekli okuyamaz (`item.word || item` boş kelime üretir). Geri dönüş gerekirse `@hsk_review_pool` temizlenmeli (o ana kadar biriken yanlışlar gider); dönmeden önce `known-good` etiketinin hangi commit'te olduğuna bak.
 - **`HandwritingModal` harici Google `inputtools` servisine bağımlı** (çevrimdışı → `⚠️ No connection` uyarısı). İstek artık `services/handwritingService.js` üzerinden gidiyor ve **9 sn'lik garantili zaman aşımı** var (`⚠️ Timed out (internet slow?)`): yavaş/askıda kalan bağlantıda spinner sonsuza kadar dönmüyor. Hizmet kapanırsa/sözleşmesi değişirse tek dokunulacak yer bu servis.
 
 ---
 
-## 10. Yeni oturumda nasıl devam edilir
+## 11. Yeni oturumda nasıl devam edilir
 
 1. Bu dosyayı oku (`NOTES.md`).
 2. `git log --oneline` ve `git status` ile durumu doğrula.

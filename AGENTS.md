@@ -1,6 +1,6 @@
 # ChineseQuizApp — agent guide
 
-An Expo/React Native app (**SDK 57**) for studying HSK 1–6 vocabulary: a fixed library of 5,000 words (ids 1–5000, six levels; **HSK 5 and 6 follow the official Hanban 2012 lists** — 1300 + 2500 words, see `NOTES.md` §11), 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, and a stats screen.
+An Expo/React Native app (**SDK 57**) for studying HSK 1–6 vocabulary: a fixed library of 5,000 words (ids 1–5000, six levels; **HSK 5 and 6 follow the official Hanban 2012 lists** — 1300 + 2500 words, see `NOTES.md` §9), 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, and a stats screen.
 
 Plain **JavaScript** — JSX lives in `.js` files; there is no TypeScript source, but `tsconfig.json` type-checks the JS itself (`checkJs`). Navigation is **React Navigation (Stack)**, not Expo Router.
 
