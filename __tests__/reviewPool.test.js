@@ -13,7 +13,11 @@ import {
   toCanonicalEntry,
 } from '../services/reviewPool';
 import { ALL_WORDS, LEVEL_POOLS, getWordById } from '../services/wordRepository';
-import { MERGED_WORD_ID_MAP } from '../services/wordIdMigrations';
+import {
+  HSK5_REBALANCE_DROPPED_IDS,
+  HSK5_REBALANCE_ID_MAP,
+  MERGED_WORD_ID_MAP,
+} from '../services/wordIdMigrations';
 
 const SAMPLE = LEVEL_POOLS.hsk1[0]; // hsk1 kelimesi (level alanı var)
 const SAMPLE5 = LEVEL_POOLS.hsk5[0]; // hsk5 kelimesi (level alanı yok)
@@ -244,19 +248,46 @@ describe('reviewPool - göç (normalizeReviewPool)', () => {
 
   // Faz 4: hsk5'te birleştirilen kelime id'leri. Taşıma, çözümleme filtresinden ÖNCE
   // yapılmalı: silinen id veride olmadığı için kayıt aksi halde sessizce düşerdi.
-  test('idMap ile silinmiş id kayıtları hedef idye taşınır (haritasız kayıt düşer)', () => {
+  // Not (Faz 6): id 1889 artık CANLI bir HSK5 kelimesidir (resmi liste dolduruldu), bu
+  // yüzden harita YALNIZCA göç uygulanırken verilir — bkz. wordIdMigrations sürüm işareti.
+  test('idMap verilen kayıtlar hedef idye taşınır (haritasız kayıt korunur)', () => {
     const raw = [
       { wordId: 1889, wrongMode: 'hanzi-to-pinyin' },
       { wordId: 1889, wrongMode: 'pinyin-to-hanzi' },
       { wordId: 5, wrongMode: 'hanzi-to-pinyin' },
     ];
 
-    expect(normalizeReviewPool(raw)).toEqual([{ wordId: 5, wrongMode: 'hanzi-to-pinyin' }]);
+    // Haritasız: id çözülebildiği sürece kayıt korunur (Faz 6'dan sonra 1889 doludur).
+    expect(normalizeReviewPool(raw)).toEqual(raw);
 
     expect(normalizeReviewPool(raw, MERGED_WORD_ID_MAP)).toEqual([
       { wordId: 1206, wrongMode: 'hanzi-to-pinyin' },
       { wordId: 1206, wrongMode: 'pinyin-to-hanzi' },
       { wordId: 5, wrongMode: 'hanzi-to-pinyin' },
+    ]);
+  });
+
+  // Faz 6: hsk5 kuyruğu değişti. Eski kuyruk id'leri (ör. 1802 = 执行) yeni kelimeyi
+  // gösterir; göç haritası ilerlemeyi kelimenin gerçekten bulunduğu id'ye taşır.
+  test('Faz 6 göçü eski kuyruk id kayıtlarını kelimenin yeni id sine taşır', () => {
+    const raw = [{ wordId: 1802, wrongMode: 'hanzi-to-pinyin' }];
+
+    expect(normalizeReviewPool(raw, HSK5_REBALANCE_ID_MAP)).toEqual([
+      { wordId: HSK5_REBALANCE_ID_MAP[1802], wrongMode: 'hanzi-to-pinyin' },
+    ]);
+  });
+
+  // Hedefi olmayan kelimeler (artık hiçbir resmi listede yok) tam id listesiyle silinir:
+  // id'leri Faz 6'da YENİ kelimelere verildiği için haritayla ayırt edilemezler (App.js).
+  test('silinen kelimelerin havuz kayıtları tam id listesiyle düşer', () => {
+    const dropped = HSK5_REBALANCE_DROPPED_IDS[0];
+    const raw = [
+      { wordId: dropped, wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 1201, wrongMode: 'hanzi-to-pinyin' },
+    ];
+
+    expect(removeWordIds(raw, HSK5_REBALANCE_DROPPED_IDS)).toEqual([
+      { wordId: 1201, wrongMode: 'hanzi-to-pinyin' },
     ]);
   });
 

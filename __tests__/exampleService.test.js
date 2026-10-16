@@ -1,4 +1,20 @@
 import { getExampleByWordId } from '../services/exampleService';
+import { LEVEL_POOLS } from '../services/wordRepository';
+import hsk1Examples from '../data/examples/hsk1_examples';
+import hsk2Examples from '../data/examples/hsk2_examples';
+import hsk3Examples from '../data/examples/hsk3_examples';
+import hsk4Examples from '../data/examples/hsk4_examples';
+import hsk5Examples from '../data/examples/hsk5_examples';
+import hsk6Examples from '../data/examples/hsk6_examples';
+
+const EXAMPLES_BY_LEVEL = {
+  hsk1: hsk1Examples,
+  hsk2: hsk2Examples,
+  hsk3: hsk3Examples,
+  hsk4: hsk4Examples,
+  hsk5: hsk5Examples,
+  hsk6: hsk6Examples,
+};
 
 describe('getExampleByWordId', () => {
   test('hsk5 kelimesi için örnek döner (Faz 1 düzeltmesi)', () => {
@@ -39,5 +55,29 @@ describe('getExampleByWordId', () => {
 
   test('örneği olmayan id için null döner', () => {
     expect(getExampleByWordId('hsk1', 999999)).toBeNull();
+  });
+
+  // Faz 6: hsk5 kuyruğu değişti. Taşınan HSK6 kelimelerinin örnekleri hsk6 dosyasına
+  // geçti (hsk6 bu yüzden kısmen doludur), kalanlar hsk5 içinde yeni id'lerinde durur.
+  test('hsk6 kelimesi için örnek döner (eski hsk5 kuyruğundan taşındı)', () => {
+    const example = getExampleByWordId('hsk6', 2501);
+
+    expect(example).toBeTruthy();
+    expect(typeof example.hanzi).toBe('string');
+  });
+
+  test('mixed: hsk6 aralığındaki id de örnek bulur', () => {
+    expect(getExampleByWordId('mixed', 2501)).toBeTruthy();
+  });
+
+  // Örnek kayıtları id ile anahtarlanır; kelime başka seviyeye taşınırsa "yetim"
+  // kayıt kalır ve yanlış kelimenin cümlesi gösterilirdi. Bu test onu yakalar.
+  test('her seviyenin örnekleri kendi havuzundaki bir kelimeye çözülür (yetim kayıt yok)', () => {
+    for (const [level, examples] of Object.entries(EXAMPLES_BY_LEVEL)) {
+      const ids = new Set(LEVEL_POOLS[level].map((word) => word.id));
+      const orphans = Object.keys(examples).filter((key) => !ids.has(Number(key)));
+
+      expect({ level, orphans }).toEqual({ level, orphans: [] });
+    }
   });
 });

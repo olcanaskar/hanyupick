@@ -6,8 +6,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { normalizeReviewPool, removeWordIds } from './services/reviewPool';
-import { MERGED_WORD_ID_MAP } from './services/wordIdMigrations';
-import { mergeWordStatsIds } from './services/statsManager';
+import {
+  HSK5_REBALANCE_DROPPED_IDS,
+  WORD_ID_MIGRATIONS,
+  markWordIdMigrationsApplied,
+  needsWordIdMigrations,
+} from './services/wordIdMigrations';
+import { mergeWordStatsIds, removeWordStatsByIds } from './services/statsManager';
 import HomeScreen from './screens/HomeScreen';
 import QuizScreen from './screens/QuizScreen';
 import VocabularyScreen from './screens/VocabularyScreen';
@@ -31,10 +36,17 @@ export default function App() {
   useEffect(() => {
     const loadReviewPool = async () => {
       try {
-        // Faz 4 göçü: hsk5'te birleştirilen kelime id'leri (bkz. wordIdMigrations.js)
-        // diskteki istatistiklerde kalmışsa hedef id'ye taşınır. Yanlış havuzu için aynı
-        // eşleme aşağıda, normalizasyon sırasında uygulanır. İkisi de idempotenttir.
-        await mergeWordStatsIds(MERGED_WORD_ID_MAP);
+        // Faz 4 + Faz 6 id göçleri (bkz. services/wordIdMigrations.js). İkisi de TEK
+        // SEFER çalışır: kaynak id'ler artık BAŞKA kelimeleri gösterdiği için tablo
+        // ikinci kez uygulanırsa yeni ilerleme yanlış kelimeye taşınırdı. Bu yüzden
+        // sürüm işareti okunur, göçler uygulanır ve en son işaret yazılır.
+        const migrationPending = await needsWordIdMigrations();
+        if (migrationPending) {
+          // İstatistikler: taşınacak kayıt yoksa diske hiç yazılmaz (idempotent).
+          await mergeWordStatsIds(WORD_ID_MIGRATIONS);
+          // Hedefi olmayan (artık hiçbir listede bulunmayan) kelimelerin izleri silinir.
+          await removeWordStatsByIds(HSK5_REBALANCE_DROPPED_IDS);
+        }
 
         const savedData = await AsyncStorage.getItem(STORAGE_KEY);
         if (savedData !== null) {
@@ -42,7 +54,17 @@ export default function App() {
 
           // Faz 3.2 göçü: eski kayıtlar (kelime kopyası taşıyan şekiller) kanonik
           // şekle çevrilir. Veri değişmediği sürece görünür içerik aynı kalır.
-          const migrated = normalizeReviewPool(parsed, MERGED_WORD_ID_MAP);
+          // Faz 4/6 id göçü yalnızca uygulanmamışsa uygulanır (yukarıya bakın).
+          const migratedEntries = normalizeReviewPool(
+            parsed,
+            migrationPending ? WORD_ID_MIGRATIONS : null
+          );
+          // Hedefi olmayan (artık hiçbir listede bulunmayan) kelimelerin kayıtları
+          // düşer: id'leri Faz 6'da BAŞKA kelimelere verildiği için haritayla
+          // ayırt edilemezler, bu yüzden tam id listesiyle silinirler.
+          const migrated = migrationPending
+            ? removeWordIds(migratedEntries, HSK5_REBALANCE_DROPPED_IDS)
+            : migratedEntries;
           setReviewPool(migrated);
 
           // Göç gerçekten bir şey değiştirdiyse diski de güncelle (tek seferlik).
@@ -56,6 +78,9 @@ export default function App() {
             await AsyncStorage.setItem(STORAGE_KEY, migratedRaw);
           }
         }
+
+        // Göç uygulandı olarak işaretlenir (uygulanacak kayıt bulunmasa da).
+        if (migrationPending) await markWordIdMigrationsApplied();
       } catch (error) {
         console.error('Kayıtlı veriler yüklenemedi:', error);
       }

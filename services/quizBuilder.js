@@ -63,7 +63,7 @@ const hasConflict = (word, blockedValues) =>
 // donanım; ölçüm HSK 6 eklenmeden önce, o günkü havuz boyutlarıyla): hsk5 havuzu
 // (1.300) ~556 µs/soru, `ALL_WORDS` (2.500) ~1.294 µs/soru. Dairesel tarama ile
 // maliyet havuz boyutundan neredeyse bağımsız hale geldi (~4 µs/soru). Güncel
-// boyutlar: hsk5 1.283, ALL_WORDS 4.983 (HSK 6 eklendi).
+// boyutlar: hsk5 1.300, ALL_WORDS 5.000 (Faz 6: hsk5 resmî 1300 kelimelik liste).
 // `ALL_WORDS` tek havuz olarak şu durumlarda kullanılır: özel deste soruları
 // (`sameLevelPool` yok → `[ALL_WORDS]`) ve seviyesi bulunamayan inceleme kelimeleri.
 // Artık rastgele bir noktadan başlanıp DAİRESEL taranıyor: tipik durumda ilk birkaç

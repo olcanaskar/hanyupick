@@ -6,7 +6,6 @@ import {
   getLevelFromWordId,
   getWordPool,
 } from '../services/wordRepository';
-import { MERGED_WORD_ID_MAP } from '../services/wordIdMigrations';
 
 // Test, veriyi doğrudan okur (kodun kendi eşlemesine güvenmez). Böylece
 // wordRepository ile gerçek veri arasındaki ayrışma yakalanır.
@@ -49,9 +48,9 @@ describe('wordRepository - seviye tanımları', () => {
   test('ALL_WORDS tüm havuzların birleşimidir', () => {
     const expectedLength = LEVELS.reduce((sum, l) => sum + RAW_POOLS[l].length, 0);
     expect(ALL_WORDS.length).toBe(expectedLength);
-    // Faz 4 veri temizliği: hsk5'teki 17 ikiz kayıt silindi (2500 → 2483).
-    // HSK 6 eklendi: 2483 + 2500 = 4983.
-    expect(ALL_WORDS.length).toBe(4983);
+    // Faz 6: hsk5 resmi Hanban 2012 listesiyle (1300 kelime) değiştirildi; Faz 4'te
+    // 17 ikiz kayıt silindiği için 1283'e düşmüştü. 150+150+300+600+1300+2500 = 5000.
+    expect(ALL_WORDS.length).toBe(5000);
   });
 
   // Faz 4: veri sağlığı — aynı hanzi bir seviyenin içinde iki kez geçmez. (Seviyeler
@@ -111,32 +110,21 @@ describe('getLevelFromWordId', () => {
     });
   });
 
-  test("id'ler 1..5000 aralığında, benzersiz ve yalnızca birleştirilen 17 id eksik", () => {
+  test("id'ler 1..5000 aralığında, benzersiz ve boşluksuz", () => {
     const ids = ALL_WORDS.map((w) => w.id);
     const unique = new Set(ids);
     expect(unique.size).toBe(ids.length);
-    expect(ids.length).toBe(4983);
+    expect(ids.length).toBe(5000);
     expect(Math.min(...ids)).toBe(1);
     expect(Math.max(...ids)).toBe(5000);
 
-    // Veri temizliğinde silinen id'ler TAM OLARAK göç tablosundakilerdir.
+    // Faz 6: hsk5 resmi 1300 kelimeyle dolduruldu → Faz 4'te boşalan 17 id de
+    // gerçek kelime tutuyor, kütüphane artık TAM 5000 kayıt.
     const missing = [];
     for (let id = 1; id <= 5000; id++) {
       if (!unique.has(id)) missing.push(id);
     }
-    expect(missing.sort((a, b) => a - b)).toEqual(
-      Object.keys(MERGED_WORD_ID_MAP).map(Number).sort((a, b) => a - b)
-    );
-
-    // Göç hedefleri gerçekten veride olmalı; yoksa taşınan kayıt çözülemezdi.
-    for (const targetId of Object.values(MERGED_WORD_ID_MAP)) {
-      expect(unique.has(targetId)).toBe(true);
-      expect(getLevelFromWordId(targetId)).toBe('hsk5');
-    }
-    // Silinen id'ler artık hiçbir yerde olmamalı.
-    for (const removedId of Object.keys(MERGED_WORD_ID_MAP).map(Number)) {
-      expect(unique.has(removedId)).toBe(false);
-    }
+    expect(missing).toEqual([]);
   });
 });
 

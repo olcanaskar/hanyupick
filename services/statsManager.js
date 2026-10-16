@@ -165,16 +165,17 @@ export const removeWordStatsByIds = (wordIds) => {
   return statsWriteQueue;
 };
 
-// 6. Birleştirilen kelime id'lerinin istatistiğini hedef id'ye taşır (Faz 4 göçü).
+// 6. Bir kelimenin id'si değiştiğinde istatistiğini hedef id'ye taşır (Faz 4 + Faz 6).
 //
-// hsk5'te aynı kelime iki id ile bulunuyordu (bkz. services/wordIdMigrations.js) ve
-// kullanıcının cevapları iki id'ye BÖLÜNMÜŞ olabilir. Kayıtlar tek kelimeyi gösterdiği
+// İki durumda gerekir (bkz. services/wordIdMigrations.js): (a) hsk5'te aynı kelime iki id
+// ile bulunuyordu (Faz 4) ve (b) hsk5 kuyruğu resmî listeyle değiştiğinde kelime başka bir
+// id'ye (ya da HSK 6'ya) geçti (Faz 6). Her iki durumda kayıtlar TEK kelimeyi gösterdiği
 // için kategori serileri TOPLANIR: kullanıcı o kelimeyi toplam kaç kez doğru/yanlış
 // bilmişse o kadar sayılır.
 //
 // Bilinen sınır: araya karışık doğru/yanlış girmişse toplam, gerçek "kesintisiz seri"
-// uzunluğundan uzun olabilir. Yalnızca 17 kelime ve bölünmüş kayıtlar için geçerli
-// olduğundan kabul edilen bir ödündür (alternatifi veri kaybıdır).
+// uzunluğundan uzun olabilir. Yalnızca id'si değişen kelimeler için geçerli olduğundan
+// kabul edilen bir ödündür (alternatifi veri kaybıdır).
 export const mergeWordStatsRecords = (target, source) => {
   const categories = { ...((target && target.categories) || {}) };
 
