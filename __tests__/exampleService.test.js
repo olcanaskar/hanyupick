@@ -82,9 +82,10 @@ describe('getExampleByWordId', () => {
 
   // Faz 8: Faz 7'de resmî listeye geçince örneksiz kalan kelimelerin cümleleri
   // yazıldı (hsk1 5, hsk3 8, hsk4 78) -> hsk1-4 artık TAM (1200/1200).
-  // hsk5/hsk6 hâlâ kısmi; orada eksik örnek kabul edilir (sıradaki iş).
-  test('hsk1-4 örnek kapsamı tamdır (Faz 8)', () => {
-    for (const level of ['hsk1', 'hsk2', 'hsk3', 'hsk4']) {
+  // Faz 9: hsk5'in eksik 638 örneği yazıldı -> hsk5 de TAM (1300/1300).
+  // hsk6 hâlâ kısmi; orada eksik örnek kabul edilir (sıradaki iş).
+  test('hsk1-5 örnek kapsamı tamdır (Faz 8 + Faz 9)', () => {
+    for (const level of ['hsk1', 'hsk2', 'hsk3', 'hsk4', 'hsk5']) {
       const poolIds = new Set(LEVEL_POOLS[level].map((word) => word.id));
       const covered = Object.keys(EXAMPLES_BY_LEVEL[level]).filter((id) => poolIds.has(Number(id)));
 
@@ -99,6 +100,30 @@ describe('getExampleByWordId', () => {
     expect(getExampleByWordId('hsk4', 1184).hanzi).toContain('转');
     // Faz 7 öncesinden gelen örnekler aynen korunur.
     expect(getExampleByWordId('hsk4', 601).hanzi).toBe('他们的爱情故事很美。');
+  });
+
+  // Faz 9: hsk5'in eksik 638 örneği yazıldı. Ayrıca Faz 6 öncesi sıralamadan
+  // kalan ve başka kelimeye ait 22 "kaymış" kayıt doğru cümlelerle değiştirildi,
+  // 2 bozuk pinyin (按照 -> "ànz照") düzeltildi. Dokunulmayanlar aynen durur.
+  test('Faz 9 pinleri: yeni hsk5 örnekleri doğru kelimeye bağlı', () => {
+    expect(getExampleByWordId('hsk5', 1201).hanzi).toBe('唉，我真的不知道该怎么办。');
+    expect(getExampleByWordId('hsk5', 1803).hanzi).toContain('制定');
+    expect(getExampleByWordId('hsk5', 2227).hanzi).toContain('权利');
+    expect(getExampleByWordId('hsk5', 2491).hanzi).toContain('总统');
+    expect(getExampleByWordId('hsk5', 1256).pinyin).toContain('ànzhào');
+    expect(getExampleByWordId('hsk5', 1748).pinyin).toContain('yízhì');
+  });
+
+  // hsk5 tamamlandıktan sonra kapsam kontrolü yetmez: kaymış bir kayıt da
+  // "dolu" görünür. Bu yüzden her hsk5 örneğinin cümlesi kendi kelimesini
+  // birebir içermelidir (Faz 9'da 1300/1300 sağlandı).
+  test('hsk5: her örneğin cümlesi kendi kelimesini içerir (Faz 9)', () => {
+    const broken = LEVEL_POOLS.hsk5.filter((word) => {
+      const example = hsk5Examples[word.id];
+      return !example || !example.hanzi.includes(word.hanzi);
+    }).map((word) => word.id);
+
+    expect(broken).toEqual([]);
   });
 
   // Örnek kayıtları id ile anahtarlanır; kelime başka seviyeye taşınırsa "yetim"
