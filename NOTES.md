@@ -3,22 +3,22 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 4 tamamlandı (cihaz onayı)** — **4.6** (`d9e8b0b`: el yazısı `handwritingService`, 9 sn timeout), **4.1** (`593cc0d`: istatistik modalı anında açılma + `useMemo`), **4.2** (`99b3e2a`: şık üretimi havuz kopyası yok, ~556-1294 µs → ~4 µs), **4.3** (`1e0831e`: yüzen Hanzi matematiği servise, sınırlı hedef denemesi, canlı pencere ölçüsü), **4.5** (`4bbacf6` + `e98e860`: 8 dosyada `accessibilityRole/Label`, Android `Text` okunurluğu, modal karartmaları gizlendi; `1894f2b`: `QuestionCard` `promptStyle` TS2322 tip düzeltmesi) → **167 test yeşil**, **`tsc` 0 hata**, **`known-good` = `e98e860`** (force-pushed), **yeni yedek** `ChineseQuizApp-backup-2026-10-15_2256.tar.gz`. Kalan planlanmış kalem: **4.4** (quiz oturumu) — atlandı (karar). İsteğe bağlı temizlikler: silinen destenin istatistik/review kayıtları, boş havuzda boş ekran, kalıcı "İlerlemeyi sıfırla" butonu, Quiz geri butonu, `hsk5.json` 17 kopya kayıt.
+Son güncelleme: **Faz 4 kapandı + 5 ek temizlik tamamlandı** — Faz 4: **4.6** (`d9e8b0b`: el yazısı `handwritingService`, 9 sn timeout), **4.1** (`593cc0d`: istatistik modalı anında açılma + `useMemo`), **4.2** (`99b3e2a`: şık üretimi havuz kopyası yok, ~556-1294 µs → ~4 µs), **4.3** (`1e0831e`: yüzen Hanzi matematiği servise, sınırlı hedef denemesi, canlı pencere ölçüsü), **4.5** (`4bbacf6` + `e98e860`: 8 dosyada `accessibilityRole/Label`, Android `Text` okunurluğu, modal karartmaları gizlendi; `1894f2b`: `QuestionCard` `promptStyle` TS2322 tip düzeltmesi). Ek temizlikler: `Header` ölü prop adları (`e0249c4`), **boş havuzda boş ekran** (`47a4e7e`), **silinen destenin izleri** (`9341de4`), **"İlerlemeyi sıfırla"** (`c53141c`), **`hsk5.json` 17 ikiz kayıt + id göçü** (`9044490`) → **187 test yeşil**, **`tsc` 0 hata**, **lint 0 hata / 14 uyarı**, **`known-good` = `3a9370e`** (yerel; son 5 temizlik cihazda doğrulanmayı bekliyor), **yeni yedek** `ChineseQuizApp-backup-2026-10-16_1245.tar.gz`. Kalan: **4.4** (quiz oturumu) — kararla atlandı; isteğe bağlı: Quiz geri butonu, 4.5b (durum/duyuru katmanı), bileşen testleri.
 
 ---
 
 ## 1. Proje özeti
 
 HSK 1–5 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması.
-2.500 kelimelik sabit kütüphane, 6 soru yönü, yanlışları tekrar etme (Review),
+2.483 kelimelik sabit kütüphane (2.500 kayıttan 17 ikiz birleştirildi), 6 soru yönü, yanlışları tekrar etme (Review),
 JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı.
 
 - **Navigasyon:** React Navigation **Stack** (Expo Router DEĞİL — `AGENTS.md` bu konuda yanıltıcı, bkz. Faz 3.4).
 - **Giriş:** `index.js` → `App.js`.
 - **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`.
 - **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, CustomDeckModal, HandwritingModal, FloatingBackground).
-- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`.
-- **Veri:** `data/hsk1..5.json` (2.500 kelime, id 1–2500), `data/examples/hsk1..5_examples.js`.
+- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`, `services/handwritingService.js`, `services/floatingParticles.js`, `services/wordIdMigrations.js` (**birleştirilen kelime id'lerinin göç tablosu**, Faz 4 ek).
+- **Veri:** `data/hsk1..5.json` (**2.483 kelime**, id 1–2500 aralığında; hsk5'te birleştirilen 17 id eksik — bkz. §7 "ek temizlikler"), `data/examples/hsk1..5_examples.js`.
 
 ### Önemli sabitler / veri akışı
 
@@ -318,6 +318,24 @@ Her maddeyi **ayrı commit** olarak yap.
 - [x] **4.5** Erişilebilirlik: rol + etiket (İngilizce) → **`4bbacf6`** (8 dosya, 79 özellik; iç içe `TouchableOpacity` şık gizlemesi düzeltildi). Durum/duyuru katmanı kapsam dışı.
 - [x] **4.6** `HandwritingModal`: fetch zaman aşımı → **`d9e8b0b`** (istek `services/handwritingService.js`'e taşındı, `Promise.race` + `abort()`).
 
+### Faz 4 ek temizlikler (kullanıcı seçimi, her biri ayrı commit — cihaz doğrulaması ⏳ bekliyor)
+
+- [x] **A) `Header` ölü prop adları** → **`e0249c4`**. `onSelectLevel`/`onToggleMode` hiçbir çağrıda geçmiyordu (Header yalnızca `QuizScreen`'de, o da `setLevel`/`setMode` veriyor). İkinci biçim kaldırıldı; JSDoc gerekçeyi taşıyor.
+- [x] **B) Boş havuzda boş ekran** → **`47a4e7e`**. `QuizScreen` havuz boşsa `currentWord = null` yapıyordu ama boş-durum ekranı **yalnızca `review`** için vardı: özel deste silinirse/boş kalırsa ekran tamamen boş kalıyordu.
+  - Eklenenler: `isPoolLoading` bayrağı (özel desteler diskten okunurken "kelime yok" ekranı bir an bile görünmesin; istek sayacı `poolRequestRef` ile yalnızca EN SON isteğin sonucu yazılır), boş-durum ekranı tüm seviyelere genellendi, `services/importService.js`'e `isCustomDeckLevel()` + `CUSTOM_ID_PREFIX` eklendi (`QuizScreen`'deki `startsWith('custom_')` tek kaynağa bağlandı).
+  - Not: bu değişiklik `QuizScreen`'de **1 yeni `set-state-in-effect` uyarısı** doğurdu (13 → 14); kural bu projede bilinçli olarak uyarı seviyesinde (bkz. `eslint.config.js`), hata sayısı 0.
+- [x] **C) Silinen destenin izleri** → **`9341de4`**. `deleteCustomDeck` yalnızca desteyi siliyordu; o desteye ait `@hsk_user_stats` kayıtları ve `@hsk_review_pool` yanlışları kalıyordu (istatistikte "hayalet" satır / silinmiş kelime "sorunlu kelimeler" listesinde).
+  - `deleteCustomDeck` artık silinecek kelime id'lerini **önce** okuyup `{ success, deckName, removedIds }` döner; istatistikleri `statsManager.removeWordStatsByIds` (yazma kuyruğu üzerinden) temizler. Yanlış havuzunun sahibi `App.js` olduğu için `CustomDeckModal` `onCustomDeckDeleted` olayı yayar, `App.js` `reviewPool.removeWordIds` ile temizler ve diske yazar.
+  - Eşleşme **tam id listesiyle** yapılır, önek karşılaştırmasıyla DEĞİL: "Ders" destesinin öneki (`custom_Ders_`) "Ders_1" destesinin kelimeleriyle de eşleşirdi (test bunu korur).
+  - `removeWordStatsByIds` günlük aktivite/streak'e dokunmaz (onlar kelimeye değil güne bağlı).
+- [x] **D) Kalıcı "İlerlemeyi sıfırla"** → **`c53141c`**. `StatsModal`'ın en altında, üst çizgiyle ayrılmış tehlikeli bölge: buton → modalın kendi temasıyla çizilen **iki adımlı onay** (`Alert` kullanılmaz; uygulamanın geri kalanı da uyarıları kendi temasıyla çizer).
+  - `statsManager.clearAllStats()` (kelime istatistikleri + günlük aktivite + streak; yazma kuyruğunun SONUNDA çalışır, yani sırada bekleyen bir cevap varsa sıfırlama yine "en son söz" olur) + `onProgressReset` olayı ile `App.js` yanlış havuzunu boşaltır. Modal tazelenir, onay kapanır. **Özel desteler SİLİNMEZ** (yalnızca ilerleme).
+- [x] **E) `hsk5.json` 17 ikiz kayıt + id göçü** → **`9044490`**. Aynı hanzi + aynı pinyin ile iki kez bulunan 17 kelime tek kayda indirildi: **küçük id korundu** (liste sırası ve mevcut kayıtlar değişmesin), **anlam metni iki kayıttan daha açıklayıcısı** seçildi (uydurulmadı). 2.500 → **2.483** kayıt; `data/examples/hsk5_examples.js` içindeki 17 ölü örnek de silindi.
+  - Silinen id'ler artık veride yok; kullanıcının diskindeki kayıtlar sessizce düşmesin diye **göç** eklendi: yeni `services/wordIdMigrations.js` (`MERGED_WORD_ID_MAP`: 1889→1206, … 2454→1579) + `statsManager.mergeWordStatsIds` (kategori serileri **toplanır**, kayıt hedefte yoksa olduğu gibi taşınır) + `reviewPool.normalizeReviewPool(pool, idMap)` (taşıma **çözümleme filtresinden ÖNCE**; sonra aynı `(wordId, mod)` çifti tekilleşir). İkisi de **idempotent** (yazacak bir şey yoksa diske yazmaz) ve `App.js` açılışında bir kez çalışır.
+  - Bilinen ödün: bölünmüş kayıtlarda toplama, araya karışık doğru/yanlış girmişse "kesintisiz seri"yi olduğundan uzun sayabilir (yalnızca 17 kelime; alternatifi veri kaybıydı).
+  - Yeni kalıcı testler: seviye içinde **aynı hanzi iki kez geçmez**, id'ler 1..2500 arasında ve **eksikler tam olarak göç tablosundakiler**, göç hedefleri gerçekten veride; `mergeWordStatsIds` (toplama/taşıma/idempotentlik), `normalizeReviewPool` + harita (taşıma, tekilleşme, özel deste kayıtları etkilenmez).
+  - Not: `quizBuilder`'ın "ikiz kayıtlarda şıklar temiz" testleri BOZULMADI — seviyeler ARASI hanzi tekrarı bilinçli olarak var (49 grup, örn. 过 hsk2/3/4), test `ALL_WORDS` üzerinden çalışıyor.
+
 ---
 
 ## 8. Bilinen açık riskler / notlar
@@ -358,9 +376,16 @@ Her maddeyi **ayrı commit** olarak yap.
   6. **El yazısı + özel deste modalları:** adaylar "Candidate 日", Undo/Clear/Close, "Deck name", "Delete deck <ad>", içe aktarma; üzerine yazma uyarısında Cancel/Replace.
   7. **Dekoratif arka plan:** yüzen 18 Hanzi **hiç odaklanmamalı** (okunmamalı).
   8. Ekran okuyucu kapalıyken **tüm dokunuşlar eskisi gibi** çalışmalı (regresyon yok).
+- **Cihaz testi (Faz 4 ek temizlikler, `e0249c4` / `47a4e7e` / `9341de4` / `c53141c` / `9044490`) ⏳ BEKLİYOR** — `known-good` hâlâ `3a9370e`; doğrulanınca ilerletilir. Kontrol listesi:
+  1. **Boş havuz ekranı:** özel bir deste aktar, quiz'de o desteyi seç, sonra deste silinip boş kalırsa (ya da 0 kelimeli bir JSON aktarılırsa) quiz ekranı **boş kalmamalı**: "This deck has no words" + "Import it again from Home, or pick another level above." görünmeli. Üstteki seviye menüsünden başka bir seviyeye geçince soru normal gelmeli. Ayrıca uygulama açılışında/özel desteye geçerken **anlık "kelime yok" titremesi olmamalı**.
+  2. **Silinen destenin izleri:** bir özel desteyi çöz (birkaç doğru + en az 3 kez yanlış yap → `PROBLEMATIC WORDS`'te görünsün), sonra desteyi sil. İstatistik ekranında **o destenin ustalık satırı kalmamalı**, silinen kelime "Problematic Words" listesinde **görünmemeli**; HSK istatistikleri ve günlük aktivite **bozulmamalı**. Review'da o desteye ait yanlışlar da düşmeli (kalan yanlışlar durmalı).
+  3. **İlerlemeyi sıfırla:** İstatistik modalinin en altındaki "RESET PROGRESS" → onay kutusu ("CANCEL" / "YES, RESET"). Sıfırla: tüm HSK + özel deste yüzdeleri & "Problematic Words" boşalmalı, takvim/streak sıfırlanmalı, Home'daki Review sayacı **0** olmalı. **Özel desteler silinmemeli** (liste ve kelimeleri durmalı). Modal kapanıp açıldığında onay kutusu **kapalı** başlamalı.
+  4. **hsk5 ikizleri + göç:** `包含`/`宝贵`/`财产`… gibi kelimeler artık **tek kez** gelmeli (anlamları daha açık: "contain, embody" vb.). Bu kelimelerden birini 3 kez doğru/yanlış yapıp istatistiğin **tek satır** altında biriktiğini gör (kelime başına tek kayıt). Göç: uygulamayı eski sürümle açıp bu 17 kelimeden birini çalıştıysan, yeni sürüme geçince ilerleme **kaybolmamalı** (hedef id'ye taşınır).
+  5. **Regresyon:** header seviye/mode sekmeleri, quiz soru/şık/ipucu akışı ve elde yazı modali eskisi gibi çalışmalı.
 - **Bilinçli olarak kapsam dışı (4.5):** `accessibilityState` (seçili sekme/şık), doğru-yanlış **duyurusu** (`announceForAccessibility`) ve modal içinde odak yönetimi eklenmedi. Bunlar istenirse ayrı bir "4.5b" olarak yapılabilir (durum + duyuru katmanı).
 - **Bileşenler için otomatik test yok** (jest yalnızca `services/`'i çalıştırır). Faz 4.1'de `react-test-renderer` ile **geçici** bir render kontrolü yapıldı (yükleme→içerik + aç/kapa) ve dosya silindi — `react-test-renderer` bildirilmiş bir bağımlılık değil ve React 19'da kullanımdan kaldırıldı. Kalıcı istatistiksel kontrol istenirse `@testing-library/react-native` bilinçli olarak eklenip birkaç ekran için duman testi yazılabilir (ayrı karar).
-- **Ölü prop adları** (Faz 3.4b'de `tsc` sayesinde bulundu, temizlik adayı): `Header` iki prop adı çiftini destekliyor (`setLevel`/`onSelectLevel`, `setMode`/`onToggleMode`) ama `onSelectLevel`/`onToggleMode` **hiçbir çağrıda geçmiyor** (Header yalnızca `QuizScreen`'de kullanılıyor; o da `setX` biçimini veriyor). Tek biçime indirilebilir.
+- ~~**Ölü prop adları** (`Header` `onSelectLevel`/`onToggleMode`)~~ → **ÇÖZÜLDÜ (`e0249c4`)** · ~~**`hsk5.json`'da 17 ikiz kayıt**~~ → **ÇÖZÜLDÜ (`9044490`)**: küçük id korunarak tek kayda indirildi, anlam metni daha açıklayıcı olan seçildi, silinen id'ler için göç yazıldı (§7 "ek temizlikler E").
+- **hsk5 id göçü TEK YÖNLÜ** (`9044490`): birleştirme geri alınamaz. Eski bir sürüme dönülürse 17 kelimenin istatistiği bölünmüş hâline geri DÖNMEZ (hedef id'de birleşik kalır) — kayıp değil, sadece birleşik. Göç idempotent olduğu için ileri/geri geçişte tekrar uygulanması zarar vermez.
 - **`wordStats[].level` alanı SİLİNDİ (Faz 3.3, `ef10c3a`)** — iki sorunluydu: (1) **hiç okunmuyordu** (`StatsModal` yalnızca `categories` kullanır), (2) **yanlış veri** tutuyordu: `QuizScreen` oturumun seviyesini geçiyordu, yani değer `hsk1` değil `'review'` / `'mixed'` / `'custom_X'` olabiliyordu. Bir kelimenin gerçek seviyesi gerekiyorsa **tek kaynak** `wordRepository.getLevelFromWordId(id)`. Diskteki eski kayıtlarda alan duruyor ama artık yazılmıyor ve hiçbir yerde okunmuyor (zararsız); göç gerekmez.
 - `hsk5.json` kayıtlarında `level` alanı yok (hsk1–4'te var) — veri modeli tutarsızlığı (düşük öncelik). Seviye tespiti bu yüzden `id` aralığından yapılıyor (§5, 2.4).
 - **`hsk5.json`'da 17 ikiz kayıt** var (aynı hanzi iki kez, farklı id): 2'si birebir aynı (`财产` 1237/2002, `插` 1242/2024), 15'i yalnızca anlam yazımı farklı (`包含` 1206/1889). Kod artık bu ikizleri şık olarak göstermiyor ama istatistikler iki ayrı id'de birikiyor; veri temizliği ayrı bir iş.
