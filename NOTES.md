@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 7 — hsk1–4 resmî HSK 2012 listeleriyle hizalandı** (kod tamam, **cihazda doğrulama ⏳ bekliyor** — kontrol listesi §11, kayıt §10). Kapsam: `data/hsk1..4.json` MandarinBean / resmî Hanban 2012 L1–L4 listelerine göre yeniden kuruldu (**150/150/300/600**; sıra kelimenin kendi pinyin'inden türetilen hece anahtarına göre), resmî kalıplar (因为……所以……) tek kayıt oldu, **55 kelime** HSK 5/6'ya taşındı, **16 kelime** kütüphaneden çıktı, örnek cümleler hedef id'nin kendi seviyesine yeniden anahtarlandı (kapsam 1200 → **1109/1200**). Göç artık **sürüm-farkındalıklı** (Faz 4/6/7 yükselen sırayla). **219 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo export` hatasız. `known-good` hâlâ **`e9e881f`** (Faz 6 + Faz 7 doğrulanana kadar ilerletilmez).
+Son güncelleme: **Faz 7 — hsk1–4 resmî HSK 2012 listeleriyle hizalandı** (`5950ce4`; kod tamam, **cihazda doğrulama ⏳ bekliyor** — kontrol listesi §11, kayıt §10). Kapsam: `data/hsk1..4.json` MandarinBean / resmî Hanban 2012 L1–L4 listelerine göre yeniden kuruldu (**150/150/300/600**; sıra kelimenin kendi pinyin'inden türetilen hece anahtarına göre), resmî kalıplar (因为……所以……) tek kayıt oldu, **55 kelime** HSK 5/6'ya taşındı, **16 kelime** kütüphaneden çıktı, örnek cümleler hedef id'nin kendi seviyesine yeniden anahtarlandı (kapsam 1200 → **1109/1200**). Göç artık **sürüm-farkındalıklı** (Faz 4/6/7 yükselen sırayla). **219 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo export` hatasız. `known-good` hâlâ **`e9e881f`** (Faz 6 + Faz 7 doğrulanana kadar ilerletilmez).
 
 Önceki faz: **Faz 6 — hsk5 resmî 1300 kelimelik listeyle değiştirildi** (`b4e8429`; kod tamam, **cihazda doğrulama ⏳ bekliyor** — kayıt §9): `data/hsk5.json` 1300 kelime (id 1201–2500, ilk 601 kayıt korundu), ilerleme göçü + örnekler kelimeyle taşındı, göç tek seferlik sürüm işaretiyle kapılandı → **207 test yeşil**. Faz 5'in kaydı §8'dedir.
 
@@ -114,6 +114,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
+- **Faz 7 (hsk1–4 resmî liste) commit'i:** `5950ce4` (veri + göç tabloları + **sürüm-farkındalıklı** uygulama + `App.js` + örnekler + testler + `AGENTS.md` + `NOTES.md`) — **kod tamam, cihaz doğrulaması ⏳ bekliyor** (bkz. §10, §11). Doğrulanana kadar `known-good` = **`e9e881f`**.
 - **Faz 6 (hsk5 resmî liste) commit'i:** `b4e8429` (veri + göç tabloları + örnekler + App.js + testler + AGENTS.md) — **kod tamam, cihaz doğrulaması ⏳ bekliyor** (bkz. §9, §11). Doğrulanana kadar `known-good` = **`e9e881f`**.
 - **Faz 5 (HSK 6) commit'leri:** `7d12737` (veri) · `869e8e9` (`level` temizliği) · `07beb1e` (sunum) · `5a15ec3` (repo + testler) · `a3d5f01` ve `b1bbc5a` (doküman) — cihazda **doğrulandı ✅**; `known-good` artık bu doğrulamayı kaydeden doküman commit'inde (doğrulanan kod durumu `b1bbc5a`), yedek `ChineseQuizApp-backup-2026-10-16_1406.tar.gz` (bkz. §8, §9).
 - Her şey ters giderse dönüş: `git reset --hard known-good`
