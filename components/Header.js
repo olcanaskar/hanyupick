@@ -28,32 +28,26 @@ const BASE_LEVELS = [
 ];
 
 /**
- * Not: Header iki farklı prop adını destekliyor (`setLevel`/`onSelectLevel`,
- * `setMode`/`onToggleMode`); uygulamada yalnızca `setX` biçimi kullanılıyor,
- * yine de ikisi de opsiyonel olarak tanımlı (bkz. handleLevelChange/handleModeChange).
+ * Seviye ve mod değişikliğini `setLevel` / `setMode` callback'leriyle bildirir.
+ * (Faz 4 temizliği: alternatif `onSelectLevel` / `onToggleMode` adları hiçbir çağrıda
+ * kullanılmıyordu — `Header` yalnızca `QuizScreen`'de render ediliyor ve o da `setX`
+ * biçimini geçiyor — bu yüzden ikinci biçim kaldırıldı.)
  *
  * @param {{
  *   level: any,
  *   setLevel?: any,
- *   onSelectLevel?: any,
  *   mode?: string,
  *   setMode?: any,
- *   onToggleMode?: any,
  *   reviewCount?: number,
  * }} props
  */
 export default function Header({
   level,
   setLevel,
-  onSelectLevel,
   mode = DEFAULT_MODE,
   setMode,
-  onToggleMode,
   reviewCount = 0,
 }) {
-  const handleLevelChange = setLevel || onSelectLevel;
-  const handleModeChange = setMode || onToggleMode;
-
   const [containerWidth, setContainerWidth] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [levelsList, setLevelsList] = useState(BASE_LEVELS);
@@ -147,13 +141,13 @@ export default function Header({
     if (currentIndex === targetIndex) {
       const nextMode = getReverseMode(mode) || MODES_BY_CATEGORY[targetCategory][0];
       animateFlip(() => {
-        if (handleModeChange) handleModeChange(nextMode);
+        if (setMode) setMode(nextMode);
       });
       return;
     }
 
     // Farklı sekme: o kategorinin ileri yönü
-    if (handleModeChange) handleModeChange(MODES_BY_CATEGORY[targetCategory][0]);
+    if (setMode) setMode(MODES_BY_CATEGORY[targetCategory][0]);
   };
 
   // Butona basıldığında tam konumunu ölçüp menüyü altına yerleştirir
@@ -181,7 +175,7 @@ export default function Header({
     };
 
   const handleSelectLevel = (levelId) => {
-    if (handleLevelChange) handleLevelChange(levelId);
+    if (setLevel) setLevel(levelId);
     setIsDropdownOpen(false);
   };
 
