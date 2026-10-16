@@ -6,6 +6,7 @@ import {
   getLevelFromWordId,
   getWordPool,
 } from '../services/wordRepository';
+import { MERGED_WORD_ID_MAP } from '../services/wordIdMigrations';
 
 // Test, veriyi doğrudan okur (kodun kendi eşlemesine güvenmez). Böylece
 // wordRepository ile gerçek veri arasındaki ayrışma yakalanır.
@@ -46,7 +47,30 @@ describe('wordRepository - seviye tanımları', () => {
   test('ALL_WORDS tüm havuzların birleşimidir', () => {
     const expectedLength = LEVELS.reduce((sum, l) => sum + RAW_POOLS[l].length, 0);
     expect(ALL_WORDS.length).toBe(expectedLength);
-    expect(ALL_WORDS.length).toBe(2500);
+    // Faz 4 veri temizliği: hsk5'teki 17 ikiz kayıt silindi (2500 → 2483).
+    expect(ALL_WORDS.length).toBe(2483);
+  });
+
+  // Faz 4: veri sağlığı — aynı hanzi bir seviyenin içinde iki kez geçmez. (Seviyeler
+  // ARASI tekrar bilinçli olarak vardır: HSK listeleri kelimeleri farklı anlamlarla
+  // tekrar edebilir, örn. 过.) Bu test, ileride aynı ikiz kayıtların geri gelmesini
+  // engeller.
+  test('hiçbir seviyede aynı hanzi iki kez geçmez', () => {
+    LEVELS.forEach((level) => {
+      const counts = new Map();
+      RAW_POOLS[level].forEach((w) => counts.set(w.hanzi, (counts.get(w.hanzi) || 0) + 1));
+      const duplicated = [...counts.entries()].filter(([, n]) => n > 1);
+
+      expect(duplicated.map(([hanzi, n]) => `${hanzi}x${n}`)).toEqual([]);
+    });
+  });
+
+  test('her kayıtta hanzi, pinyin ve meaning alanları boş değil', () => {
+    const incomplete = ALL_WORDS.filter(
+      (w) => !w.hanzi || !w.pinyin || !w.meaning
+    );
+
+    expect(incomplete.map((w) => w.id)).toEqual([]);
   });
 });
 
@@ -82,13 +106,32 @@ describe('getLevelFromWordId', () => {
     });
   });
 
-  test("id'ler 1..2500 aralığında kesintisiz ve benzersiz", () => {
+  test("id'ler 1..2500 aralığında, benzersiz ve yalnızca birleştirilen 17 id eksik", () => {
     const ids = ALL_WORDS.map((w) => w.id);
     const unique = new Set(ids);
     expect(unique.size).toBe(ids.length);
-    expect(ids.length).toBe(2500);
+    expect(ids.length).toBe(2483);
     expect(Math.min(...ids)).toBe(1);
     expect(Math.max(...ids)).toBe(2500);
+
+    // Veri temizliğinde silinen id'ler TAM OLARAK göç tablosundakilerdir.
+    const missing = [];
+    for (let id = 1; id <= 2500; id++) {
+      if (!unique.has(id)) missing.push(id);
+    }
+    expect(missing.sort((a, b) => a - b)).toEqual(
+      Object.keys(MERGED_WORD_ID_MAP).map(Number).sort((a, b) => a - b)
+    );
+
+    // Göç hedefleri gerçekten veride olmalı; yoksa taşınan kayıt çözülemezdi.
+    for (const targetId of Object.values(MERGED_WORD_ID_MAP)) {
+      expect(unique.has(targetId)).toBe(true);
+      expect(getLevelFromWordId(targetId)).toBe('hsk5');
+    }
+    // Silinen id'ler artık hiçbir yerde olmamalı.
+    for (const removedId of Object.keys(MERGED_WORD_ID_MAP).map(Number)) {
+      expect(unique.has(removedId)).toBe(false);
+    }
   });
 });
 

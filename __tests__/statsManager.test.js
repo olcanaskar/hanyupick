@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getStats, recordAnswer, removeWordStatsByIds, clearAllStats, getMastery, isMastered, isProblematic } from '../services/statsManager';
+import { getStats, recordAnswer, removeWordStatsByIds, clearAllStats, mergeWordStatsIds, getMastery, isMastered, isProblematic } from '../services/statsManager';
 import { getDateKey, addDays } from '../services/dateUtils';
 
 const STATS_KEY = '@hsk_user_stats';
@@ -275,6 +275,81 @@ describe('clearAllStats — tüm ilerlemeyi sıfırla', () => {
     const data = await readStats();
     expect(data.wordStats[11]).toBeUndefined();
     expect(data.dailyStats).toEqual({});
+  });
+});
+
+// Faz 4: hsk5'te birleştirilen kelime id'leri (göç tablosu: services/wordIdMigrations.js).
+describe('mergeWordStatsIds — birleştirilen kelime id göçü', () => {
+  const MAP = { 1889: 1206 };
+
+  test('kayıt hedef idye taşınır; hedefte kayıt varsa kategori serileri TOPLANIR', async () => {
+    await seedStats({
+      wordStats: {
+        1206: { categories: { hanzi_pinyin: { streak: 1, wrongStreak: 0 } } },
+        1889: {
+          categories: {
+            hanzi_pinyin: { streak: 2, wrongStreak: 1 },
+            hanzi_meaning: { streak: 0, wrongStreak: 2 },
+          },
+        },
+      },
+      dailyStats: {},
+      streak: { current: 1, lastDate: today },
+    });
+
+    await mergeWordStatsIds(MAP);
+
+    const data = await readStats();
+    expect(data.wordStats['1889']).toBeUndefined();
+    expect(data.wordStats['1206'].categories.hanzi_pinyin).toEqual({ streak: 3, wrongStreak: 1 });
+    // Hedefte olmayan kategori de taşınır.
+    expect(data.wordStats['1206'].categories.hanzi_meaning).toEqual({
+      streak: 0,
+      wrongStreak: 2,
+    });
+  });
+
+  test('hedefte kayıt yoksa kayıt olduğu gibi taşınır', async () => {
+    await seedStats({
+      wordStats: { 1889: { categories: { hanzi_pinyin: { streak: 2, wrongStreak: 0 } } } },
+      dailyStats: {},
+      streak: { current: 1, lastDate: today },
+    });
+
+    await mergeWordStatsIds(MAP);
+
+    const data = await readStats();
+    expect(data.wordStats['1206']).toEqual({
+      categories: { hanzi_pinyin: { streak: 2, wrongStreak: 0 } },
+    });
+    expect(data.wordStats['1889']).toBeUndefined();
+  });
+
+  test('taşınacak kayıt yoksa disk değişmez (idempotent): false döner', async () => {
+    await seedStats({
+      wordStats: { 5: { categories: {} } },
+      dailyStats: {},
+      streak: { current: 1, lastDate: today },
+    });
+
+    await expect(mergeWordStatsIds(MAP)).resolves.toBe(false);
+
+    const data = await readStats();
+    expect(Object.keys(data.wordStats)).toEqual(['5']);
+  });
+
+  test('boş/geçersiz harita hiçbir şey yapmaz', async () => {
+    await seedStats({
+      wordStats: { 1889: { categories: {} } },
+      dailyStats: {},
+      streak: { current: 0, lastDate: null },
+    });
+
+    await mergeWordStatsIds(null);
+    await mergeWordStatsIds({});
+
+    const data = await readStats();
+    expect(data.wordStats['1889']).toBeDefined();
   });
 });
 

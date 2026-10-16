@@ -13,6 +13,7 @@ import {
   toCanonicalEntry,
 } from '../services/reviewPool';
 import { ALL_WORDS, LEVEL_POOLS, getWordById } from '../services/wordRepository';
+import { MERGED_WORD_ID_MAP } from '../services/wordIdMigrations';
 
 const SAMPLE = LEVEL_POOLS.hsk1[0]; // hsk1 kelimesi (level alanı var)
 const SAMPLE5 = LEVEL_POOLS.hsk5[0]; // hsk5 kelimesi (level alanı yok)
@@ -232,13 +233,56 @@ describe('reviewPool - göç (normalizeReviewPool)', () => {
     expect(JSON.stringify(again)).toBe(JSON.stringify(migrated));
   });
 
-  test('tüm 2.500 satır kopyalı veri kanonikleşir, hepsi çözülür ve snapshot taşımaz', () => {
+  test('tüm kelimeler için kopyalı veri kanonikleşir, hepsi çözülür ve snapshot taşımaz', () => {
     const legacy = ALL_WORDS.map((word) => legacyWithCopy(word, 'hanzi-to-pinyin'));
     const migrated = normalizeReviewPool(legacy);
 
     expect(migrated).toHaveLength(ALL_WORDS.length);
     expect(migrated.filter((entry) => entry.snapshot !== undefined)).toEqual([]);
     expect(migrated.every((entry) => resolveReviewWord(entry))).toBe(true);
+  });
+
+  // Faz 4: hsk5'te birleştirilen kelime id'leri. Taşıma, çözümleme filtresinden ÖNCE
+  // yapılmalı: silinen id veride olmadığı için kayıt aksi halde sessizce düşerdi.
+  test('idMap ile silinmiş id kayıtları hedef idye taşınır (haritasız kayıt düşer)', () => {
+    const raw = [
+      { wordId: 1889, wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 1889, wrongMode: 'pinyin-to-hanzi' },
+      { wordId: 5, wrongMode: 'hanzi-to-pinyin' },
+    ];
+
+    expect(normalizeReviewPool(raw)).toEqual([{ wordId: 5, wrongMode: 'hanzi-to-pinyin' }]);
+
+    expect(normalizeReviewPool(raw, MERGED_WORD_ID_MAP)).toEqual([
+      { wordId: 1206, wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 1206, wrongMode: 'pinyin-to-hanzi' },
+      { wordId: 5, wrongMode: 'hanzi-to-pinyin' },
+    ]);
+  });
+
+  test('taşımadan sonra aynı (wordId, mod) çifti tekilleşir', () => {
+    const raw = [
+      { wordId: 1206, wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 1889, wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 1889, wrongMode: 'hanzi-to-meaning' },
+    ];
+
+    expect(normalizeReviewPool(raw, MERGED_WORD_ID_MAP)).toEqual([
+      { wordId: 1206, wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 1206, wrongMode: 'hanzi-to-meaning' },
+    ]);
+  });
+
+  test('özel deste kayıtları haritadan etkilenmez (metin id)', () => {
+    const raw = [
+      {
+        wordId: 'custom_Ders_0',
+        wrongMode: 'hanzi-to-pinyin',
+        snapshot: { hanzi: '你', pinyin: 'nǐ', meaning: 'you' },
+      },
+    ];
+
+    expect(normalizeReviewPool(raw, MERGED_WORD_ID_MAP)).toEqual(raw);
   });
 
   test('göç ham veriyi küçültür (kelime kopyası düşer)', () => {

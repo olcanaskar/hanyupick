@@ -6,6 +6,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { normalizeReviewPool, removeWordIds } from './services/reviewPool';
+import { MERGED_WORD_ID_MAP } from './services/wordIdMigrations';
+import { mergeWordStatsIds } from './services/statsManager';
 import HomeScreen from './screens/HomeScreen';
 import QuizScreen from './screens/QuizScreen';
 import VocabularyScreen from './screens/VocabularyScreen';
@@ -29,13 +31,18 @@ export default function App() {
   useEffect(() => {
     const loadReviewPool = async () => {
       try {
+        // Faz 4 göçü: hsk5'te birleştirilen kelime id'leri (bkz. wordIdMigrations.js)
+        // diskteki istatistiklerde kalmışsa hedef id'ye taşınır. Yanlış havuzu için aynı
+        // eşleme aşağıda, normalizasyon sırasında uygulanır. İkisi de idempotenttir.
+        await mergeWordStatsIds(MERGED_WORD_ID_MAP);
+
         const savedData = await AsyncStorage.getItem(STORAGE_KEY);
         if (savedData !== null) {
           const parsed = JSON.parse(savedData);
 
           // Faz 3.2 göçü: eski kayıtlar (kelime kopyası taşıyan şekiller) kanonik
           // şekle çevrilir. Veri değişmediği sürece görünür içerik aynı kalır.
-          const migrated = normalizeReviewPool(parsed);
+          const migrated = normalizeReviewPool(parsed, MERGED_WORD_ID_MAP);
           setReviewPool(migrated);
 
           // Göç gerçekten bir şey değiştirdiyse diski de güncelle (tek seferlik).

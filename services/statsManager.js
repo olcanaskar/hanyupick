@@ -165,6 +165,64 @@ export const removeWordStatsByIds = (wordIds) => {
   return statsWriteQueue;
 };
 
+// 6. Birleştirilen kelime id'lerinin istatistiğini hedef id'ye taşır (Faz 4 göçü).
+//
+// hsk5'te aynı kelime iki id ile bulunuyordu (bkz. services/wordIdMigrations.js) ve
+// kullanıcının cevapları iki id'ye BÖLÜNMÜŞ olabilir. Kayıtlar tek kelimeyi gösterdiği
+// için kategori serileri TOPLANIR: kullanıcı o kelimeyi toplam kaç kez doğru/yanlış
+// bilmişse o kadar sayılır.
+//
+// Bilinen sınır: araya karışık doğru/yanlış girmişse toplam, gerçek "kesintisiz seri"
+// uzunluğundan uzun olabilir. Yalnızca 17 kelime ve bölünmüş kayıtlar için geçerli
+// olduğundan kabul edilen bir ödündür (alternatifi veri kaybıdır).
+export const mergeWordStatsRecords = (target, source) => {
+  const categories = { ...((target && target.categories) || {}) };
+
+  for (const [category, stat] of Object.entries((source && source.categories) || {})) {
+    const current = categories[category] || { streak: 0, wrongStreak: 0 };
+    categories[category] = {
+      streak: (current.streak || 0) + (stat && stat.streak ? stat.streak : 0),
+      wrongStreak: (current.wrongStreak || 0) + (stat && stat.wrongStreak ? stat.wrongStreak : 0),
+    };
+  }
+
+  // Kaydın diğer (varsa eski) alanları korunur.
+  return { ...target, categories };
+};
+
+// `idMap`: silinen id (anahtar) → tutulan id (değer). Yazma kuyruğu üzerinden çalışır;
+// taşınacak kayıt yoksa diske hiç yazılmaz (idempotent).
+export const mergeWordStatsIds = (idMap) => {
+  const pairs = idMap && typeof idMap === 'object' ? Object.entries(idMap) : [];
+  if (pairs.length === 0) return statsWriteQueue;
+
+  const performMerge = async () => {
+    const data = await getStats();
+    const wordStats = data.wordStats || {};
+    let changed = false;
+
+    for (const [fromId, toId] of pairs) {
+      const source = wordStats[fromId];
+      if (!source) continue;
+
+      const target = wordStats[toId];
+      wordStats[toId] = target ? mergeWordStatsRecords(target, source) : source;
+      delete wordStats[fromId];
+      changed = true;
+    }
+
+    if (changed) await AsyncStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(data));
+    return changed;
+  };
+
+  statsWriteQueue = statsWriteQueue.then(performMerge).catch((error) => {
+    console.error('İstatistik göçü uygulanamadı:', error);
+    return false;
+  });
+
+  return statsWriteQueue;
+};
+
 // 5. TÜM ilerlemeyi siler (Faz 4: kalıcı "İlerlemeyi sıfırla" butonu).
 //
 // Kelime istatistikleri, günlük aktivite ve streak birlikte sıfırlanır; diske boş kayıt

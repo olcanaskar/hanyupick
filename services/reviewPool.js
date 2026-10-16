@@ -112,15 +112,23 @@ const entryKey = (wordId, wrongMode) => `${wordId}::${wrongMode}`;
 // - Çözülemeyen kayıtlar (örn. artık var olmayan sayısal id) atlanır; böylece
 //   "ana ekranda N bekliyor yazıp Review'da hiç soru çıkmaması" durumu oluşmaz.
 // - Aynı (wordId, wrongMode) çifti tekilleşir; ilk görülen kayıt ve SIRA korunur.
-export const normalizeReviewPool = (raw) => {
+// - `idMap` verilirse (silinen id → tutulan id) kayıtlar ÖNCE yeni id'ye taşınır. Bu
+//   adım çözümlemeden ÖNCE olmak zorundadır: birleştirilen eski id artık veride
+//   bulunmadığı için kayıt aksi halde sessizce düşerdi (bkz. services/wordIdMigrations.js).
+export const normalizeReviewPool = (raw, idMap = null) => {
   if (!Array.isArray(raw)) return [];
 
   const seen = new Set();
   const result = [];
 
   for (const item of raw) {
-    const entry = toCanonicalEntry(item);
+    let entry = toCanonicalEntry(item);
     if (!entry) continue;
+
+    if (idMap && idMap[entry.wordId] !== undefined) {
+      entry = { ...entry, wordId: idMap[entry.wordId] };
+    }
+
     if (!resolveReviewWord(entry)) continue;
 
     const key = entryKey(entry.wordId, entry.wrongMode);
