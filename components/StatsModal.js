@@ -26,6 +26,7 @@ const LEVEL_COLORS = {
   hsk3: '#D97706',
   hsk4: '#2563EB',
   hsk5: '#7C3AED',
+  hsk6: '#0891B2',
 };
 
 // Özel desteler için tek renk: HSK seviye renklerinin hiçbiriyle çakışmaz.

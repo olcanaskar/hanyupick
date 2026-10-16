@@ -28,6 +28,7 @@ const LEVEL_PRESENTATION = {
   hsk3: { hanzi: '三级', difficulty: 'Intermediate' },
   hsk4: { hanzi: '四级', difficulty: 'Upper-Intermediate' },
   hsk5: { hanzi: '五级', difficulty: 'Advanced' },
+  hsk6: { hanzi: '六级', difficulty: 'Proficient' },
 };
 
 const BASE_LEVELS = [
