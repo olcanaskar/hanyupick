@@ -7,10 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { normalizeReviewPool, removeWordIds } from './services/reviewPool';
 import {
-  HSK5_REBALANCE_DROPPED_IDS,
-  WORD_ID_MIGRATIONS,
+  getPendingWordIdMigrations,
   markWordIdMigrationsApplied,
-  needsWordIdMigrations,
 } from './services/wordIdMigrations';
 import { mergeWordStatsIds, removeWordStatsByIds } from './services/statsManager';
 import HomeScreen from './screens/HomeScreen';
@@ -36,17 +34,21 @@ export default function App() {
   useEffect(() => {
     const loadReviewPool = async () => {
       try {
-        // Faz 4 + Faz 6 id göçleri (bkz. services/wordIdMigrations.js). İkisi de TEK
-        // SEFER çalışır: kaynak id'ler artık BAŞKA kelimeleri gösterdiği için tablo
-        // ikinci kez uygulanırsa yeni ilerleme yanlış kelimeye taşınırdı. Bu yüzden
-        // sürüm işareti okunur, göçler uygulanır ve en son işaret yazılır.
-        const migrationPending = await needsWordIdMigrations();
-        if (migrationPending) {
+        // Faz 4 + Faz 6 + Faz 7 id göçleri (bkz. services/wordIdMigrations.js). Her faz
+        // TEK SEFER ve SIRAYLA uygulanır: kaynak id'ler sonraki fazda BAŞKA kelimeleri
+        // gösterdiği için tablo ikinci kez uygulanırsa yeni ilerleme yanlış kelimeye
+        // taşınırdı. Bu yüzden yalnızca sürümü geride olan fazlar uygulanır ve en son
+        // sürüm işareti yazılır.
+        const pendingMigrations = await getPendingWordIdMigrations();
+        const migrationPending = pendingMigrations.length > 0;
+        for (const migration of pendingMigrations) {
           // İstatistikler: taşınacak kayıt yoksa diske hiç yazılmaz (idempotent).
-          await mergeWordStatsIds(WORD_ID_MIGRATIONS);
+          await mergeWordStatsIds(migration.map);
           // Hedefi olmayan (artık hiçbir listede bulunmayan) kelimelerin izleri silinir.
-          await removeWordStatsByIds(HSK5_REBALANCE_DROPPED_IDS);
+          await removeWordStatsByIds(migration.dropped);
         }
+        // Bu açılışta hedefi olmayan kelimeler (tüm bekleyen fazların toplamı).
+        const droppedIds = pendingMigrations.flatMap((migration) => migration.dropped);
 
         const savedData = await AsyncStorage.getItem(STORAGE_KEY);
         if (savedData !== null) {
@@ -54,17 +56,16 @@ export default function App() {
 
           // Faz 3.2 göçü: eski kayıtlar (kelime kopyası taşıyan şekiller) kanonik
           // şekle çevrilir. Veri değişmediği sürece görünür içerik aynı kalır.
-          // Faz 4/6 id göçü yalnızca uygulanmamışsa uygulanır (yukarıya bakın).
-          const migratedEntries = normalizeReviewPool(
-            parsed,
-            migrationPending ? WORD_ID_MIGRATIONS : null
-          );
+          // Faz 4/6/7 id göçleri yalnızca uygulanmamış fazlar için uygulanır.
+          let migratedEntries = parsed;
+          const migrationMaps = migrationPending ? pendingMigrations.map((m) => m.map) : [null];
+          for (const map of migrationMaps) {
+            migratedEntries = normalizeReviewPool(migratedEntries, map);
+          }
           // Hedefi olmayan (artık hiçbir listede bulunmayan) kelimelerin kayıtları
-          // düşer: id'leri Faz 6'da BAŞKA kelimelere verildiği için haritayla
+          // düşer: id'leri sonraki fazda BAŞKA kelimelere verildiği için haritayla
           // ayırt edilemezler, bu yüzden tam id listesiyle silinirler.
-          const migrated = migrationPending
-            ? removeWordIds(migratedEntries, HSK5_REBALANCE_DROPPED_IDS)
-            : migratedEntries;
+          const migrated = removeWordIds(migratedEntries, droppedIds);
           setReviewPool(migrated);
 
           // Göç gerçekten bir şey değiştirdiyse diski de güncelle (tek seferlik).

@@ -55,16 +55,22 @@ describe('wordRepository - seviye tanımları', () => {
 
   // Faz 4: veri sağlığı — aynı hanzi bir seviyenin içinde iki kez geçmez. (Seviyeler
   // ARASI tekrar bilinçli olarak vardır: HSK listeleri kelimeleri farklı anlamlarla
-  // tekrar edebilir, örn. 过.) Bu test, ileride aynı ikiz kayıtların geri gelmesini
-  // engeller.
-  test('hiçbir seviyede aynı hanzi iki kez geçmez', () => {
+  // tekrar edebilir, örn. 过.)
+  //
+  // Faz 7 istisnası: resmi HSK 2012 listesinin KENDİSİ üç kelimeyi aynı seviyede iki
+  // kez verir (farklı anlamlarla): 对 (hsk2), 花 ve 只 (hsk3). Bu üçü bilinçlidir;
+  // başka bir ikiz eklenirse test kırılır.
+  test('aynı seviyedeki ikiz kayıtlar yalnızca resmi listedeki bilinen ikizlerdir', () => {
+    const duplicated = [];
     LEVELS.forEach((level) => {
       const counts = new Map();
       RAW_POOLS[level].forEach((w) => counts.set(w.hanzi, (counts.get(w.hanzi) || 0) + 1));
-      const duplicated = [...counts.entries()].filter(([, n]) => n > 1);
-
-      expect(duplicated.map(([hanzi, n]) => `${hanzi}x${n}`)).toEqual([]);
+      [...counts.entries()]
+        .filter(([, n]) => n > 1)
+        .forEach(([hanzi, n]) => duplicated.push(`${level}:${hanzi}x${n}`));
     });
+
+    expect(duplicated.sort()).toEqual(['hsk2:对x2', 'hsk3:只x2', 'hsk3:花x2']);
   });
 
   test('her kayıtta hanzi, pinyin ve meaning alanları boş değil', () => {

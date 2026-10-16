@@ -70,6 +70,23 @@ describe('getExampleByWordId', () => {
     expect(getExampleByWordId('mixed', 2501)).toBeTruthy();
   });
 
+  // Faz 7: hsk1-4 resmi 2012 listeleriyle hizalandı. Kelimeler sıra/seviye
+  // değiştirdi; örnekler HEDEF id'nin kendi seviyesine taşındı (seviye değiştiren
+  // kelimenin cümlesi onunla gelir), üst seviyeye taşınanların örneği düşer.
+  test('Faz 7 sonrası taşınan kelimelerin örnekleri hedef idde durur', () => {
+    // 零 hsk1#57 -> hsk2#214, 笔记本 hsk4#617 -> hsk3#318, 欢迎 hsk2#300 -> hsk3#400.
+    expect(getExampleByWordId('hsk2', 214).hanzi).toContain('零');
+    expect(getExampleByWordId('hsk3', 318)).toBeTruthy();
+    expect(getExampleByWordId('hsk3', 400)).toBeTruthy();
+  });
+
+  test('Faz 7\'de eklenen yeni kelime örneksiz olabilir (boşluk null döner)', () => {
+    // 坐 resmi L1'de yeni; örneği yoksa ExampleBox hiçbir şey çizmez.
+    const example = getExampleByWordId('hsk1', 150);
+
+    expect(example === null || typeof example.hanzi === 'string').toBe(true);
+  });
+
   // Örnek kayıtları id ile anahtarlanır; kelime başka seviyeye taşınırsa "yetim"
   // kayıt kalır ve yanlış kelimenin cümlesi gösterilirdi. Bu test onu yakalar.
   test('her seviyenin örnekleri kendi havuzundaki bir kelimeye çözülür (yetim kayıt yok)', () => {
