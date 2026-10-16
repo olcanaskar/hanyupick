@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ALL_WORDS, LEVEL_POOLS, getWordById, getLevelFromWordId } from '../services/wordRepository';
+import { mergeWordStatsIds } from '../services/statsManager';
 import {
   HSK14_REALIGN_DROPPED_IDS,
   HSK14_REALIGN_ID_MAP,
@@ -168,6 +169,40 @@ describe('wordIdMigrations - Faz 7 (hsk1-4 hizalaması)', () => {
     await AsyncStorage.clear();
     const versions = (await getPendingWordIdMigrations()).map((m) => m.version);
     expect(versions).toEqual([1, 2, 3]);
+  });
+
+  // Uçtan uca: zincirli id. Doğru sırada eski 1843 kaydı Faz 6 hedefine gider, 暗'nin
+  // (604) kaydı Faz 7 ile 1843'e oturur. Ters sırada iki kayıt 1843'te BİRLEŞİR ve
+  // Faz 6 hepsini yanlış id'ye taşır (mergeWordStatsIds serileri toplar).
+  test('zincirli id: yükselen sıra ilerlemeyi doğru id\'ye oturtur', async () => {
+    const STATS_KEY = '@hsk_user_stats';
+    const seed = {
+      wordStats: {
+        604: { correct: 2, wrong: 1, streak: 1 }, // 暗 (hsk4)
+        1843: { correct: 5, wrong: 0, streak: 5 }, // eski hsk5 kelimesi
+      },
+      dailyStats: {},
+      streak: 0,
+    };
+    const readWordStats = async () =>
+      JSON.parse(await AsyncStorage.getItem(STATS_KEY)).wordStats;
+
+    await AsyncStorage.clear();
+    await AsyncStorage.setItem(STATS_KEY, JSON.stringify(seed));
+    for (const migration of await getPendingWordIdMigrations()) {
+      await mergeWordStatsIds(migration.map);
+    }
+    const right = await readWordStats();
+    expect(right[604]).toBeUndefined();
+    expect(right[1843]).toEqual(seed.wordStats[604]);
+    expect(right[HSK5_REBALANCE_ID_MAP[1843]]).toEqual(seed.wordStats[1843]);
+
+    // Ters sıra aynı sonucu vermez (regresyon koruması).
+    await AsyncStorage.setItem(STATS_KEY, JSON.stringify(seed));
+    await mergeWordStatsIds(HSK14_REALIGN_ID_MAP);
+    await mergeWordStatsIds(HSK5_REBALANCE_ID_MAP);
+    const wrong = await readWordStats();
+    expect(wrong[1843]).toBeUndefined();
   });
 });
 
