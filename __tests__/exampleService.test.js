@@ -80,11 +80,25 @@ describe('getExampleByWordId', () => {
     expect(getExampleByWordId('hsk3', 400)).toBeTruthy();
   });
 
-  test('Faz 7\'de eklenen yeni kelime örneksiz olabilir (boşluk null döner)', () => {
-    // 坐 resmi L1'de yeni; örneği yoksa ExampleBox hiçbir şey çizmez.
-    const example = getExampleByWordId('hsk1', 150);
+  // Faz 8: Faz 7'de resmî listeye geçince örneksiz kalan kelimelerin cümleleri
+  // yazıldı (hsk1 5, hsk3 8, hsk4 78) -> hsk1-4 artık TAM (1200/1200).
+  // hsk5/hsk6 hâlâ kısmi; orada eksik örnek kabul edilir (sıradaki iş).
+  test('hsk1-4 örnek kapsamı tamdır (Faz 8)', () => {
+    for (const level of ['hsk1', 'hsk2', 'hsk3', 'hsk4']) {
+      const poolIds = new Set(LEVEL_POOLS[level].map((word) => word.id));
+      const covered = Object.keys(EXAMPLES_BY_LEVEL[level]).filter((id) => poolIds.has(Number(id)));
 
-    expect(example === null || typeof example.hanzi === 'string').toBe(true);
+      expect({ level, missing: poolIds.size - covered.length }).toEqual({ level, missing: 0 });
+    }
+  });
+
+  test('Faz 8 pinleri: yeni yazılan örnekler doğru kelimeye bağlı', () => {
+    expect(getExampleByWordId('hsk1', 150).hanzi).toContain('坐');
+    expect(getExampleByWordId('hsk3', 583).hanzi).toContain('只');
+    expect(getExampleByWordId('hsk4', 680).hanzi).toContain('倒');
+    expect(getExampleByWordId('hsk4', 1184).hanzi).toContain('转');
+    // Faz 7 öncesinden gelen örnekler aynen korunur.
+    expect(getExampleByWordId('hsk4', 601).hanzi).toBe('他们的爱情故事很美。');
   });
 
   // Örnek kayıtları id ile anahtarlanır; kelime başka seviyeye taşınırsa "yetim"

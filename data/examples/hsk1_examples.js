@@ -34,6 +34,7 @@ const hsk1Examples = {
   "31": { "hanzi": "认识你很高兴。", "pinyin": "Rènshi nǐ hěn gāoxìng.", "meaning": "Nice to meet you." },
   "32": { "hanzi": "我有一个哥哥。", "pinyin": "Wǒ yǒu yī gè gēge.", "meaning": "I have an older brother." },
   "33": { "hanzi": "我的工作很忙。", "pinyin": "Wǒ de gōngzuò hěn máng.", "meaning": "My work is very busy." },
+  "34": { "hanzi": "我家有一只狗。", "pinyin": "Wǒ jiā yǒu yì zhī gǒu.", "meaning": "My family has a dog." },
   "35": { "hanzi": "我在学习汉语。", "pinyin": "Wǒ zài xuéxí Hànyǔ.", "meaning": "I am learning Chinese." },
   "36": { "hanzi": "今天天气很好。", "pinyin": "Jīntiān tiānqì hěn hǎo.", "meaning": "Today's weather is very good." },
   "37": { "hanzi": "今天是五号。", "pinyin": "Jīntiān shì wǔ hào.", "meaning": "Today is the 5th." },
@@ -145,7 +146,11 @@ const hsk1Examples = {
   "143": { "hanzi": "我想去中国。", "pinyin": "Wǒ xiǎng qù Zhōngguó.", "meaning": "I want to go to China." },
   "144": { "hanzi": "中午我们一起吃饭。", "pinyin": "Zhōngwǔ wǒmen yīqǐ chīfàn.", "meaning": "We eat lunch together at noon." },
   "145": { "hanzi": "我住在北京。", "pinyin": "Wǒ zhù zài Běijīng.", "meaning": "I live in Beijing." },
-  "146": { "hanzi": "书在桌子上。", "pinyin": "Shū zài zhuōzi shàng.", "meaning": "The book is on the table." }
+  "146": { "hanzi": "书在桌子上。", "pinyin": "Shū zài zhuōzi shàng.", "meaning": "The book is on the table." },
+  "147": { "hanzi": "这个字我不认识。", "pinyin": "Zhège zì wǒ bú rènshi.", "meaning": "I don't know this character." },
+  "148": { "hanzi": "昨天我很忙。", "pinyin": "Zuótiān wǒ hěn máng.", "meaning": "I was very busy yesterday." },
+  "149": { "hanzi": "你在做什么？", "pinyin": "Nǐ zài zuò shénme?", "meaning": "What are you doing?" },
+  "150": { "hanzi": "请坐这儿。", "pinyin": "Qǐng zuò zhèr.", "meaning": "Please sit here." }
 };
 
 export default hsk1Examples;
