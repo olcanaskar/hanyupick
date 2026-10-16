@@ -1,6 +1,8 @@
 import * as DocumentPicker from 'expo-document-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { removeWordStatsByIds } from './statsManager';
+
 const CUSTOM_DECKS_KEY = '@custom_word_decks';
 
 // Deste adından kelime id öneki üretir (alfanümerik olmayan her karakter '_').
@@ -154,15 +156,33 @@ export const getCustomDecks = async () => {
   }
 };
 
+// 3. Deste silme.
+//
+// Silme yalnızca desteyi kaldırmaz: o desteye ait KALICI İZLER de temizlenir, aksi
+// halde istatistikler var olmayan kelimeleri göstermeye devam eder (hayalet kayıt).
+// İki veri ayrı yerde tutulduğu için temizlik ikiye ayrılır:
+//   - @hsk_user_stats : burada silinir (statsManager'ın yazma kuyruğu üzerinden).
+//   - @hsk_review_pool: sahibi App.js'tir; silinen kelime id'leri `removedIds` ile
+//     çağırana döner, çağıran `onCustomDeckDeleted` olayını yayar (App.js temizler).
 export const deleteCustomDeck = async (deckName) => {
   try {
     const data = await AsyncStorage.getItem(CUSTOM_DECKS_KEY);
     const customDecks = data ? JSON.parse(data) : {};
+
+    // Kelime id'leri SİLMEDEN ÖNCE alınır; deste kaydı gidince erişilemezler.
+    const removedWords = Array.isArray(customDecks[deckName]) ? customDecks[deckName] : [];
+    const removedIds = removedWords
+      .map((word) => word && word.id)
+      .filter((id) => id !== undefined && id !== null);
+
     delete customDecks[deckName];
     await AsyncStorage.setItem(CUSTOM_DECKS_KEY, JSON.stringify(customDecks));
-    return true;
+
+    if (removedIds.length > 0) await removeWordStatsByIds(removedIds);
+
+    return { success: true, deckName, removedIds };
   } catch (error) {
     console.error('Error deleting custom deck:', error);
-    return false;
+    return { success: false, deckName, removedIds: [] };
   }
 };

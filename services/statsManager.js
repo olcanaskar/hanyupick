@@ -112,6 +112,8 @@ const performRecordAnswer = async ({ wordId, mode, isCorrect }) => {
 // 3. Cevap kayıtlarını sıraya alan kuyruk.
 //    Aynı anda gelen iki cevabın aynı anlık görüntüyü okuyup birbirinin yazımını
 //    ezmesini (lost update / yarış koşulu) engeller: her yazma, bir önceki bitince başlar.
+//    Kuyruk aynı zamanda istatistik SİLME işlerini de taşır (aşağıdaki removeWordStatsByIds).
+/** @type {Promise<unknown>} */
 let statsWriteQueue = Promise.resolve();
 
 export const recordAnswer = (payload) => {
@@ -120,5 +122,45 @@ export const recordAnswer = (payload) => {
     .catch((error) => {
       console.error('İstatistik kaydedilemedi:', error);
     });
+  return statsWriteQueue;
+};
+
+// 4. Belirli kelime id'lerinin istatistiğini siler (Faz 4: silinen destenin izleri).
+//
+// Neden gerekli: bir özel deste silindiğinde `wordStats` içindeki `custom_...` kayıtları
+// kalırsa "sorunlu kelimeler" listesi var olmayan bir kelimeyi göstermeye devam eder.
+//
+// Yazma, cevap kayıtlarıyla AYNI kuyruk üzerinden yapılır: aksi halde tam o anda işlenen
+// bir cevap (recordAnswer) diskteki eski kopyayı geri yazar ve temizlik kaybolurdu.
+//
+// Günlük aktivite ve streak KORUNUR: onlar kelimeye değil güne bağlıdır.
+// Dönen değer: temizlik gerçekten bir şey sildiyse true.
+export const removeWordStatsByIds = (wordIds) => {
+  const ids = Array.isArray(wordIds) ? wordIds : [];
+  if (ids.length === 0) return statsWriteQueue;
+
+  const performRemove = async () => {
+    const data = await getStats();
+    const wordStats = data.wordStats || {};
+    let changed = false;
+
+    for (const id of ids) {
+      // JSON'dan okunan anahtarlar metindir; sayısal id de metne çevrilerek aranır.
+      const key = String(id);
+      if (Object.prototype.hasOwnProperty.call(wordStats, key)) {
+        delete wordStats[key];
+        changed = true;
+      }
+    }
+
+    if (changed) await AsyncStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(data));
+    return changed;
+  };
+
+  statsWriteQueue = statsWriteQueue.then(performRemove).catch((error) => {
+    console.error('İstatistik silinemedi:', error);
+    return false;
+  });
+
   return statsWriteQueue;
 };

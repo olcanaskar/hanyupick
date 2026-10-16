@@ -102,7 +102,6 @@ export default function QuizScreen({
   const generateQuestion = useCallback(async (targetLevel = level, targetMode = mode) => {
     const requestId = poolRequestRef.current + 1;
     poolRequestRef.current = requestId;
-    setIsPoolLoading(true);
 
     let currentPool = [];
 
@@ -111,6 +110,9 @@ export default function QuizScreen({
         .map(resolveReviewWord)
         .filter(Boolean);
     } else if (isCustomDeckLevel(targetLevel)) {
+      // Özel deste diskten okunur: bu bekleme sırasında "kelime yok" ekranı
+      // görünmesin diye bayrak burada kaldırılır/indirilir.
+      setIsPoolLoading(true);
       const deckName = targetLevel.replace(CUSTOM_ID_PREFIX, '');
       const customDecks = await getCustomDecks();
       currentPool = customDecks[deckName] || [];

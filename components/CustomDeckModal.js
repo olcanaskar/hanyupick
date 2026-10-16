@@ -178,10 +178,16 @@ export default function CustomDeckModal({ visible, onClose }) {
   // Silme Onayı
   const handleConfirmDelete = async () => {
     if (!deckToDelete) return;
-    await deleteCustomDeck(deckToDelete);
+    const result = await deleteCustomDeck(deckToDelete);
     setDeckToDelete(null);
     await loadDecks();
     DeviceEventEmitter.emit('onCustomDeckImported');
+
+    // Destenin yanlışları @hsk_review_pool'da tutulur; o havuzun sahibi App.js olduğu
+    // için temizlik orada yapılır (istatistik temizliği deleteCustomDeck içinde).
+    if (result && result.success) {
+      DeviceEventEmitter.emit('onCustomDeckDeleted', result.removedIds);
+    }
   };
 
   const deckNames = Object.keys(decks);

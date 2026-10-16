@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getStats, recordAnswer, getMastery, isMastered, isProblematic } from '../services/statsManager';
+import { getStats, recordAnswer, removeWordStatsByIds, getMastery, isMastered, isProblematic } from '../services/statsManager';
 import { getDateKey, addDays } from '../services/dateUtils';
 
 const STATS_KEY = '@hsk_user_stats';
@@ -173,6 +173,69 @@ describe('recordAnswer — yerel gün anahtarı (Faz 2.2)', () => {
 
     const data = await readStats();
     expect(Object.keys(data.dailyStats)).toEqual(['2026-03-11']);
+  });
+});
+
+// Faz 4: silinen özel destenin izleri — istatistikte hayalet kayıt kalmaz.
+describe('removeWordStatsByIds — silinen destenin izleri', () => {
+  const seedMixedStats = () =>
+    seedStats({
+      wordStats: {
+        5: { categories: {}, level: 'hsk1' },
+        custom_A_0: { categories: {} },
+        custom_A_1: { categories: {} },
+        custom_B_0: { categories: {} },
+      },
+      dailyStats: { [today]: { correct: 2, wrong: 1 } },
+      streak: { current: 3, lastDate: today },
+    });
+
+  test('yalnızca verilen idlerin kelime istatistiği silinir (sayı ve metin id)', async () => {
+    await seedMixedStats();
+
+    await removeWordStatsByIds([5, 'custom_A_0', 'custom_A_1']);
+
+    const data = await readStats();
+    expect(Object.keys(data.wordStats).sort()).toEqual(['custom_B_0']);
+  });
+
+  test('günlük aktivite ve streak KORUNUR (kelimeye değil güne bağlı)', async () => {
+    await seedMixedStats();
+
+    await removeWordStatsByIds(['custom_A_0']);
+
+    const data = await readStats();
+    expect(data.dailyStats[today]).toEqual({ correct: 2, wrong: 1 });
+    expect(data.streak).toEqual({ current: 3, lastDate: today });
+  });
+
+  test('eşleşme yoksa diske yazmaz: false döner, eşleşmede true', async () => {
+    await seedMixedStats();
+
+    await expect(removeWordStatsByIds(['boyle_bir_id_yok'])).resolves.toBe(false);
+    await expect(removeWordStatsByIds(['custom_A_0'])).resolves.toBe(true);
+  });
+
+  test('boş liste hiçbir şeyi değiştirmez', async () => {
+    await seedMixedStats();
+
+    await removeWordStatsByIds([]);
+
+    const data = await readStats();
+    expect(Object.keys(data.wordStats)).toHaveLength(4);
+  });
+
+  test('devam eden cevap kaydıyla aynı anda çalışsa bile ikisi de kaybolmaz (kuyruk)', async () => {
+    await seedMixedStats();
+
+    await Promise.all([
+      recordAnswer({ wordId: 6, mode: 'hanzi-to-pinyin', isCorrect: true }),
+      removeWordStatsByIds(['custom_A_0']),
+    ]);
+
+    const data = await readStats();
+    expect(data.wordStats[6]).toBeDefined();
+    expect(data.wordStats.custom_A_0).toBeUndefined();
   });
 });
 

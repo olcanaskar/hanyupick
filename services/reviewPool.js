@@ -160,3 +160,17 @@ export const removeEntry = (pool, wordId, wrongMode) => {
   );
   return next.length === list.length ? list : next;
 };
+
+// Verilen kelime id'lerine ait TÜM kayıtları (her modda) havuzdan çıkarır.
+// Kullanım: bir özel deste silindiğinde o desteye ait yanlışlar da düşsün (Faz 4).
+// Prefix eşleştirmesi YERİNE tam id listesi verilir: "Ders" destesinin öneki
+// ("custom_Ders_"), "Ders_1" destesinin kelimeleriyle de eşleşirdi.
+// Eşleşme yoksa AYNI diziyi döner (gereksiz yazma/state tetiklenmez).
+export const removeWordIds = (pool, wordIds) => {
+  const list = Array.isArray(pool) ? pool : [];
+  const ids = wordIds instanceof Set ? wordIds : new Set(Array.isArray(wordIds) ? wordIds : []);
+  if (ids.size === 0) return list;
+
+  const next = list.filter((entry) => !ids.has(entry && entry.wordId));
+  return next.length === list.length ? list : next;
+};

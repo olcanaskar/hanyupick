@@ -131,15 +131,42 @@ describe('özel desteler (custom decks)', () => {
     expect(decks['Ders 1!'][0].level).toBe('custom');
   });
 
-  test('deste silinir, diğerleri korunur', async () => {
+  test('deste silinir, diğerleri korunur ve silinen kelime idleri döner', async () => {
     await saveCustomDeck('A', VALID_WORDS.slice(0, 1));
     await saveCustomDeck('B', VALID_WORDS.slice(0, 1));
 
-    await deleteCustomDeck('A');
+    const result = await deleteCustomDeck('A');
 
     const decks = await getCustomDecks();
     expect(decks.A).toBeUndefined();
     expect(decks.B).toBeDefined();
+    expect(result.success).toBe(true);
+    expect(result.removedIds).toEqual(['custom_A_1']);
+  });
+
+  // Faz 4: silme yalnızca desteyi kaldırmaz; o desteye ait istatistik de temizlenir,
+  // aksi halde "sorunlu kelimeler" silinmiş bir kelimeyi göstermeye devam ederdi.
+  test('silme, o desteye ait istatistiği de temizler (başkalarınınki kalır)', async () => {
+    await saveCustomDeck('A', VALID_WORDS.slice(0, 1));
+    await saveCustomDeck('B', VALID_WORDS.slice(0, 1));
+
+    await AsyncStorage.setItem(
+      '@hsk_user_stats',
+      JSON.stringify({
+        wordStats: {
+          5: { categories: {} },
+          custom_A_1: { categories: {} },
+          custom_B_1: { categories: {} },
+        },
+        dailyStats: {},
+        streak: { current: 1, lastDate: null },
+      })
+    );
+
+    await deleteCustomDeck('A');
+
+    const stats = JSON.parse(await AsyncStorage.getItem('@hsk_user_stats'));
+    expect(Object.keys(stats.wordStats).sort()).toEqual(['5', 'custom_B_1']);
   });
 
   test('bozuk depoda getCustomDecks boş nesne döner', async () => {

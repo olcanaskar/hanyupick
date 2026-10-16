@@ -8,6 +8,7 @@ import {
   makeReviewEntry,
   normalizeReviewPool,
   removeEntry,
+  removeWordIds,
   resolveReviewWord,
   toCanonicalEntry,
 } from '../services/reviewPool';
@@ -293,6 +294,41 @@ describe('reviewPool - havuz yardımcıları', () => {
     // Mod eşleşmezse silinmez (aynı kelimenin diğer modu korunur).
     expect(removeEntry(pool, 1, 'pinyin-to-hanzi')).toBe(pool);
     expect(removeEntry(pool, 999, 'hanzi-to-pinyin')).toBe(pool);
+  });
+
+  // Faz 4: silinen özel destenin yanlışları (tam id listesiyle) havuzdan düşürülür.
+  test('removeWordIds verilen idleri tüm modlarda siler; eşleşme yoksa AYNI diziyi döner', () => {
+    const mixed = [
+      { wordId: 'custom_A_0', wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 'custom_A_0', wrongMode: 'pinyin-to-hanzi' },
+      { wordId: 'custom_A_1', wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 'custom_B_0', wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 7, wrongMode: 'hanzi-to-pinyin' },
+    ];
+
+    const pruned = removeWordIds(mixed, ['custom_A_0', 'custom_A_1']);
+
+    expect(pruned).toHaveLength(2);
+    expect(pruned.map((entry) => entry.wordId)).toEqual(['custom_B_0', 7]);
+
+    // Set de kabul edilir; silinecek kayıt yoksa gereksiz yeni dizi üretilmez.
+    expect(removeWordIds(mixed, new Set(['custom_B_0']))).toHaveLength(4);
+    expect(removeWordIds(mixed, ['yok'])).toBe(mixed);
+    expect(removeWordIds(mixed, [])).toBe(mixed);
+    expect(removeWordIds(null, ['custom_A_0'])).toEqual([]);
+  });
+
+  test('removeWordIds önek eşleştirmesi YAPMAZ ("Ders" silmek "Ders_1"i etkilemez)', () => {
+    const poolWithSimilarDecks = [
+      { wordId: 'custom_Ders_1', wrongMode: 'hanzi-to-pinyin' },
+      { wordId: 'custom_Ders_1_5', wrongMode: 'hanzi-to-pinyin' },
+    ];
+
+    // "Ders" destesinin kelimeleri tam idleriyle verilir; "Ders_1" destesinin
+    // kelimesi (`custom_Ders_1_5`) prefix benzerliği yüzünden silinmemeli.
+    const pruned = removeWordIds(poolWithSimilarDecks, ['custom_Ders_1']);
+
+    expect(pruned).toEqual([{ wordId: 'custom_Ders_1_5', wrongMode: 'hanzi-to-pinyin' }]);
   });
 
   test('makeReviewEntry HSK için snapshot üretmez, özel deste için üretir', () => {

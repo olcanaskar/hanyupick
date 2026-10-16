@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { DeviceEventEmitter } from 'react-native';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { normalizeReviewPool } from './services/reviewPool';
+import { normalizeReviewPool, removeWordIds } from './services/reviewPool';
 import HomeScreen from './screens/HomeScreen';
 import QuizScreen from './screens/QuizScreen';
 import VocabularyScreen from './screens/VocabularyScreen';
@@ -57,7 +58,7 @@ export default function App() {
   }, []);
 
   // 2. reviewPool değiştikçe diske kaydet
-  const updateReviewPool = (updater) => {
+  const updateReviewPool = useCallback((updater) => {
     setReviewPool((prev) => {
       const nextState = typeof updater === 'function' ? updater(prev) : updater;
       AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(nextState)).catch((err) =>
@@ -65,7 +66,20 @@ export default function App() {
       );
       return nextState;
     });
-  };
+  }, []);
+
+  // 3. Bir özel deste silinince o desteye ait yanlışlar da havuzdan düşsün.
+  //    Havuzun sahibi burasıdır (kalıcılığı da yukarıdaki update ile olur); istatistik
+  //    tarafındaki temizlik `deleteCustomDeck` içinde yapılır.
+  useEffect(() => {
+    const deckDeletedSub = DeviceEventEmitter.addListener('onCustomDeckDeleted', (removedIds) => {
+      updateReviewPool((prev) => removeWordIds(prev, removedIds));
+    });
+
+    return () => {
+      deckDeletedSub.remove();
+    };
+  }, [updateReviewPool]);
 
   // Not: @react-navigation v7 tip tanımları Stack.Navigator'da `id` alanını zorunlu
   // tutuyor (çalışma zamanında opsiyoneldir). Değer yalnızca `navigation.getParent(id)`
