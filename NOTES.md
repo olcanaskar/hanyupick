@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 5 kapandı — HSK 6 entegrasyonu** (cihaz doğrulaması ⏳ bekliyor): **`7d12737`** `data/hsk6.json` (2.500 kelime, id **2501–5000**; kaynak `C:\Projects\App\hsk6\HSK-6-Vocabulary.pdf`, bağımlılıksız kendi CMap çıkarıcımızla üretildi) · **`869e8e9`** kullanılmayan `level` alanı hsk1–4'ten kaldırıldı (tek veri modeli: `{id, hanzi, pinyin, meaning}`) · **`07beb1e`** `HomeScreen`/`StatsModal` HSK 6 sunumu (yoksa açılışta çöküyordu) · **`5a15ec3`** `wordRepository` HSK 6 (`LEVELS`/etiket/havuz + `ID_RANGES` 2501–5000) + testler → **188 test yeşil**, **`tsc` 0 hata**, lint **0 hata / 14 uyarı**, `expo export` hatasız. Kütüphane **2.483 → 4.983 kelime** (bkz. §8). Önceki: Faz 4 + ek temizlikler, `known-good` = **`341d49e`**.
+Son güncelleme: **Faz 5 kapandı — HSK 6 entegrasyonu** (cihaz doğrulaması ⏳ bekliyor): **`7d12737`** `data/hsk6.json` (2.500 kelime, id **2501–5000**; kaynak `C:\Projects\App\hsk6\HSK-6-Vocabulary.pdf`, bağımlılıksız kendi CMap çıkarıcımızla üretildi) · **`869e8e9`** kullanılmayan `level` alanı hsk1–4'ten kaldırıldı (tek veri modeli: `{id, hanzi, pinyin, meaning}`) · **`07beb1e`** `HomeScreen`/`StatsModal` HSK 6 sunumu (yoksa açılışta çöküyordu) · **`5a15ec3`** `wordRepository` HSK 6 (`LEVELS`/etiket/havuz + `ID_RANGES` 2501–5000) + testler → **188 test yeşil**, **`tsc` 0 hata**, lint **0 hata / 14 uyarı**, `expo export` hatasız. Kütüphane **2.483 → 4.983 kelime** (bkz. §8). Önceki: Faz 4 + ek temizlikler, `known-good` = **`832cdec`**.
 
 ---
 
@@ -111,7 +111,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 5 (HSK 6) commit'leri:** `7d12737` (veri) · `869e8e9` (`level` temizliği) · `07beb1e` (sunum) · `5a15ec3` (repo + testler) — cihaz doğrulaması gelene kadar `known-good` **`341d49e`**'de kalır (bkz. §8, §9).
+- **Faz 5 (HSK 6) commit'leri:** `7d12737` (veri) · `869e8e9` (`level` temizliği) · `07beb1e` (sunum) · `5a15ec3` (repo + testler) · `a3d5f01` (doküman) — cihaz doğrulaması gelene kadar `known-good` **`832cdec`**'te kalır (bkz. §8, §9).
 - Her şey ters giderse dönüş: `git reset --hard known-good`
 - Tek commit geri alma: `git revert <hash>`
 - Kaydedilmemiş dosya geri alma: `git restore <dosya>`
@@ -400,13 +400,13 @@ Her maddeyi **ayrı commit** olarak yap.
   6. **El yazısı + özel deste modalları:** adaylar "Candidate 日", Undo/Clear/Close, "Deck name", "Delete deck <ad>", içe aktarma; üzerine yazma uyarısında Cancel/Replace.
   7. **Dekoratif arka plan:** yüzen 18 Hanzi **hiç odaklanmamalı** (okunmamalı).
   8. Ekran okuyucu kapalıyken **tüm dokunuşlar eskisi gibi** çalışmalı (regresyon yok).
-- **Cihaz testi (Faz 4 ek temizlikler, `e0249c4` / `47a4e7e` / `9341de4` / `c53141c` / `9044490`) ✅ TAMAMLANDI** (kullanıcı: "hepsi sorunsuz") — `known-good` = **`341d49e`**. Kontrol listesi (gelecekte regresyon olursa yeniden bakılabilir):
+- **Cihaz testi (Faz 4 ek temizlikler, `e0249c4` / `47a4e7e` / `9341de4` / `c53141c` / `9044490`) ✅ TAMAMLANDI** (kullanıcı: "hepsi sorunsuz") — `known-good` = **`832cdec`** (doğrulamayı kaydeden doküman commit'i; doğrulanan kod durumu `341d49e`). Kontrol listesi (gelecekte regresyon olursa yeniden bakılabilir):
   1. **Boş havuz ekranı:** özel bir deste aktar, quiz'de o desteyi seç, sonra deste silinip boş kalırsa (ya da 0 kelimeli bir JSON aktarılırsa) quiz ekranı **boş kalmamalı**: "This deck has no words" + "Import it again from Home, or pick another level above." görünmeli. Üstteki seviye menüsünden başka bir seviyeye geçince soru normal gelmeli. Ayrıca uygulama açılışında/özel desteye geçerken **anlık "kelime yok" titremesi olmamalı**.
   2. **Silinen destenin izleri:** bir özel desteyi çöz (birkaç doğru + en az 3 kez yanlış yap → `PROBLEMATIC WORDS`'te görünsün), sonra desteyi sil. İstatistik ekranında **o destenin ustalık satırı kalmamalı**, silinen kelime "Problematic Words" listesinde **görünmemeli**; HSK istatistikleri ve günlük aktivite **bozulmamalı**. Review'da o desteye ait yanlışlar da düşmeli (kalan yanlışlar durmalı).
   3. **İlerlemeyi sıfırla:** İstatistik modalinin en altındaki "RESET PROGRESS" → onay kutusu ("CANCEL" / "YES, RESET"). Sıfırla: tüm HSK + özel deste yüzdeleri & "Problematic Words" boşalmalı, takvim/streak sıfırlanmalı, Home'daki Review sayacı **0** olmalı. **Özel desteler silinmemeli** (liste ve kelimeleri durmalı). Modal kapanıp açıldığında onay kutusu **kapalı** başlamalı.
   4. **hsk5 ikizleri + göç:** `包含`/`宝贵`/`财产`… gibi kelimeler artık **tek kez** gelmeli (anlamları daha açık: "contain, embody" vb.). Bu kelimelerden birini 3 kez doğru/yanlış yapıp istatistiğin **tek satır** altında biriktiğini gör (kelime başına tek kayıt). Göç: uygulamayı eski sürümle açıp bu 17 kelimeden birini çalıştıysan, yeni sürüme geçince ilerleme **kaybolmamalı** (hedef id'ye taşınır).
   5. **Regresyon:** header seviye/mode sekmeleri, quiz soru/şık/ipucu akışı ve elde yazı modali eskisi gibi çalışmalı.
-- **Cihaz testi (Faz 5: HSK 6 entegrasyonu, `7d12737` / `869e8e9` / `07beb1e` / `5a15ec3`) ⏳ BEKLİYOR** — geri dönüş gerekirse `known-good` = **`341d49e`** (yeni veri dosyası sorun çıkarırsa `git reset --hard known-good`). Kontrol listesi:
+- **Cihaz testi (Faz 5: HSK 6 entegrasyonu, `7d12737` / `869e8e9` / `07beb1e` / `5a15ec3` / `a3d5f01`) ⏳ BEKLİYOR** — geri dönüş gerekirse `known-good` = **`832cdec`** (yeni veri dosyası sorun çıkarırsa `git reset --hard known-good`). Kontrol listesi:
   1. **Home seviye listesi:** menüde **HSK 6** görünsün — "六级" + "2500 words · Proficient". Menü 7 satır (HSK 1–6 + Mixed) ile kaydırılabilir kalsın, taşma/kesilme olmasın.
   2. **Header seviye menüsü:** quiz içinde seviye menüsünden HSK 6 seçilebilsin; sorular HSK 6'dan gelsin (ör. ilk kelimeler 挨 / 癌症 / 爱不释手).
   3. **6 mod:** HSK 6'da hanzi→anlam, anlam→hanzi, pinyin modları ve ters yönleri çalışsın; şıklar **aynı seviyeden** gelsin, aynı şık iki kez görünmesin. Uzun anlamlar ("So much that one cannot bear to part with it") taşmadan okunabilsin.
