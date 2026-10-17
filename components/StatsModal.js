@@ -958,7 +958,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   calendarDayTextToday: {
-    color: '#DC2626',
+    color: '#7F1D1D',
     fontWeight: '800',
   },
   // Tooltip Stilleri
