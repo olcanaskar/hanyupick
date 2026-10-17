@@ -36,8 +36,8 @@ npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored
 | Path | Contents |
 | --- | --- |
 | `index.js` → `App.js` | entry point; owns the review-pool state and the navigator |
-| `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen`, `SettingsScreen` (Faz 11) |
-| `components/` | `Header`, `QuestionCard`, `ScoreBoard`, `StatsModal`, `CustomDeckModal`, `HandwritingModal`, `ExampleBox`, `FloatingBackground` |
+| `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen` |
+| `components/` | `Header`, `QuestionCard`, `ScoreBoard`, `StatsModal`, `SettingsModal` (Faz 11), `CustomDeckModal`, `HandwritingModal`, `ExampleBox`, `FloatingBackground` |
 | `services/` | all logic: `wordRepository`, `reviewPool`, `quizBuilder`, `statsManager`, `importService`, `exampleService`, `handwritingService`, `floatingParticles`, `dateUtils`, `wordIdMigrations`, `settingsService`, `speechService`, `hapticsService` |
 | `data/` | `hsk1..6.json` (5.000 words, ids 1-5000 without gaps; all six levels = the official Hanban 2012 lists, in list order) + `examples/hsk*_examples.js` (keyed by word id; hsk1-4 1200/1200, hsk5 1300/1300, hsk6 2500/2500 — 5000/5000) |
 | `__tests__/` | jest tests (services only) |
@@ -80,7 +80,8 @@ AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`, 
 
 React Navigation **Stack** (`@react-navigation/stack` + `@react-navigation/native`), wired up in `App.js`:
 
-- `NavigationContainer` → `Stack.Navigator` with the routes `Home`, `Quiz`, `Vocabulary`, `Settings`; `headerShown: false` everywhere (screens draw their own header with a back button). The `Settings` route is opened from the ⚙️ button in the Home header row, not from the quiz `Header` tabs.
+- `NavigationContainer` → `Stack.Navigator` with the routes `Home`, `Quiz`, `Vocabulary`; `headerShown: false` everywhere.
+- Settings is **not** a route: it is a pop-up (`components/SettingsModal.js`, same shell as `StatsModal`) owned by `HomeScreen` (`visible` / `onClose`) and opened by the ⚙️ button in Home's header row. Anything that needs the same treatment (a second overlay) belongs there too, not in a new route.
 - Home passes `{ initialLevel }` to Quiz; `QuizScreen` reads `route.params.initialLevel`.
 - Cross-component events go through `DeviceEventEmitter` (`onCustomDeckImported`, `onLevelChange`).
 
@@ -89,7 +90,7 @@ Do not introduce `expo-router`.
 ## Rules
 
 - Custom-deck word IDs (`custom_<sanitized name>_<item.id ?? index>`, `services/importService.js`) are **identity**: review-pool and stats entries resolve by `wordId`, so never change the prefix rule without writing a migration. `saveCustomDeck` over-writes nothing silently (needs `{ overwrite: true }`) and rejects a name whose word IDs would collide with another deck. Deleting a deck goes through `deleteCustomDeck` only: it reads the deck's word ids **before** removing the deck (they are unreachable afterwards), prunes their stats itself, and returns `removedIds` so the caller can emit `onCustomDeckDeleted` — `App.js` owns `@hsk_review_pool` and drops the matching entries there. Pruning matches **exact ids**, never a prefix (`custom_Ders_` would also match another deck's `custom_Ders_1_5`).
-- "Reset progress" (`clearAllStats()` + `onProgressReset`) clears stats **and** the mistake pool but never touches custom decks. Any new written copy of user progress must be cleared by it too. Since Faz 11 the button lives in `SettingsScreen` only (it was in `StatsModal` before) — do not add a second copy.
+- "Reset progress" (`clearAllStats()` + `onProgressReset`) clears stats **and** the mistake pool but never touches custom decks. Any new written copy of user progress must be cleared by it too. Since Faz 11 the button lives in `components/SettingsModal.js` only (it was in `StatsModal` before) — do not add a second copy.
 - Settings are read **synchronously** at speak/vibrate time (`getCachedSettings()`), so `App.js` must keep priming the cache with `getSettings()` at startup, and any new setting must be added to `DEFAULT_SETTINGS` + the sanitizer in `services/settingsService.js` rather than read from AsyncStorage directly.
 - Never create or edit `android/` or `ios/` by hand — they are generated (Continuous Native Generation). Configure native behaviour in `app.json` and config plugins. (A stale `android/` folder exists locally; it is gitignored.)
 - Expo Go only ships its bundled native modules. Adding a library with native code requires a development build (`npx expo run:*`, or `eas build --profile development`) — unless the SDK docs mark it `inExpoGo: true` (e.g. `@react-native-community/slider`, added in Faz 11 for the speech-volume slider).

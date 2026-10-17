@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 11 — Ayarlar ekranı eklendi** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran + rota + Home'da ⚙️ + `@react-native-community/slider` · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihaz doğrulaması bekliyor ⏳** — kayıt §14, kontrol listesi §15). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada; `StatsModal`'dan kaldırıldı) ve **GitHub bağlantısı**. Titreşim `services/hapticsService.js`, ses `services/speechService.js` üzerinden **tek noktadan** geçer; ayarlar `services/settingsService.js` + `@hsk_settings` anahtarında tutulur ve okuma **senkron** önbellekten yapılır. Yeni bağımlılık: `@react-native-community/slider` (Expo Go'da hazır gelir). **246 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata.
+Son güncelleme: **Faz 11 — Ayarlar pop-up'ı eklendi** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ayar ekranı → `afe51c1` ile **pop-up'a** çevrildi: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihaz doğrulaması bekliyor ⏳** — kayıt §14, kontrol listesi §15). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada; `StatsModal`'dan kaldırıldı) ve **GitHub bağlantısı**. Home'daki ⚙️ İstatistikler gibi bir **pop-up** açar (karartılmış zemin + ✕). Titreşim `services/hapticsService.js`, ses `services/speechService.js` üzerinden **tek noktadan** geçer; ayarlar `services/settingsService.js` + `@hsk_settings` anahtarında tutulur ve okuma **senkron** önbellekten yapılır. Yeni bağımlılık: `@react-native-community/slider` (Expo Go'da hazır gelir). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata.
 
 Önceki faz: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §13). hsk6'da eksik olan **1945 örnek** yazıldı, Faz 6'dan kalan **385 kaymış/kusurlu kayıt** değiştirildi (170 doğru kayıt korundu) → hsk6 **2500/2500**. Faz 9'un kaydı §12'dedir.
 
@@ -13,12 +13,12 @@ Son güncelleme: **Faz 11 — Ayarlar ekranı eklendi** (`54907fb` ayar servisi 
 
 HSK 1–6 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması.
 **5.000 kelimelik** sabit kütüphane (id 1–5000, boşluk yok; **HSK 1–6 resmî Hanban 2012 listeleri** — §10, §9 ve §8), 6 soru yönü, yanlışları tekrar etme (Review),
-JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı, ayarlar ekranı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub).
+JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı, ayarlar pop-up'ı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub).
 
 - **Navigasyon:** React Navigation **Stack** (Expo Router DEĞİL — `AGENTS.md` bu konuda yanıltıcı, bkz. Faz 3.4).
 - **Giriş:** `index.js` → `App.js`.
-- **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`, `screens/SettingsScreen.js` (Faz 11).
-- **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, CustomDeckModal, HandwritingModal, FloatingBackground).
+- **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`. (Ayarlar bir **ekran değil**, Home'un sahip olduğu bir pop-up'tır: `components/SettingsModal.js` — Faz 11.)
+- **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, **SettingsModal** (Faz 11), CustomDeckModal, HandwritingModal, FloatingBackground).
 - **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`, `services/handwritingService.js`, `services/floatingParticles.js`, `services/wordIdMigrations.js` (**kelime id'lerinin tüm göç tabloları** — Faz 4 ikiz birleştirme + Faz 6 hsk5 yeniden dengeleme + Faz 7 hsk1–4 hizalama; fazlar **sürüm sırasıyla** uygulanır, §9, §10), `services/settingsService.js` (**ayarların tek kaynağı + `@hsk_settings`**, Faz 11), `services/speechService.js` (**`expo-speech`'e dokunan tek yer** — ses seviyesi ayardan gelir, Faz 11), `services/hapticsService.js` (**`expo-haptics`'e dokunan tek yer** — kullanıcı ayarı kapalıysa susar, Faz 11).
 - **Veri:** `data/hsk1..6.json` (**5.000 kelime**, id 1–5000 boşluksuz; hsk1–4 = resmî 150/150/300/600, hsk5 = resmî 1300, hsk6 = resmî 2500 — §10, §9, §8), `data/examples/hsk1..6_examples.js` (id ile anahtarlı örnek cümleler; **hsk1–4 1200/1200** (Faz 8), **hsk5 1300/1300** (Faz 9), **hsk6 2500/2500** (Faz 10) — §13, §12, §11, §10, §9).
 
@@ -32,7 +32,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 | `@hsk_word_id_migration_version` | Uygulanmış id göçü sürümü (kullanıcı ilerlemesi DEĞİL; §9, §10) |
 | `@hsk_settings` | `{ haptics, speechVolume }` — kullanıcı ayarları (Faz 11, §14) |
 
-- Navigasyon parametresi: Home → Quiz `{ initialLevel }` (`QuizScreen` `route.params.initialLevel` okur). `Settings` rotası Home başlığındaki ⚙️ ile açılır (Faz 11).
+- Navigasyon parametresi: Home → Quiz `{ initialLevel }` (`QuizScreen` `route.params.initialLevel` okur). **Ayarlar bir rota değildir**: Home'daki ⚙️ `SettingsModal`'ı açar (Faz 11).
 - DeviceEventEmitter olayları: `onCustomDeckImported`, `onLevelChange`, `onCustomDeckDeleted`, `onProgressReset`, `onSettingsChange` (Faz 11 — `services/settingsService.js` yayar).
 
 ---
@@ -63,7 +63,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 - **ESLint VAR (Faz 3.4a):** `eslint` + `eslint-config-expo` (dev) + flat `eslint.config.js` (SDK 53+ düzeni; kaynak: https://docs.expo.dev/guides/using-eslint/). Komut: **`npm run lint`** (= `eslint .`).
   - **`npx expo lint` KULLANILMAZ:** o komut yalnızca `/src`, `/app`, `/components` klasörlerini tarar (Expo Router varsayımı) → bu projede `screens/`, `services/`, `__tests__/`, `App.js` **sessizce atlanır** (18 uyarı gösterir, gerçekte 25 var).
   - Kurulumda: test dosyalarına jest global'leri tanıtıldı (yoksa 330 sahte `no-undef` hatası çıkıyordu); üç kural **bilinçli** gevşetildi — `react-hooks/refs` → **off** (52 yanlış-pozitif: proje RN'in resmî `Animated` ref API'sini kullanıyor, kural bu deseni modelleyemiyor; uzun vadede `react-native`'in `useAnimatedValue()` kancasına geçilirse geri açılabilir), `react-hooks/set-state-in-effect` ve `react/no-unescaped-entities` → **warn**.
-  - Güncel durum: **0 hata, 14 uyarı** (7 `set-state-in-effect`, 7 `exhaustive-deps`) — 3.4a'da geçici olarak `warn` yapılan `react/no-unescaped-entities` 3.5'te **error**'a döndürüldü (8 JSX tırnağı kaçırıldı), 3 `no-unused-vars` da 3.5'te temizlendi.
+  - Güncel durum: **0 hata, 15 uyarı** (8 `set-state-in-effect`, 7 `exhaustive-deps`) — 3.4a'da geçici olarak `warn` yapılan `react/no-unescaped-entities` 3.5'te **error**'a döndürüldü (8 JSX tırnağı kaçırıldı), 3 `no-unused-vars` da 3.5'te temizlendi. (15. uyarı Faz 11'de geldi: `components/SettingsModal.js`'in açılış effect'i `StatsModal` ile aynı `set-state-in-effect` uyarısını veriyor — ikisi de bilinçli, aynı desen.)
   - **npm 11 tuzağı:** `expo install <pkg> --dev` artık `--include=dev` demek; Windows'ta `"--"` ayırıcısı `--dev`'i yutuyor → paketler yanlışlıkla `dependencies`'e düşer (başımıza geldi, elle düzeltildi).
 - **`tsconfig.json` VAR (Faz 3.4b)** — `expo customize tsconfig.json` ile üretildi (`expo/tsconfig.base`'i genişletir), komut **`npm run tsc`** (= `tsc --noEmit`). `expo/tsconfig.base` sağlar: `allowJs`, `noEmit` (**kaynak .js üzerine yazma riski yok**), `resolveJsonModule`, `moduleResolution: bundler`, `skipLibCheck`.
   - **Neden `checkJs: true`:** varsayılan (yalnızca `allowJs`) bir `tsc` kapısı **sadece sözdizimini** kontrol eder; ölçüldü — bozuk bir import yolu bile **yakalanmıyor**. `checkJs` açıkken RN/React API'lerine yapılan gerçek çağrı hataları yakalanıyor (3.4b'de tam olarak böyle 3 bulgu çıktı).
@@ -115,7 +115,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 11 (Ayarlar ekranı) commit'leri:** `54907fb` (`services/settingsService.js` + `__tests__/settingsService.test.js`) · `6379bed` (`services/speechService.js` + `QuestionCard`/`VocabularyScreen`/`QuizScreen` tek noktaya bağlandı + `App.js` açılışta `getSettings()`) · `d962454` (`services/hapticsService.js` + `QuizScreen` kapısı) · `7111834` (`screens/SettingsScreen.js` + Stack rotası + Home'da ⚙️ + `@react-native-community/slider`) · `f6d4d99` (`StatsModal`'dan reset bölümünün kaldırılması) · `8443912` (`hapticsService`/`speechService` testleri) — **cihazda doğrulama bekliyor ⏳** (bkz. §14, §15).
+- **Faz 11 (Ayarlar pop-up'ı) commit'leri:** `54907fb` (`services/settingsService.js` + `__tests__/settingsService.test.js`) · `6379bed` (`services/speechService.js` + `QuestionCard`/`VocabularyScreen`/`QuizScreen` tek noktaya bağlandı + `App.js` açılışta `getSettings()`) · `d962454` (`services/hapticsService.js` + `QuizScreen` kapısı) · `7111834` (ayarlar ekranı + `@react-native-community/slider`) · `f6d4d99` (`StatsModal`'dan reset bölümünün kaldırılması) · `8443912` (`hapticsService`/`speechService` testleri) · `afe51c1` (**ekran → pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, `Settings` rotası kaldırıldı) — **cihazda doğrulama bekliyor ⏳** (bkz. §14, §15).
 - **Faz 10 (hsk6 örnek cümleleri, 2500/2500) commit'leri:** 18 batch commit'i (`a36c34b` id 2501–2801 → `37f9307` id 4886–5000; aradaki 9–17: `972bc2d`, `bf9e3ba`, `a035282`, `ee17fea`, `6d6d9f7`, `27d489a`, `bbab9a9`, `53dcfbe`, `b8ec101`) · `e195f8e` (hsk6 **2965** pinyin `uānwǔjié` → `duānwǔjié`) · `8ff35d1` (hsk5 **1774** pinyin `uándàn` → `yuándàn`) · `3ce3529` (`exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §13, §15).
 - **Faz 9 (hsk5 eksik örnekler + kaymış/pinyin düzeltmeleri) commit'i:** `b29682f` (638 yeni + 25 düzeltilmiş hsk5 örneği + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §12, §15).
 - **Faz 8 (hsk1–4 eksik örnekler + 倒 anlamı) commit'leri:** `2fa9a8e` (91 örnek cümle + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) · `d8a5ede` (`data/hsk4.json` #680 **倒** anlamı) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §11, §15).
@@ -498,32 +498,33 @@ Her maddeyi **ayrı commit** olarak yap.
 
 ---
 
-## 14. Faz 11 — Ayarlar ekranı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub)
+## 14. Faz 11 — Ayarlar pop-up'ı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub)
 
 **Başlangıç isteği (kullanıcı):** "Uygulamaya bir ayarlar bölümü ekleyip içine reset progress, titreşimlerin açılıp kapanması, kartların üzerindeki hoparlöre basınca okunan karakterin ses seviyesini ayarlama ve uygulamanın GitHub sayfasına yönlendiren bir buton koymayı düşünüyorum."
 
-**Kararlar (kullanıcı onayı):** giriş noktası **Home başlığındaki ⚙️** (sekme değil) · ses seviyesi **gerçek slider** (`@react-native-community/slider`, SDK 57'de `inExpoGo: true`) · reset progress **yalnızca Ayarlar'da** (`StatsModal`'dan taşındı) · ses seviyesi **hem quiz kartı hem sözlük** hoparlörünü etkiler · GitHub butonu **mevcut private URL**'i kullanır (repo ileride public yapılırsa aynı buton çalışır).
+**Kararlar (kullanıcı onayı):** giriş noktası **Home başlığındaki ⚙️** (sekme değil) · İstatistikler gibi **pop-up** (`Modal`) olarak açılır — kullanıcı isteği üzerine ayrı ekran/rota değil · ses seviyesi **gerçek slider** (`@react-native-community/slider`, SDK 57'de `inExpoGo: true`) · reset progress **yalnızca Ayarlar'da** (`StatsModal`'dan taşındı) · ses seviyesi **hem quiz kartı hem sözlük** hoparlörünü etkiler · GitHub butonu **mevcut private URL**'i kullanır (repo ileride public yapılırsa aynı buton çalışır).
 
 **Yapılan (her biri ayrı commit):**
 1. `services/settingsService.js` — ayarların tek kaynağı: `DEFAULT_SETTINGS` (`{ haptics: true, speechVolume: 1 }`), `@hsk_settings` anahtarı, `getSettings()` (diskten okur; **eksik/bozuk alan alan varsayılana düşer**, bilinmeyen alan atılır), `updateSettings(patch)` (birleştirir → `onSettingsChange` yayar → diske yazar), `clampSpeechVolume` (0–1) ve **senkron** `getCachedSettings()`.
    - Neden senkron: `Speech.speak` anında çağrılır, ses seviyesi için AsyncStorage beklenemez → bellek içi kopya; `App.js` açılışta `getSettings()` ile önbelleği doldurur.
 2. `services/speechService.js` — `expo-speech`'e dokunan **tek** yer (`speakHanzi`, `stopSpeaking`, `warmUpSpeech`); `volume` ayardan eklenir. `QuestionCard` (kart 🔊, `rate 0.85`), `VocabularyScreen` (sözlük 🔊, `pitch 1.0 + rate 0.85`) ve `QuizScreen` (sessiz ısınma, `volume: 0` — ayardan **bağımsız**) buraya bağlandı. Davranış değişmedi: okuma parametreleri birleştirildi (`zh-CN`, `pitch 1.0`, `rate 0.85`).
 3. `services/hapticsService.js` — `expo-haptics`'e dokunan **tek** yer: `selectionFeedback()` (doğru) ve `failureFeedback()` (yanlış, 140 ms arayla iki darbe). `settings.haptics === false` iken ikisi de hiçbir şey yapmaz.
-4. `screens/SettingsScreen.js` + `App.js` Stack rotası `Settings` + `HomeScreen` üst satırında ⚙️. Bölümler: **FEEDBACK** (Switch) · **SOUND** (yüzde göstergesi + slider `step 0.05` + "Test volume" → 你好 okur) · **DATA** (iki adımlı onaylı RESET PROGRESS) · **ABOUT** (GitHub butonu + URL metni). Slider sürüklenirken yalnız ekran güncellenir, **diske yazım parmak kaldırılınca** (`onSlidingComplete`) yapılır. `Linking.canOpenURL` başarısızsa `Alert` ile uyarılır.
+4. `components/SettingsModal.js` (başta ayrı bir `screens/SettingsScreen.js` olarak yazılmıştı; `afe51c1` ile **İstatistikler ile aynı pop-up kabuğuna** çevrildi: `Modal` + karartılmış zemin (`Pressable` ile kapatma) + ölçek/kayma animasyonu + sağ üstte ✕) + `HomeScreen` üst satırında ⚙️ (`isSettingsVisible` state'i; **rota yok**, `App.js` değişmedi). Bölümler: **FEEDBACK** (Switch) · **SOUND** (yüzde göstergesi + slider `step 0.05` + "Test volume" → 你好 okur) · **DATA** (iki adımlı onaylı RESET PROGRESS) · **ABOUT** (GitHub butonu + URL metni). Slider sürüklenirken yalnız ekran güncellenir, **diske yazım parmak kaldırılınca** (`onSlidingComplete`) yapılır. `Linking.canOpenURL` başarısızsa `Alert` ile uyarılır. İçerik `ScrollView` içindedir (küçük ekranda kart `maxHeight: 85%` sınırına girerse kaydırılır).
 5. `components/StatsModal.js` — reset bölümü, onay kutusu, `handleResetProgress`, `resetConfirm`/`isResetting` state'i ve ilgili stiller **kaldırıldı**; `clearAllStats`/`DeviceEventEmitter` import'ları düştü. Aynı akış (`clearAllStats()` + `onProgressReset`) Ayarlar'da sürüyor; `App.js` değişmedi.
 6. Testler — `__tests__/settingsService.test.js` (12), `__tests__/hapticsService.test.js` (4, `expo-haptics` taklit), `__tests__/speechService.test.js` (6, `expo-speech` taklit) → **246 test / 14 suite**.
 
-**Doğrulama:** `npm test` **246 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · modified `.js` dosyaları Babel parse ✓.
+**Doğrulama:** `npm test` **246 yeşil** · lint **0 hata / 15 uyarı** (yeni uyarı: `SettingsModal`'ın açılış effect'i — `StatsModal` ile aynı `set-state-in-effect` deseni) · `tsc` **0 hata** · değişen `.js` dosyaları Babel parse ✓ · `npx expo export --platform android` hatasız.
 
 **Cihaz kontrol listesi (⏳ bekliyor):**
-1. Home'da ⚙️ → Ayarlar açılmalı; geri oku sorunsuz dönmeli.
-2. SOUND → ses seviyesini %20'ye çek → "Test volume" 你好'yu kısık okumalı; Quiz'e geçip karttaki 🔊 ve Sözlük'teki 🔊 **aynı** kısık seviyede okumalı.
-3. Ses seviyesini **%0**'a çek → okuma duyulmamalı (uygulama çökmemeli) ve açıklama "Muted" olmalı.
-4. FEEDBACK → titreşimi **kapat** → quiz'de doğru/yanlış cevapta **hiç** titreşim olmamalı; tekrar açınca titreşim geri gelmeli.
-5. DATA → RESET PROGRESS → CANCEL hiçbir şeyi silmemeli; **YES, RESET** istatistikleri **ve** yanlış havuzunu silmeli, **özel desteler kalmalı**.
-6. `StatsModal`'da artık RESET butonu **olmamalı**.
-7. ABOUT → GitHub butonu tarayıcıda repo sayfasını açmalı (private repo: giriş yapılmış hesapta açılır).
-8. Uygulamayı kapatıp aç → ayarlar (ses seviyesi + titreşim) **korunmalı**.
+1. Home'da ⚙️ → Ayarlar **İstatistikler gibi pop-up** olarak açılmalı (karartılmış zemin + ölçek animasyonu); **✕**, karartılmış alana dokunma ve **donanım geri tuşu** ile kapanmalı.
+2. Pop-up içeriği gerekirse kaydırılabilmeli (küçük ekranda ABOUT bölümü görünmeli).
+3. SOUND → ses seviyesini %20'ye çek → "Test volume" 你好'yu kısık okumalı; Quiz'e geçip karttaki 🔊 ve Sözlük'teki 🔊 **aynı** kısık seviyede okumalı.
+4. Ses seviyesini **%0**'a çek → okuma duyulmamalı (uygulama çökmemeli) ve açıklama "Muted" olmalı.
+5. FEEDBACK → titreşimi **kapat** → quiz'de doğru/yanlış cevapta **hiç** titreşim olmamalı; tekrar açınca titreşim geri gelmeli.
+6. DATA → RESET PROGRESS → CANCEL hiçbir şeyi silmemeli; **YES, RESET** istatistikleri **ve** yanlış havuzunu silmeli, **özel desteler kalmalı**.
+7. `StatsModal`'da artık RESET butonu **olmamalı**.
+8. ABOUT → GitHub butonu tarayıcıda repo sayfasını açmalı (private repo: giriş yapılmış hesapta açılır).
+9. Uygulamayı kapatıp aç → ayarlar (ses seviyesi + titreşim) **korunmalı**.
 
 **Sonraki adım:** cihaz doğrulaması ✅ olunca bu bölümü işaretle, `known-good`'u ilerlet ve tek yedek arşivi tazele (bkz. §16).
 
