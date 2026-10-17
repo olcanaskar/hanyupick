@@ -1,6 +1,6 @@
 # ChineseQuizApp — agent guide
 
-An Expo/React Native app (**SDK 57**) for studying HSK 1-6 vocabulary: a fixed library of 5,000 words (ids 1-5000, six levels; **all six levels follow the official Hanban 2012 lists** — 150 + 150 + 300 + 600 + 1300 + 2500 words, see `NOTES.md` §10, §9, §8), 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, and a stats screen.
+An Expo/React Native app (**SDK 57**) for studying HSK 1-6 vocabulary: a fixed library of 5,000 words (ids 1-5000, six levels; **all six levels follow the official Hanban 2012 lists** — 150 + 150 + 300 + 600 + 1300 + 2500 words, see `NOTES.md` §10, §9, §8), 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, a stats screen, and a settings screen (vibration, speech volume, reset progress, GitHub link).
 
 Plain **JavaScript** — JSX lives in `.js` files; there is no TypeScript source, but `tsconfig.json` type-checks the JS itself (`checkJs`). Navigation is **React Navigation (Stack)**, not Expo Router.
 
@@ -19,10 +19,10 @@ This project uses npm (`package-lock.json`; there is no `bun.lock`) — use `npx
 ```bash
 npx expo install <package>          # ALWAYS use instead of npm/yarn/pnpm add — resolves SDK-compatible versions
 npm run lint                        # ESLint over the whole project (flat config) — 0 errors expected
-npm test                            # jest (jest-expo preset) — 224 tests, 11 suites
+npm test                            # jest (jest-expo preset) — 246 tests, 14 suites
 npm run tsc                         # tsc --noEmit over the JS (checkJs) — 0 errors expected
 npx expo start --go --clear         # dev server for Expo Go (no native build needed)
-npx expo-doctor                     # dependency/config diagnosis — 21/21 clean (needs git on PATH)
+npx expo-doctor                     # dependency/config diagnosis — currently 19/21 (see NOTES.md §15); needs git on PATH
 npx expo install --fix              # fix incompatible package versions
 npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored) — delete afterwards
 ```
@@ -36,9 +36,9 @@ npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored
 | Path | Contents |
 | --- | --- |
 | `index.js` → `App.js` | entry point; owns the review-pool state and the navigator |
-| `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen` |
+| `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen`, `SettingsScreen` (Faz 11) |
 | `components/` | `Header`, `QuestionCard`, `ScoreBoard`, `StatsModal`, `CustomDeckModal`, `HandwritingModal`, `ExampleBox`, `FloatingBackground` |
-| `services/` | all logic: `wordRepository`, `reviewPool`, `quizBuilder`, `statsManager`, `importService`, `exampleService`, `handwritingService`, `floatingParticles`, `dateUtils`, `wordIdMigrations` |
+| `services/` | all logic: `wordRepository`, `reviewPool`, `quizBuilder`, `statsManager`, `importService`, `exampleService`, `handwritingService`, `floatingParticles`, `dateUtils`, `wordIdMigrations`, `settingsService`, `speechService`, `hapticsService` |
 | `data/` | `hsk1..6.json` (5.000 words, ids 1-5000 without gaps; all six levels = the official Hanban 2012 lists, in list order) + `examples/hsk*_examples.js` (keyed by word id; hsk1-4 1200/1200, hsk5 1300/1300, hsk6 2500/2500 — 5000/5000) |
 | `__tests__/` | jest tests (services only) |
 | `tsconfig.json`, `eslint.config.js` | the `npm run tsc` and `npm run lint` configs |
@@ -55,7 +55,11 @@ Single sources of truth — never duplicate these elsewhere:
 - `services/handwritingService.js` — the ONLY place that talks to the external handwriting API (`recognizeHandwriting()`, `buildInk()`). It owns the timeout, so callers never `fetch` directly and must handle its `{ candidates, error }` result (`error` is `null | 'timeout' | 'network'`) instead of catching network errors themselves.
 - `services/floatingParticles.js` — the floating-Hanzi geometry and motion (`getRandomBoundaryPoint`, `pickTargetPoint`, `createParticle`, `PARTICLE_COUNT`, size/speed bounds). Randomness is injectable and the target search is **bounded** (`MAX_TARGET_ATTEMPTS`) — never put this math back into `FloatingBackground`, and never replace the bounded search with a bare `while` (that was an unguarded loop that could freeze the JS thread). The component supplies the live window size (`useWindowDimensions`), never a module-load snapshot of `Dimensions`.
 
-AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`, `@hsk_word_id_migration_version` (the applied id-migration version, not user progress).
+- `services/settingsService.js` — the user settings record (`{ haptics, speechVolume }`), defaults and validation, under `@hsk_settings`. `getSettings()` reads the disk (missing/corrupt fields fall back per field, unknown fields are dropped), `updateSettings(patch)` merges, emits `SETTINGS_CHANGED_EVENT` and then persists, and `getCachedSettings()` returns the in-memory copy **synchronously** — `Speech.speak` cannot await storage, so every reader (speech/haptics services, the settings screen) goes through this module.
+- `services/speechService.js` — the ONLY place that calls `expo-speech` (`speakHanzi`, `stopSpeaking`, `warmUpSpeech`). It attaches the user's `speechVolume`, so the quiz card's 🔊 and the vocabulary 🔊 behave identically; callers never pass `volume` themselves. `warmUpSpeech` deliberately speaks at `volume: 0` (independent of the setting).
+- `services/hapticsService.js` — the ONLY place that calls `expo-haptics` (`selectionFeedback`, `failureFeedback`). Both are no-ops while `settings.haptics === false`, so the vibration toggle covers every call site.
+
+AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`, `@hsk_word_id_migration_version` (the applied id-migration version, not user progress), `@hsk_settings` (user settings).
 
 ## Testing
 
@@ -76,7 +80,7 @@ AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`, 
 
 React Navigation **Stack** (`@react-navigation/stack` + `@react-navigation/native`), wired up in `App.js`:
 
-- `NavigationContainer` → `Stack.Navigator` with the routes `Home`, `Quiz`, `Vocabulary`; `headerShown: false` everywhere.
+- `NavigationContainer` → `Stack.Navigator` with the routes `Home`, `Quiz`, `Vocabulary`, `Settings`; `headerShown: false` everywhere (screens draw their own header with a back button). The `Settings` route is opened from the ⚙️ button in the Home header row, not from the quiz `Header` tabs.
 - Home passes `{ initialLevel }` to Quiz; `QuizScreen` reads `route.params.initialLevel`.
 - Cross-component events go through `DeviceEventEmitter` (`onCustomDeckImported`, `onLevelChange`).
 
@@ -85,9 +89,10 @@ Do not introduce `expo-router`.
 ## Rules
 
 - Custom-deck word IDs (`custom_<sanitized name>_<item.id ?? index>`, `services/importService.js`) are **identity**: review-pool and stats entries resolve by `wordId`, so never change the prefix rule without writing a migration. `saveCustomDeck` over-writes nothing silently (needs `{ overwrite: true }`) and rejects a name whose word IDs would collide with another deck. Deleting a deck goes through `deleteCustomDeck` only: it reads the deck's word ids **before** removing the deck (they are unreachable afterwards), prunes their stats itself, and returns `removedIds` so the caller can emit `onCustomDeckDeleted` — `App.js` owns `@hsk_review_pool` and drops the matching entries there. Pruning matches **exact ids**, never a prefix (`custom_Ders_` would also match another deck's `custom_Ders_1_5`).
-- "Reset progress" (`clearAllStats()` + `onProgressReset`) clears stats **and** the mistake pool but never touches custom decks. Any new written copy of user progress must be cleared by it too.
+- "Reset progress" (`clearAllStats()` + `onProgressReset`) clears stats **and** the mistake pool but never touches custom decks. Any new written copy of user progress must be cleared by it too. Since Faz 11 the button lives in `SettingsScreen` only (it was in `StatsModal` before) — do not add a second copy.
+- Settings are read **synchronously** at speak/vibrate time (`getCachedSettings()`), so `App.js` must keep priming the cache with `getSettings()` at startup, and any new setting must be added to `DEFAULT_SETTINGS` + the sanitizer in `services/settingsService.js` rather than read from AsyncStorage directly.
 - Never create or edit `android/` or `ios/` by hand — they are generated (Continuous Native Generation). Configure native behaviour in `app.json` and config plugins. (A stale `android/` folder exists locally; it is gitignored.)
-- Expo Go only ships its bundled native modules. Adding a library with native code requires a development build (`npx expo run:*`, or `eas build --profile development`).
+- Expo Go only ships its bundled native modules. Adding a library with native code requires a development build (`npx expo run:*`, or `eas build --profile development`) — unless the SDK docs mark it `inExpoGo: true` (e.g. `@react-native-community/slider`, added in Faz 11 for the speech-volume slider).
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
 - Accessibility: labels are **English** (matching the visible UI text). `TouchableOpacity` is an accessibility element by default (`accessible={this.props.accessible !== false}`) and therefore **hides its children** from screen readers — when a touchable wraps other touchables (the quiz card wrapping the option buttons in `QuestionCard`), keep it `accessible={false}` while those children must stay reachable. The floating-Hanzi background is decorative and must stay out of the accessibility tree (`accessibilityElementsHidden` + `importantForAccessibility="no-hide-descendants"`). `accessibilityState`/hints/announcements are not implemented yet.
 - No emulator or device is attached to the development machine: device verification is done by the user, in Expo Go, on request.

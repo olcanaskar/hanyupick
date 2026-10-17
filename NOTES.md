@@ -3,9 +3,9 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17, kullanıcı: "tamamdır çalışıyor") — kontrol listesi §14, kayıt §13). Kapsam: hsk6'da eksik olan **1945 örnek** elle yazıldı; ayrıca Faz 6 öncesi sıralamadan kalan ve başka kelimeye ait **385 kaymış kayıt** doğru cümlelerle değiştirildi (170 doğru kayıt korundu) → `data/examples/hsk6_examples.js` artık **2500/2500**. Yan bulgu: hsk6 **2965 端午节** (`uānwǔjié` → `duānwǔjié`) ve hsk5 **1774 元旦** (`uándàn` → `yuándàn`) pinyin düzeltmeleri. Doğrulama: **her örneğin cümlesi kendi kelimesini birebir içerir**, pinyin'i kelimenin pinyin'ini ton duyarlı içerir. **224 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo export` hatasız. `known-good` artık bu doğrulama kaydını taşıyan doküman commit'indedir (**Faz 6 + Faz 7 + Faz 8 + Faz 9 + Faz 10 birlikte doğrulandı ✅**).
+Son güncelleme: **Faz 11 — Ayarlar ekranı eklendi** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran + rota + Home'da ⚙️ + `@react-native-community/slider` · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihaz doğrulaması bekliyor ⏳** — kayıt §14, kontrol listesi §15). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada; `StatsModal`'dan kaldırıldı) ve **GitHub bağlantısı**. Titreşim `services/hapticsService.js`, ses `services/speechService.js` üzerinden **tek noktadan** geçer; ayarlar `services/settingsService.js` + `@hsk_settings` anahtarında tutulur ve okuma **senkron** önbellekten yapılır. Yeni bağımlılık: `@react-native-community/slider` (Expo Go'da hazır gelir). **246 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata.
 
-Önceki faz: **Faz 9 — hsk5'in eksik örnek cümleleri yazıldı** (`b29682f`; **cihazda doğrulandı ✅** (2026-10-16) — kayıt §12). Kapsam: hsk5'te eksik olan **638 örnek** elle yazıldı; Faz 6 öncesinden kalan **22 kaymış kayıt** değiştirildi, **2 bozuk pinyin** düzeltildi → hsk5 **1300/1300**. Faz 8'in kaydı §11'dedir.
+Önceki faz: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §13). hsk6'da eksik olan **1945 örnek** yazıldı, Faz 6'dan kalan **385 kaymış/kusurlu kayıt** değiştirildi (170 doğru kayıt korundu) → hsk6 **2500/2500**. Faz 9'un kaydı §12'dedir.
 
 ---
 
@@ -13,13 +13,13 @@ Son güncelleme: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 
 
 HSK 1–6 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması.
 **5.000 kelimelik** sabit kütüphane (id 1–5000, boşluk yok; **HSK 1–6 resmî Hanban 2012 listeleri** — §10, §9 ve §8), 6 soru yönü, yanlışları tekrar etme (Review),
-JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı.
+JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı, ayarlar ekranı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub).
 
 - **Navigasyon:** React Navigation **Stack** (Expo Router DEĞİL — `AGENTS.md` bu konuda yanıltıcı, bkz. Faz 3.4).
 - **Giriş:** `index.js` → `App.js`.
-- **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`.
+- **Ekranlar:** `screens/HomeScreen.js`, `screens/QuizScreen.js`, `screens/VocabularyScreen.js`, `screens/SettingsScreen.js` (Faz 11).
 - **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, CustomDeckModal, HandwritingModal, FloatingBackground).
-- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`, `services/handwritingService.js`, `services/floatingParticles.js`, `services/wordIdMigrations.js` (**kelime id'lerinin tüm göç tabloları** — Faz 4 ikiz birleştirme + Faz 6 hsk5 yeniden dengeleme + Faz 7 hsk1–4 hizalama; fazlar **sürüm sırasıyla** uygulanır, §9, §10).
+- **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`, `services/handwritingService.js`, `services/floatingParticles.js`, `services/wordIdMigrations.js` (**kelime id'lerinin tüm göç tabloları** — Faz 4 ikiz birleştirme + Faz 6 hsk5 yeniden dengeleme + Faz 7 hsk1–4 hizalama; fazlar **sürüm sırasıyla** uygulanır, §9, §10), `services/settingsService.js` (**ayarların tek kaynağı + `@hsk_settings`**, Faz 11), `services/speechService.js` (**`expo-speech`'e dokunan tek yer** — ses seviyesi ayardan gelir, Faz 11), `services/hapticsService.js` (**`expo-haptics`'e dokunan tek yer** — kullanıcı ayarı kapalıysa susar, Faz 11).
 - **Veri:** `data/hsk1..6.json` (**5.000 kelime**, id 1–5000 boşluksuz; hsk1–4 = resmî 150/150/300/600, hsk5 = resmî 1300, hsk6 = resmî 2500 — §10, §9, §8), `data/examples/hsk1..6_examples.js` (id ile anahtarlı örnek cümleler; **hsk1–4 1200/1200** (Faz 8), **hsk5 1300/1300** (Faz 9), **hsk6 2500/2500** (Faz 10) — §13, §12, §11, §10, §9).
 
 ### Önemli sabitler / veri akışı
@@ -30,9 +30,10 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 | `@hsk_user_stats` | `{ wordStats, dailyStats, streak }` |
 | `@custom_word_decks` | `{ "Deste Adı": [kelimeler] }` |
 | `@hsk_word_id_migration_version` | Uygulanmış id göçü sürümü (kullanıcı ilerlemesi DEĞİL; §9, §10) |
+| `@hsk_settings` | `{ haptics, speechVolume }` — kullanıcı ayarları (Faz 11, §14) |
 
-- Navigasyon parametresi: Home → Quiz `{ initialLevel }` (`QuizScreen` `route.params.initialLevel` okur).
-- DeviceEventEmitter olayları: `onCustomDeckImported`, `onLevelChange`.
+- Navigasyon parametresi: Home → Quiz `{ initialLevel }` (`QuizScreen` `route.params.initialLevel` okur). `Settings` rotası Home başlığındaki ⚙️ ile açılır (Faz 11).
+- DeviceEventEmitter olayları: `onCustomDeckImported`, `onLevelChange`, `onCustomDeckDeleted`, `onProgressReset`, `onSettingsChange` (Faz 11 — `services/settingsService.js` yayar).
 
 ---
 
@@ -114,11 +115,12 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 10 (hsk6 örnek cümleleri, 2500/2500) commit'leri:** 18 batch commit'i (`a36c34b` id 2501–2801 → `37f9307` id 4886–5000; aradaki 9–17: `972bc2d`, `bf9e3ba`, `a035282`, `ee17fea`, `6d6d9f7`, `27d489a`, `bbab9a9`, `53dcfbe`, `b8ec101`) · `e195f8e` (hsk6 **2965** pinyin `uānwǔjié` → `duānwǔjié`) · `8ff35d1` (hsk5 **1774** pinyin `uándàn` → `yuándàn`) · `3ce3529` (`exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §13, §14).
-- **Faz 9 (hsk5 eksik örnekler + kaymış/pinyin düzeltmeleri) commit'i:** `b29682f` (638 yeni + 25 düzeltilmiş hsk5 örneği + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §12, §14).
-- **Faz 8 (hsk1–4 eksik örnekler + 倒 anlamı) commit'leri:** `2fa9a8e` (91 örnek cümle + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) · `d8a5ede` (`data/hsk4.json` #680 **倒** anlamı) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §11, §14).
-- **Faz 7 (hsk1–4 resmî liste) commit'i:** `5950ce4` (veri + göç tabloları + **sürüm-farkındalıklı** uygulama + `App.js` + örnekler + testler + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §10, §14).
-- **Faz 6 (hsk5 resmî liste) commit'i:** `b4e8429` (veri + göç tabloları + örnekler + App.js + testler + AGENTS.md) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §9, §14).
+- **Faz 11 (Ayarlar ekranı) commit'leri:** `54907fb` (`services/settingsService.js` + `__tests__/settingsService.test.js`) · `6379bed` (`services/speechService.js` + `QuestionCard`/`VocabularyScreen`/`QuizScreen` tek noktaya bağlandı + `App.js` açılışta `getSettings()`) · `d962454` (`services/hapticsService.js` + `QuizScreen` kapısı) · `7111834` (`screens/SettingsScreen.js` + Stack rotası + Home'da ⚙️ + `@react-native-community/slider`) · `f6d4d99` (`StatsModal`'dan reset bölümünün kaldırılması) · `8443912` (`hapticsService`/`speechService` testleri) — **cihazda doğrulama bekliyor ⏳** (bkz. §14, §15).
+- **Faz 10 (hsk6 örnek cümleleri, 2500/2500) commit'leri:** 18 batch commit'i (`a36c34b` id 2501–2801 → `37f9307` id 4886–5000; aradaki 9–17: `972bc2d`, `bf9e3ba`, `a035282`, `ee17fea`, `6d6d9f7`, `27d489a`, `bbab9a9`, `53dcfbe`, `b8ec101`) · `e195f8e` (hsk6 **2965** pinyin `uānwǔjié` → `duānwǔjié`) · `8ff35d1` (hsk5 **1774** pinyin `uándàn` → `yuándàn`) · `3ce3529` (`exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §13, §15).
+- **Faz 9 (hsk5 eksik örnekler + kaymış/pinyin düzeltmeleri) commit'i:** `b29682f` (638 yeni + 25 düzeltilmiş hsk5 örneği + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §12, §15).
+- **Faz 8 (hsk1–4 eksik örnekler + 倒 anlamı) commit'leri:** `2fa9a8e` (91 örnek cümle + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) · `d8a5ede` (`data/hsk4.json` #680 **倒** anlamı) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §11, §15).
+- **Faz 7 (hsk1–4 resmî liste) commit'i:** `5950ce4` (veri + göç tabloları + **sürüm-farkındalıklı** uygulama + `App.js` + örnekler + testler + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §10, §15).
+- **Faz 6 (hsk5 resmî liste) commit'i:** `b4e8429` (veri + göç tabloları + örnekler + App.js + testler + AGENTS.md) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §9, §15).
 - **Faz 5 (HSK 6) commit'leri:** `7d12737` (veri) · `869e8e9` (`level` temizliği) · `07beb1e` (sunum) · `5a15ec3` (repo + testler) · `a3d5f01` ve `b1bbc5a` (doküman) — cihazda **doğrulandı ✅**; `known-good` artık bu doğrulamayı kaydeden doküman commit'inde (doğrulanan kod durumu `b1bbc5a`), yedek `ChineseQuizApp-backup-2026-10-16_1406.tar.gz` (bkz. §8, §9).
 - Her şey ters giderse dönüş: `git reset --hard known-good`
 - Tek commit geri alma: `git revert <hash>`
@@ -197,10 +199,10 @@ Her maddeyi **ayrı commit** olarak yap.
   - `__tests__/quizBuilder.test.js`: fixture + **gerçek veri** (tüm ikiz hanzi/pinyin/anlam grupları ve her seviye için 200 soru) → hiçbir şıkta çakışma yok.
   - Önce/sonra simülasyonu: bozuk şık **%0,01–0,06 → %0,00**; hsk1 modunda çeldiricilerin seviyesi **%9 → %100 hsk1**.
   - Suite: **60 test yeşil**.
-- **Bilinçli sınırlama:** Eleme **string** eşitliğine dayanır; `"sun, day"` ↔ `"day, sun"` gibi farklı yazılmış eş anlamlılar yakalanmaz (bkz. §14 veri notu).
+- **Bilinçli sınırlama:** Eleme **string** eşitliğine dayanır; `"sun, day"` ↔ `"day, sun"` gibi farklı yazılmış eş anlamlılar yakalanmaz (bkz. §15 veri notu).
 - **Commit:** `8cfe62e`
 
-> **Faz 2 kapandı.** Sıradaki adım için öneri: Faz 1-2.4 değişikliklerini cihazda bir kez dene (§14'deki kontrol listesi), sonra Faz 3 (mimari) veya Faz 4 (performans).
+> **Faz 2 kapandı.** Sıradaki adım için öneri: Faz 1-2.4 değişikliklerini cihazda bir kez dene (§15'deki kontrol listesi), sonra Faz 3 (mimari) veya Faz 4 (performans).
 
 ---
 
@@ -227,7 +229,7 @@ Her maddeyi **ayrı commit** olarak yap.
   - **Sessiz varsayılan kaldırıldı:** eskiden tanınmayan bir mod istatistikte **sessizce `hanzi_pinyin`** sayılıyordu (fark edilmeden veri bozulması). Şimdi `getCategory()` tanınmayan modda `__DEV__`'de `console.warn` basar ve `null` döner; `statsManager` bu durumda kelime kategorisini **güncellemez** (boş kelime kaydı da açmaz) ama **günlük aktivite ve seri işlenir** → veri kaybı yok.
   - **Birleşen kopyalar:** `statsManager.getCategoryFromMode` (10 modlu map), `Header.getModeIndex` (aynı eşlemenin kopyası) + 3 sekme etiketi ternary'si, `QuestionCard`'daki üç ayrı mod ayrıştırma bloğu (`renderPrompt` / `renderOptionContent` / `renderMissingInfo`), `QuizScreen.getSubText` (`endsWith`), `StatsModal`'daki elle yazılmış 3 kategori anahtarı. Ayrıca `DEFAULT_MODE` artık `reviewPool`'dan değil `modes.js`'ten geliyor.
   - **Ayrıca (aynı dosyada kopya temizliği):** Header'daki 3 kopyala-yapıştır sekme bloğu tek `CATEGORIES.map(...)` döngüsüne indi — **aynı JSX, aynı davranış**.
-  - **Ölü veri alanı silindi:** `wordStats[wordId].level` (ayrıntı §14).
+  - **Ölü veri alanı silindi:** `wordStats[wordId].level` (ayrıntı §15).
   - **Doğrulama:** yeni `__tests__/modes.test.js` (**17 test**: tablo bütünlüğü, hayalet modlar, kategori/sekme indeksi, `getReverseMode` involüsyonu, kategori↔alan tutarlılığı, sekme etiketi türetimi, ipucu alanı, `__DEV__` uyarısı) + `statsManager.test.js`'e "tanınmayan mod" testi. Suite **115 test yeşil** (98 → 115) · `npm run tsc` **0 hata** · lint **0 hata / 14 uyarı** (değişmedi) · `npx expo export --platform android` hatasız · kodda mod string'i yalnızca `services/modes.js`'te kaldı (doğrulandı).
   - **Commit:** `ef10c3a`
 - [x] **3.4a AGENTS.md + ESLint:** `AGENTS.md` gerçek yapıya göre **yeniden yazıldı** — Expo Router/`src/app` iddiası kaldırıldı (React Navigation **Stack**, ekranlar `screens/`), test/lint komutları, `services/` tek-kaynak listesi, jest'in **ekranları kapsamadığı** uyarısı + babel parse önerisi, git/`known-good`/yedek akışı eklendi. ESLint kuruldu (ayrıntı: §2). **Doğrulama:** `npm run lint` → **0 hata** (25 uyarı), `npm test` → **98/98**, `npx expo-doctor` → **21/21** (git PATH'te değilse `.expo` kontrolü sahte hata verir — 19/21 görünür).
@@ -327,7 +329,7 @@ Her maddeyi **ayrı commit** olarak yap.
 - [x] **4.5** Erişilebilirlik: rol + etiket (İngilizce) → **`4bbacf6`** (8 dosya, 79 özellik; iç içe `TouchableOpacity` şık gizlemesi düzeltildi). Durum/duyuru katmanı kapsam dışı.
 - [x] **4.6** `HandwritingModal`: fetch zaman aşımı → **`d9e8b0b`** (istek `services/handwritingService.js`'e taşındı, `Promise.race` + `abort()`).
 
-### Faz 4 ek temizlikler (kullanıcı seçimi, her biri ayrı commit — cihaz doğrulaması ✅, bkz. §14)
+### Faz 4 ek temizlikler (kullanıcı seçimi, her biri ayrı commit — cihaz doğrulaması ✅, bkz. §15)
 
 - [x] **A) `Header` ölü prop adları** → **`e0249c4`**. `onSelectLevel`/`onToggleMode` hiçbir çağrıda geçmiyordu (Header yalnızca `QuizScreen`'de, o da `setLevel`/`setMode` veriyor). İkinci biçim kaldırıldı; JSDoc gerekçeyi taşıyor.
 - [x] **B) Boş havuzda boş ekran** → **`47a4e7e`**. `QuizScreen` havuz boşsa `currentWord = null` yapıyordu ama boş-durum ekranı **yalnızca `review`** için vardı: özel deste silinirse/boş kalırsa ekran tamamen boş kalıyordu.
@@ -394,7 +396,7 @@ Her maddeyi **ayrı commit** olarak yap.
 - **Kütüphaneden tamamen çıkan 60 kelime** (66 kaybolan − 6'sı app hsk1–4'te zaten var). Bunların **7'si resmî HSK kelimesiydi** (至少, 自信, 总结, 戴, 法律, 脾气, 办法); **6'sı app'in hsk3/hsk4'ünde zaten bulunduğu için kaybolmadı**, yalnızca **`自信`** (resmî L4) artık hiçbir yerde yok. Kök neden hsk3/hsk4'ün kaynağının resmî listelerden farklı olması; hsk4 düzeltilirse bu kelimeler geri gelir. Kütüphaneden çıkan 60 kelimenin **59'u** `鼻梯`/`言而喻` gibi yanlış kaynaklı artıktı; **tek gerçek kayıp `自信`** (resmî L4, app'in hsk4'ünde de yoktu).
 - **Testler:** `ALL_WORDS.length` 4.983 → **5.000**, "id'ler boşluksuz" testi (eski "eksikler = göç tablosu" testi geçersiz: o id'ler artık dolu), yeni `__tests__/wordIdMigrations.test.js` (tablo bütünlüğü + örnek pinler + tek seferlik sürüm işareti), `reviewPool` göç testleri güncellendi (haritasız kayıt artık düşmez, **korunur**), `exampleService` testine hsk6 + yetim testi eklendi. **207 test / 11 suite**.
 - **Doğrulama:** `npm test` **207 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · değişen JS/JSX dosyaları Babel parse OK · `npx expo export --platform android` hatasız (3,1 MB; `dist/` silindi).
-- **Geri dönüş notu:** göç geri alınamaz (bkz. §14); cihazda doğrulandı ✅ (2026-10-16), `known-good` ilerletildi.
+- **Geri dönüş notu:** göç geri alınamaz (bkz. §15); cihazda doğrulandı ✅ (2026-10-16), `known-good` ilerletildi.
 
 ---
 
@@ -417,7 +419,7 @@ Her maddeyi **ayrı commit** olarak yap.
 - **Testler:** `wordIdMigrations.test.js`'e Faz 7 blokları (tablo bütünlüğü, 55 üst seviye / 13 emilme / 16 silme pinleri, hsk1–4 boyut ve sıra pinleri, **sürüm-farkındalıklı bekleyen göçler**, "Faz 7 hedefi Faz 6 kaynağı olabilir → sıra yükselendir" ve **zincirli id'nin uçtan uca göçü**), `wordRepository.test.js`'te ikiz izin listesi, `exampleService.test.js`'te taşınan örnek pinleri → **220 test / 11 suite**.
 - **Doğrulama:** `npm test` **220 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · `npx expo export --platform android` hatasız (`dist/` silindi).
 - **Bilinçli sapmalar / sınırlar:** MB L2'de **男人/女人** yazar (resmî/hskhsk: 男/女) ve **没** (resmî: 没有) — uygulamanın mevcut biçimi korundu (gereksiz göçü önlemek için). **hsk6 hâlâ eski kaynaktan** (sıradaki iş), bu yüzden hsk1–4 ile hsk6 arasında 喂 gibi tekrarlar olabilir; HSK 6 işi bunu kapatacak. Örnek kapsamı bilinçli olarak düştü (yeni kelimeler örneksiz).
-- **Geri dönüş notu:** göç geri alınamaz (bkz. §14); cihazda doğrulandı ✅ (2026-10-16), `known-good` ilerletildi.
+- **Geri dönüş notu:** göç geri alınamaz (bkz. §15); cihazda doğrulandı ✅ (2026-10-16), `known-good` ilerletildi.
 
 ---
 
@@ -463,11 +465,11 @@ Her maddeyi **ayrı commit** olarak yap.
 
 **Doğrulama:** `npm test` **223 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · `npx expo export --platform android` hatasız.
 
-**Sınır / sıradaki iş — hsk6 örnekleri GÜVENİLMEZ (2026-10-16 ölçümü):** `hsk6_examples.js`'teki **555** kaydın yalnızca **177**'si kendi kelimesini birebir içeriyor; kalan **378**'i Faz 6'da eski hsk5 kuyruğundan taşınmış ve **başka bir kelimeye ait** (bkz. §14). Yani iş "1945 eksik cümle" değil, **~2323 cümlenin yeniden yazılması**. → **ÇÖZÜLDÜ (Faz 10, §13): 2330 kayıt yazıldı, hsk6 artık 2500/2500.** hsk6 **kelime listesi** sağlamdır (resmî `HSK-6-Vocabulary.pdf`, 2500 kelime).
+**Sınır / sıradaki iş — hsk6 örnekleri GÜVENİLMEZ (2026-10-16 ölçümü):** `hsk6_examples.js`'teki **555** kaydın yalnızca **177**'si kendi kelimesini birebir içeriyor; kalan **378**'i Faz 6'da eski hsk5 kuyruğundan taşınmış ve **başka bir kelimeye ait** (bkz. §15). Yani iş "1945 eksik cümle" değil, **~2323 cümlenin yeniden yazılması**. → **ÇÖZÜLDÜ (Faz 10, §13): 2330 kayıt yazıldı, hsk6 artık 2500/2500.** hsk6 **kelime listesi** sağlamdır (resmî `HSK-6-Vocabulary.pdf`, 2500 kelime).
 
-**Cihaz doğrulaması:** ✅ 2026-10-16 (kullanıcı, Expo Go: "tamamdır çalışıyor") — §14'teki kontrol listesiyle birlikte.
+**Cihaz doğrulaması:** ✅ 2026-10-16 (kullanıcı, Expo Go: "tamamdır çalışıyor") — §15'teki kontrol listesiyle birlikte.
 
-**Not:** §14'teki Faz 6 kontrol listesinin "HSK 5'te örneği olmayan yeni kelimelerde örnek kutusu hiç çizilmesin" maddesi artık geçersiz — hsk5'te örneksiz kelime kalmadı.
+**Not:** §15'teki Faz 6 kontrol listesinin "HSK 5'te örneği olmayan yeni kelimelerde örnek kutusu hiç çizilmesin" maddesi artık geçersiz — hsk5'te örneksiz kelime kalmadı.
 
 ---
 
@@ -490,14 +492,46 @@ Her maddeyi **ayrı commit** olarak yap.
 
 **Doğrulama:** `npm test` **224 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · `npx expo export --platform android` hatasız.
 
-**Cihaz doğrulaması:** ✅ 2026-10-17 (kullanıcı, Expo Go: "tamamdır çalışıyor") — §14'teki kontrol listesiyle birlikte. `known-good` bu doğrulama kaydını taşıyan doküman commit'ine ilerletildi.
+**Cihaz doğrulaması:** ✅ 2026-10-17 (kullanıcı, Expo Go: "tamamdır çalışıyor") — §15'teki kontrol listesiyle birlikte. `known-good` bu doğrulama kaydını taşıyan doküman commit'ine ilerletildi.
 
-**Not:** §14'teki Faz 5/6/9 kontrol listelerinin "HSK 6'da örnek kutusu yalnız 555 kelimede dolu / eksik olabilir" maddeleri artık geçersiz — hsk6'da örneksiz kelime kalmadı.
+**Not:** §15'teki Faz 5/6/9 kontrol listelerinin "HSK 6'da örnek kutusu yalnız 555 kelimede dolu / eksik olabilir" maddeleri artık geçersiz — hsk6'da örneksiz kelime kalmadı.
 
 ---
 
-## 14. Bilinen açık riskler / notlar
+## 14. Faz 11 — Ayarlar ekranı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub)
 
+**Başlangıç isteği (kullanıcı):** "Uygulamaya bir ayarlar bölümü ekleyip içine reset progress, titreşimlerin açılıp kapanması, kartların üzerindeki hoparlöre basınca okunan karakterin ses seviyesini ayarlama ve uygulamanın GitHub sayfasına yönlendiren bir buton koymayı düşünüyorum."
+
+**Kararlar (kullanıcı onayı):** giriş noktası **Home başlığındaki ⚙️** (sekme değil) · ses seviyesi **gerçek slider** (`@react-native-community/slider`, SDK 57'de `inExpoGo: true`) · reset progress **yalnızca Ayarlar'da** (`StatsModal`'dan taşındı) · ses seviyesi **hem quiz kartı hem sözlük** hoparlörünü etkiler · GitHub butonu **mevcut private URL**'i kullanır (repo ileride public yapılırsa aynı buton çalışır).
+
+**Yapılan (her biri ayrı commit):**
+1. `services/settingsService.js` — ayarların tek kaynağı: `DEFAULT_SETTINGS` (`{ haptics: true, speechVolume: 1 }`), `@hsk_settings` anahtarı, `getSettings()` (diskten okur; **eksik/bozuk alan alan varsayılana düşer**, bilinmeyen alan atılır), `updateSettings(patch)` (birleştirir → `onSettingsChange` yayar → diske yazar), `clampSpeechVolume` (0–1) ve **senkron** `getCachedSettings()`.
+   - Neden senkron: `Speech.speak` anında çağrılır, ses seviyesi için AsyncStorage beklenemez → bellek içi kopya; `App.js` açılışta `getSettings()` ile önbelleği doldurur.
+2. `services/speechService.js` — `expo-speech`'e dokunan **tek** yer (`speakHanzi`, `stopSpeaking`, `warmUpSpeech`); `volume` ayardan eklenir. `QuestionCard` (kart 🔊, `rate 0.85`), `VocabularyScreen` (sözlük 🔊, `pitch 1.0 + rate 0.85`) ve `QuizScreen` (sessiz ısınma, `volume: 0` — ayardan **bağımsız**) buraya bağlandı. Davranış değişmedi: okuma parametreleri birleştirildi (`zh-CN`, `pitch 1.0`, `rate 0.85`).
+3. `services/hapticsService.js` — `expo-haptics`'e dokunan **tek** yer: `selectionFeedback()` (doğru) ve `failureFeedback()` (yanlış, 140 ms arayla iki darbe). `settings.haptics === false` iken ikisi de hiçbir şey yapmaz.
+4. `screens/SettingsScreen.js` + `App.js` Stack rotası `Settings` + `HomeScreen` üst satırında ⚙️. Bölümler: **FEEDBACK** (Switch) · **SOUND** (yüzde göstergesi + slider `step 0.05` + "Test volume" → 你好 okur) · **DATA** (iki adımlı onaylı RESET PROGRESS) · **ABOUT** (GitHub butonu + URL metni). Slider sürüklenirken yalnız ekran güncellenir, **diske yazım parmak kaldırılınca** (`onSlidingComplete`) yapılır. `Linking.canOpenURL` başarısızsa `Alert` ile uyarılır.
+5. `components/StatsModal.js` — reset bölümü, onay kutusu, `handleResetProgress`, `resetConfirm`/`isResetting` state'i ve ilgili stiller **kaldırıldı**; `clearAllStats`/`DeviceEventEmitter` import'ları düştü. Aynı akış (`clearAllStats()` + `onProgressReset`) Ayarlar'da sürüyor; `App.js` değişmedi.
+6. Testler — `__tests__/settingsService.test.js` (12), `__tests__/hapticsService.test.js` (4, `expo-haptics` taklit), `__tests__/speechService.test.js` (6, `expo-speech` taklit) → **246 test / 14 suite**.
+
+**Doğrulama:** `npm test` **246 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · modified `.js` dosyaları Babel parse ✓.
+
+**Cihaz kontrol listesi (⏳ bekliyor):**
+1. Home'da ⚙️ → Ayarlar açılmalı; geri oku sorunsuz dönmeli.
+2. SOUND → ses seviyesini %20'ye çek → "Test volume" 你好'yu kısık okumalı; Quiz'e geçip karttaki 🔊 ve Sözlük'teki 🔊 **aynı** kısık seviyede okumalı.
+3. Ses seviyesini **%0**'a çek → okuma duyulmamalı (uygulama çökmemeli) ve açıklama "Muted" olmalı.
+4. FEEDBACK → titreşimi **kapat** → quiz'de doğru/yanlış cevapta **hiç** titreşim olmamalı; tekrar açınca titreşim geri gelmeli.
+5. DATA → RESET PROGRESS → CANCEL hiçbir şeyi silmemeli; **YES, RESET** istatistikleri **ve** yanlış havuzunu silmeli, **özel desteler kalmalı**.
+6. `StatsModal`'da artık RESET butonu **olmamalı**.
+7. ABOUT → GitHub butonu tarayıcıda repo sayfasını açmalı (private repo: giriş yapılmış hesapta açılır).
+8. Uygulamayı kapatıp aç → ayarlar (ses seviyesi + titreşim) **korunmalı**.
+
+**Sonraki adım:** cihaz doğrulaması ✅ olunca bu bölümü işaretle, `known-good`'u ilerlet ve tek yedek arşivi tazele (bkz. §16).
+
+---
+
+## 15. Bilinen açık riskler / notlar
+
+- **`npx expo-doctor` artık 21/21 DEĞİL — 19/21 (Faz 11 sırasında ölçüldü).** İki başarısız kontrol de uygulama kodundan bağımsızdır: **(a)** `package.json`'daki `tsc` script'i `node_modules/.bin` ile isim çakışıyor (uzun süredir var, dokümandaki "21/21" notu bu yüzden yanıltıcıydı), **(b)** `expo` patch sürümü **57.0.29** ↔ beklenen **`~57.0.30`** (Expo yeni patch yayınladı). Yükseltmek için `npx expo install --fix` — ancak bu bir bağımlılık değişikliğidir: ayrı commit + cihaz doğrulaması ister.
 - **Uzak yedek (remote) KURULDU** — `origin` = GitHub private repo (bkz. §2). Geçmiş artık tek diskte değil; ama **düzenli `git push` unutulmamalı** (yerel commit'ler otomatik gitmez).
 - **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
   - Madde madde tekrar doğrulamak istenirse:
@@ -592,7 +626,7 @@ Her maddeyi **ayrı commit** olarak yap.
 
 ---
 
-## 15. Yeni oturumda nasıl devam edilir
+## 16. Yeni oturumda nasıl devam edilir
 
 1. Bu dosyayı oku (`NOTES.md`).
 2. `git log --oneline` ve `git status` ile durumu doğrula.
