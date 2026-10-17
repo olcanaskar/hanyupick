@@ -8,8 +8,10 @@ import hsk5Examples from '../data/examples/hsk5_examples';
 import hsk6Examples from '../data/examples/hsk6_examples';
 import { getLevelFromWordId } from './wordRepository';
 
-// Not: kapsam her seviyede tam DEGILDIR (hsk6'da 555/2500). Karşılığı olmayan
-// kelime için null döner ve ExampleBox hiçbir şey çizmez.
+// Faz 10 sonrası kapsam altı seviyede de TAMDIR (hsk1-4 1200, hsk5 1300,
+// hsk6 2500 -> 5000/5000). Yine de savunma amaçlı olarak: karşılığı olmayan
+// kelime için null döner ve ExampleBox hiçbir şey çizmez (ör. custom deck
+// kelimelerinin örneği yoktur).
 const EXAMPLES_MAP = {
   hsk1: hsk1Examples,
   hsk2: hsk2Examples,
