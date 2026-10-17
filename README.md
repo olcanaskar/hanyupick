@@ -27,7 +27,7 @@ The app is published as an APK on the **[Releases page](https://github.com/olcan
 2. Tap the downloaded file. Android will ask you to allow "install unknown apps" for your browser or
    file manager the first time — allow it, then install.
 3. That's it. No account, no sign-up, no download inside the app: the full 5,000-word library is
-   already inside the APK and everything works offline.
+   already inside the APK and everything except search by draw works offline.
 
 There is no iOS build yet; on iPhone the app has to be built from source — see
 [Building from source](#building-from-source).
