@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihaz doğrulaması bekliyor** ⏳ — kontrol listesi §14, kayıt §13). Kapsam: hsk6'da eksik olan **1945 örnek** elle yazıldı; ayrıca Faz 6 öncesi sıralamadan kalan ve başka kelimeye ait **385 kaymış kayıt** doğru cümlelerle değiştirildi (170 doğru kayıt korundu) → `data/examples/hsk6_examples.js` artık **2500/2500**. Yan bulgu: hsk6 **2965 端午节** (`uānwǔjié` → `duānwǔjié`) ve hsk5 **1774 元旦** (`uándàn` → `yuándàn`) pinyin düzeltmeleri. Doğrulama: **her örneğin cümlesi kendi kelimesini birebir içerir**, pinyin'i kelimenin pinyin'ini ton duyarlı içerir. **224 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata. `known-good` hâlâ **Faz 9** doğrulamasındadır; Faz 10 için cihaz doğrulaması gelince ilerletilecek.
+Son güncelleme: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17, kullanıcı: "tamamdır çalışıyor") — kontrol listesi §14, kayıt §13). Kapsam: hsk6'da eksik olan **1945 örnek** elle yazıldı; ayrıca Faz 6 öncesi sıralamadan kalan ve başka kelimeye ait **385 kaymış kayıt** doğru cümlelerle değiştirildi (170 doğru kayıt korundu) → `data/examples/hsk6_examples.js` artık **2500/2500**. Yan bulgu: hsk6 **2965 端午节** (`uānwǔjié` → `duānwǔjié`) ve hsk5 **1774 元旦** (`uándàn` → `yuándàn`) pinyin düzeltmeleri. Doğrulama: **her örneğin cümlesi kendi kelimesini birebir içerir**, pinyin'i kelimenin pinyin'ini ton duyarlı içerir. **224 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo export` hatasız. `known-good` artık bu doğrulama kaydını taşıyan doküman commit'indedir (**Faz 6 + Faz 7 + Faz 8 + Faz 9 + Faz 10 birlikte doğrulandı ✅**).
 
 Önceki faz: **Faz 9 — hsk5'in eksik örnek cümleleri yazıldı** (`b29682f`; **cihazda doğrulandı ✅** (2026-10-16) — kayıt §12). Kapsam: hsk5'te eksik olan **638 örnek** elle yazıldı; Faz 6 öncesinden kalan **22 kaymış kayıt** değiştirildi, **2 bozuk pinyin** düzeltildi → hsk5 **1300/1300**. Faz 8'in kaydı §11'dedir.
 
@@ -114,7 +114,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 10 (hsk6 örnek cümleleri, 2500/2500) commit'leri:** 18 batch commit'i (`a36c34b` id 2501–2801 → `37f9307` id 4886–5000; aradaki 9–17: `972bc2d`, `bf9e3ba`, `a035282`, `ee17fea`, `6d6d9f7`, `27d489a`, `bbab9a9`, `53dcfbe`, `b8ec101`) · `e195f8e` (hsk6 **2965** pinyin `uānwǔjié` → `duānwǔjié`) · `8ff35d1` (hsk5 **1774** pinyin `uándàn` → `yuándàn`) · `3ce3529` (`exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihaz doğrulaması bekliyor** ⏳ (bkz. §13, §14).
+- **Faz 10 (hsk6 örnek cümleleri, 2500/2500) commit'leri:** 18 batch commit'i (`a36c34b` id 2501–2801 → `37f9307` id 4886–5000; aradaki 9–17: `972bc2d`, `bf9e3ba`, `a035282`, `ee17fea`, `6d6d9f7`, `27d489a`, `bbab9a9`, `53dcfbe`, `b8ec101`) · `e195f8e` (hsk6 **2965** pinyin `uānwǔjié` → `duānwǔjié`) · `8ff35d1` (hsk5 **1774** pinyin `uándàn` → `yuándàn`) · `3ce3529` (`exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §13, §14).
 - **Faz 9 (hsk5 eksik örnekler + kaymış/pinyin düzeltmeleri) commit'i:** `b29682f` (638 yeni + 25 düzeltilmiş hsk5 örneği + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §12, §14).
 - **Faz 8 (hsk1–4 eksik örnekler + 倒 anlamı) commit'leri:** `2fa9a8e` (91 örnek cümle + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) · `d8a5ede` (`data/hsk4.json` #680 **倒** anlamı) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §11, §14).
 - **Faz 7 (hsk1–4 resmî liste) commit'i:** `5950ce4` (veri + göç tabloları + **sürüm-farkındalıklı** uygulama + `App.js` + örnekler + testler + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §10, §14).
@@ -488,9 +488,9 @@ Her maddeyi **ayrı commit** olarak yap.
 
 **Testler:** `exampleService.test.js` — "hsk1-6 örnek kapsamı tam" (hsk6 eklendi), "Faz 10 pinleri" (3585 口气, 3615 啦, 3705 络绎不绝, 3714 嘛, 3999 全力以赴, 5000 作息) ve "hsk5 + hsk6: her örneğin cümlesi kendi kelimesini içerir" regresyon testi → **224 test / 11 suite**.
 
-**Doğrulama:** `npm test` **224 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata**.
+**Doğrulama:** `npm test` **224 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · `npx expo export --platform android` hatasız.
 
-**Cihaz doğrulaması:** ⏳ **bekliyor** (kontrol listesi §14). `known-good` bu nedenle henüz ilerletilmedi.
+**Cihaz doğrulaması:** ✅ 2026-10-17 (kullanıcı, Expo Go: "tamamdır çalışıyor") — §14'teki kontrol listesiyle birlikte. `known-good` bu doğrulama kaydını taşıyan doküman commit'ine ilerletildi.
 
 **Not:** §14'teki Faz 5/6/9 kontrol listelerinin "HSK 6'da örnek kutusu yalnız 555 kelimede dolu / eksik olabilir" maddeleri artık geçersiz — hsk6'da örneksiz kelime kalmadı.
 
@@ -572,7 +572,7 @@ Her maddeyi **ayrı commit** olarak yap.
    2. **Eşleşme (en önemli):** birkaç HSK 5 kelimesini bilerek yanlış yap; çıkan cümlede **o kelimenin** geçtiğini gör (ör. 商业 → "这是一个商业中心。", 发抖 → "他冷得全身发抖。"). Faz 6 öncesinden kalan kaymış cümleler artık görünmemeli.
    3. **Pinyin:** cümle pinyin'i kelimenin okunuşuyla tutarlı olsun (ör. 按照 `ànzhào`, 一致 `yízhì`).
    4. **Regresyon:** HSK 1–4 soruları, HSK 6 (örneği olan 555 kelimede kutu dolu, kalanında boş), Mixed / Review / özel desteler / sözlük arama ve "İlerlemeyi sıfırla" eskisi gibi çalışsın.
-- **Cihaz testi (Faz 10: hsk6 örnek cümleleri) ⏳ BEKLİYOR** (kullanıcı, Expo Go). Kontrol listesi (geçmişte regresyon olursa yeniden bakılabilir):
+- **Cihaz testi (Faz 10: hsk6 örnek cümleleri) ✅ TAMAMLANDI** (2026-10-17; kullanıcı, Expo Go — "tamamdır çalışıyor"). Kontrol listesi (geçmişte regresyon olursa yeniden bakılabilir):
    1. **Örnek kutusu:** HSK 6'da yanlış cevapta örnek cümle **her kelimede** çıkmalı (eskiden yalnız 555 kayıtta vardı) — ör. 口气, 络绎不绝, 全力以赴, 作息.
    2. **Eşleşme (en önemli):** birkaç HSK 6 kelimesini bilerek yanlış yap; çıkan cümlede **o kelimenin** geçtiğini gör (ör. 3615 啦 → "时间不早啦，我们该走了。"). Faz 6'dan kalan kaymış cümleler artık görünmemeli (ör. 沉闷 için 沉重'in cümlesi gelmemeli).
    3. **Pinyin:** cümle pinyin'i kelimenin okunuşuyla tutarlı olsun (ör. 端午节 `duānwǔjié`, 元旦 `yuándàn`).
