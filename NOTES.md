@@ -3,9 +3,9 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihaz doğrulaması bekliyor ⏳** — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
+Son güncelleme: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
 
-Önceki faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; cihaz doğrulaması **bekliyor ⏳** — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
+Önceki faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
 
 Ondan önceki faz: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §13). hsk6'da eksik olan **1945 örnek** yazıldı, Faz 6'dan kalan **385 kaymış/kusurlu kayıt** değiştirildi (170 doğru kayıt korundu) → hsk6 **2500/2500**. Faz 9'un kaydı §12'dedir.
 
@@ -518,7 +518,7 @@ Her maddeyi **ayrı commit** olarak yap.
 
 **Doğrulama:** `npm test` **246 yeşil** · lint **0 hata / 15 uyarı** (yeni uyarı: `SettingsModal`'ın açılış effect'i — `StatsModal` ile aynı `set-state-in-effect` deseni) · `tsc` **0 hata** · değişen `.js` dosyaları Babel parse ✓ · `npx expo export --platform android` hatasız.
 
-**Cihaz kontrol listesi (⏳ bekliyor):**
+**Cihaz kontrol listesi (✅ doğrulandı — 2026-10-17, kullanıcı, Expo Go):**
 1. Home'da ⚙️ → Ayarlar **İstatistikler gibi pop-up** olarak açılmalı (karartılmış zemin + ölçek animasyonu); **✕**, karartılmış alana dokunma ve **donanım geri tuşu** ile kapanmalı.
 2. Pop-up içeriği gerekirse kaydırılabilmeli (küçük ekranda ABOUT bölümü görünmeli).
 3. SOUND → ses seviyesini %20'ye çek → "Test volume" 你好'yu kısık okumalı; Quiz'e geçip karttaki 🔊 ve Sözlük'teki 🔊 **aynı** kısık seviyede okumalı.
@@ -529,7 +529,7 @@ Her maddeyi **ayrı commit** olarak yap.
 8. ABOUT → GitHub butonu tarayıcıda repo sayfasını açmalı (private repo: giriş yapılmış hesapta açılır).
 9. Uygulamayı kapatıp aç → ayarlar (ses seviyesi + titreşim) **korunmalı**.
 
-**Sonraki adım:** cihaz doğrulaması ✅ olunca bu bölümü işaretle, `known-good`'u ilerlet ve tek yedek arşivi tazele (bkz. §17).
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go). `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §17).
 
 ---
 
@@ -559,7 +559,7 @@ Her maddeyi **ayrı commit** olarak yap.
 
 **Doğrulama:** `npm test` **246 yeşil** · lint **0 hata / 15 uyarı** · `tsc` **0 hata** · değişen `.js` dosyaları Babel parse ✓.
 
-**Cihaz kontrol listesi (⏳ bekliyor):**
+**Cihaz kontrol listesi (✅ doğrulandı — 2026-10-17, kullanıcı, Expo Go):**
 1. Home'da ekranı sürükle → hiçbir şey kaymamalı/oynamamalı.
 2. Quiz'e gir → mod sekmeleri, aktif sekme göstergesi, "Level:" menüsü, seviye dropdown'ı ve Review şeridi **kırmızı** olmalı (amber kalmamalı).
 3. Doğru şık yeşil, yanlış şık kırmızı görünmeli; renkler üstteki Correct/Wrong rozetleriyle **aynı** olmalı.
@@ -570,6 +570,8 @@ Her maddeyi **ayrı commit** olarak yap.
 8. Sözlükte ✏️ Draw → pop-up'ın aday çubuğu, harf çipleri ve tuval çerçevesi kırmızı olmalı. Uçak modunda (internet yok) **hata çubuğu belirgin şekilde daha koyu kırmızı** görünmeli — normal çubukla karışmamalı.
 9. Home → 📊 İstatistik → streak kartı, ‹ › ay butonları, bir güne dokununca çıkan detay balonu ve ustalık çubukları kırmızı tonlarında olmalı; takvimde "az" açık kırmızı, "çok" koyu kırmızı, "aktivite yok" gri kalmalı; balondaki Correct yeşil / Wrong kırmızı ayrımı korunmalı.
 10. Bu iki pop-up'ın metinleri okunaklı olmalı (koyu kırmızı üstüne beyaz gün rakamları vb.).
+
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go) — Home sürüklenmiyor, quiz/sözlük/Draw/İstatistik kırmızı temada, GitHub butonunda gerçek logo görünüyor. `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §17).
 
 ---
 
@@ -681,3 +683,5 @@ Her maddeyi **ayrı commit** olarak yap.
 3. Çalışılacak maddeyi seç (kural: **her düzeltme ayrı commit**, mesajı açıklayıcı).
 4. Bitince: doğrula (`npm test`, `npm run lint`, `npm run tsc`, varsa Babel parse) → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
 5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
+
+**`known-good` durumu:** Faz 11 + Faz 12 doğrulama commit'i (`docs: mark Faz 11 and Faz 12 as device-verified`, 2026-10-17). Önceki değer `6ceea02` (Faz 10) idi. Doğrulama turu bittiğinde tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz` olarak tazelenir ve **eskisi silinir**; ayrıntı için §16.
