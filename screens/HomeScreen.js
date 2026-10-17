@@ -171,7 +171,10 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
       {/* 2. Katman: Ön plandaki kartlar */}
       <SafeAreaView style={[styles.safeArea, { backgroundColor: 'transparent' }]}>
         <StatusBar barStyle="dark-content" backgroundColor="#FBF5EB" translucent={false} />
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Kaydırma YOK (kullanıcı isteği, Faz 11): Home'un tamamı tek ekrana sığıyor;
+            sürüklenip yerinden oynayan bir ekran yanlış hissettiriyordu. İçerik
+            sığmazsa kırpılır — bu yüzden buraya yeni kart eklerken yüksekliği gözet. */}
+        <View style={styles.container}>
           {/* Header Section */}
           <View style={styles.header}>
             <View style={styles.topRow}>
@@ -412,7 +415,7 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
             </View>
             <Text style={styles.statsCardArrow}>→</Text>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
       </SafeAreaView>
     </View>
   );
