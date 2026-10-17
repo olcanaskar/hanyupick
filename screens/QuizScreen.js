@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { StyleSheet, View, Text, StatusBar, ScrollView, DeviceEventEmitter } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Haptics from 'expo-haptics';
 
 import { recordAnswer } from '../services/statsManager';
 import { CUSTOM_ID_PREFIX, getCustomDecks, isCustomDeckLevel } from '../services/importService';
@@ -26,6 +25,7 @@ import {
   resolveReviewWord,
 } from '../services/reviewPool';
 import { DEFAULT_MODE, getAnswerType } from '../services/modes';
+import { failureFeedback, selectionFeedback } from '../services/hapticsService';
 import { warmUpSpeech } from '../services/speechService';
 
 /**
@@ -200,13 +200,11 @@ export default function QuizScreen({
       isCorrect: isCorrect,
     });
 
+    // Dokunsal geri bildirim tek servisten; kullanıcı ayarı kapalıysa susar.
     if (isCorrect) {
-      Haptics.selectionAsync();
+      selectionFeedback();
     } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      setTimeout(() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      }, 140);
+      failureFeedback();
     }
 
     if (level === 'review') {
