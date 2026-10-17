@@ -9,9 +9,8 @@ import {
   Pressable,
   Animated,
   ActivityIndicator,
-  DeviceEventEmitter,
 } from 'react-native';
-import { getStats, getMastery, isProblematic, clearAllStats } from '../services/statsManager';
+import { getStats, getMastery, isProblematic } from '../services/statsManager';
 import { getCustomDecks } from '../services/importService';
 import { getDateKey, addDays } from '../services/dateUtils';
 import { ALL_WORDS, LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
@@ -48,11 +47,6 @@ export default function StatsModal({ visible, onClose }) {
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedMonthDate, setSelectedMonthDate] = useState(new Date());
 
-  // "İlerlemeyi sıfırla" iki adımlıdır: buton → modalın kendi temasıyla çizilen onay.
-  // (Alert kullanılmıyor: uygulamanın geri kalanı uyarıları kendi temasıyla çizer.)
-  const [resetConfirm, setResetConfirm] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
-
   // Animasyon Değerleri (Ölçek, Dikey Kayma ve Opaklık)
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
   const translateYAnim = useRef(new Animated.Value(35)).current;
@@ -66,9 +60,6 @@ export default function StatsModal({ visible, onClose }) {
     opacityAnim.setValue(0);
     setSelectedDay(null);
     setSelectedMonthDate(new Date());
-    // Modal her açılışta temiz başlar: yarım kalmış bir sıfırlama onayı görünmesin.
-    setResetConfirm(false);
-    setIsResetting(false);
 
     // ANİMASYON VERİDEN BAĞIMSIZ BAŞLAR (Faz 4.1): eskiden `Animated.parallel` ancak
     // `getStats()` çözüldüğünde çağrılıyordu, yani veri okunana kadar hiçbir şey
@@ -148,22 +139,9 @@ export default function StatsModal({ visible, onClose }) {
     setSelectedMonthDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
-  // Tüm ilerlemeyi siler (istatistik + yanlış havuzu).
-  // İstatistikler burada silinir; yanlış havuzunun sahibi App.js olduğu için o kısım
-  // `onProgressReset` olayıyla temizlenir. Ardından modal kendi verisini tazeler.
-  const handleResetProgress = async () => {
-    if (isResetting) return;
-    setIsResetting(true);
-
-    await clearAllStats();
-    DeviceEventEmitter.emit('onProgressReset');
-
-    const fresh = await getStats();
-    setStatsData(fresh);
-    setSelectedDay(null);
-    setIsResetting(false);
-    setResetConfirm(false);
-  };
+  // Not (Faz 11): "İlerlemeyi sıfırla" artık burada değil, Ayarlar ekranındadır
+  // (`screens/SettingsScreen.js`). Aynı akışı kullanır: `clearAllStats()` +
+  // yanlış havuzunun sahibi olan App.js'e `onProgressReset` olayı.
 
   // Referanslar SABİTLENİR: `statsData?.x || {}` her render'da yeni bir nesne üretir ve
   // aşağıdaki `useMemo`ların bağımlılığını değiştirirdi → memoizasyon anlamsız olurdu
@@ -638,60 +616,6 @@ export default function StatsModal({ visible, onClose }) {
                     ))}
                   </View>
                 )}
-                {/* Tehlikeli Bölge — tüm ilerlemeyi sıfırla (Faz 4) */}
-                <View style={styles.dangerZone}>
-                  {!resetConfirm ? (
-                    <>
-                      <Text style={styles.dangerHint} accessible={true}>
-                        Deleting progress removes all statistics and the mistake pool.
-                      </Text>
-                      <TouchableOpacity
-                        style={styles.dangerButton}
-                        onPress={() => setResetConfirm(true)}
-                        accessibilityRole="button"
-                        accessibilityLabel="Reset progress"
-                      >
-                        <Text style={styles.dangerButtonText}>RESET PROGRESS</Text>
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <View style={styles.confirmBox}>
-                      <Text
-                        style={styles.confirmTitle}
-                        accessible={true}
-                        accessibilityRole="header"
-                      >
-                        Reset all progress?
-                      </Text>
-                      <Text style={styles.confirmText} accessible={true}>
-                        All word statistics, daily activity, your streak and the mistake pool will
-                        be deleted. This cannot be undone.
-                      </Text>
-                      <View style={styles.confirmActions}>
-                        <TouchableOpacity
-                          style={styles.cancelButton}
-                          onPress={() => setResetConfirm(false)}
-                          disabled={isResetting}
-                          accessibilityRole="button"
-                          accessibilityLabel="Cancel"
-                        >
-                          <Text style={styles.cancelButtonText}>CANCEL</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={styles.confirmButton}
-                          onPress={handleResetProgress}
-                          disabled={isResetting}
-                          accessibilityRole="button"
-                          accessibilityLabel="Yes, reset all progress"
-                        >
-                          <Text style={styles.confirmButtonText}>
-                            {isResetting ? 'RESETTING…' : 'YES, RESET'}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  )}
-                </View>
               </>
             ) : (
               <View style={styles.loadingBox}>
@@ -1225,89 +1149,5 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 6,
     borderRadius: 6,
-  },
-  // Faz 4: "İlerlemeyi sıfırla" bölümü. Tehlikeli işlem olduğu için görsel olarak
-  // ayrılır (üst çizgi) ve iki adımlı onay ister.
-  dangerZone: {
-    marginTop: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    alignItems: 'center',
-  },
-  dangerHint: {
-    fontSize: 11,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    lineHeight: 16,
-    marginBottom: 10,
-    paddingHorizontal: 6,
-  },
-  dangerButton: {
-    borderWidth: 1.5,
-    borderColor: '#FCA5A5',
-    backgroundColor: '#FEF2F2',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 14,
-  },
-  dangerButtonText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#B91C1C',
-    letterSpacing: 0.5,
-  },
-  confirmBox: {
-    width: '100%',
-    borderWidth: 1.5,
-    borderColor: '#FCA5A5',
-    backgroundColor: '#FEF2F2',
-    borderRadius: 16,
-    padding: 16,
-  },
-  confirmTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#991B1B',
-    textAlign: 'center',
-    marginBottom: 6,
-  },
-  confirmText: {
-    fontSize: 12,
-    color: '#7F1D1D',
-    textAlign: 'center',
-    lineHeight: 18,
-    marginBottom: 14,
-  },
-  confirmActions: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  cancelButton: {
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 12,
-  },
-  cancelButtonText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#6B7280',
-    letterSpacing: 0.5,
-  },
-  confirmButton: {
-    backgroundColor: '#DC2626',
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 12,
-  },
-  confirmButtonText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    letterSpacing: 0.5,
   },
 });
