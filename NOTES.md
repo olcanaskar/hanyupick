@@ -1035,6 +1035,8 @@ Betik `.js`/JSX'e dokunmadığı için Babel parse gerekmedi; `npm test` (247) +
 
 **Commit'ler:** `10ac80c` (betik + 8 vitrin görseli + README/AGENTS/NOTES) · `3b0b797` (galeri uygulamaya girmez). CI **✅ success** (`10ac80c`, `3b0b797`).
 
+**2026-10-17 (ek):** 3 quiz-yanıt karesi daha eklendi — `quiz-hanzi-to-{pinyin,english}-answered` ve `quiz-pinyin-to-english-answered` (top-strip MSE ile eşleştirildi; aynı 3 modun "doğru cevap yeşil" durumu). README galeri tablosu 3. satıra çıktı; alttaki mockup/raw `<sub>` notu kaldırıldı (kullanıcı isteği). Betik `SCREENS` listesine 3 satır eklendi. CI yeşil.
+
 ---
 
 ## 26. Yeni oturumda nasıl devam edilir

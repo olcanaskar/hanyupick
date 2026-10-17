@@ -46,10 +46,13 @@ There is no iOS build yet; on iPhone the app has to be built from source — see
     <td align="center" width="25%"><img src="docs/screenshots/handwriting.jpg" width="200" alt="Handwriting pad with the character 你 drawn by hand and five candidates" /><br /><sub><b>Handwriting</b> — look a word up by drawing it</sub></td>
     <td align="center" width="25%"><img src="docs/screenshots/statistics-mastery.jpg" width="200" alt="Statistics pop-up with the streak banner and the mastery bars for HSK 1-6" /><br /><sub><b>Statistics</b> — streak &amp; mastery</sub></td>
     <td align="center" width="25%"><img src="docs/screenshots/statistics-calendar.jpg" width="200" alt="Statistics pop-up with the seven-day strip, the activity calendar and the heat legend" /><br /><sub><b>Activity calendar</b> — practice history</sub></td>
+    <tr>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-pinyin-answered.jpg" width="200" alt="Quiz answered, the correct pinyin highlighted in green" /><br /><sub><b>Hanzi → Pinyin</b> — answered</sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-english-answered.jpg" width="200" alt="Quiz answered, the correct meaning highlighted in green" /><br /><sub><b>Hanzi → English</b> — answered</sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-pinyin-to-english-answered.jpg" width="200" alt="Quiz answered, the correct option highlighted in green" /><br /><sub><b>Pinyin → English</b> — answered</sub></td>
+    <td align="center" width="25%"></td>
   </tr>
 </table>
-
-<sub>Captured on a phone running the APK published above — the untouched captures are kept in [`docs/screenshots/raw/`](docs/screenshots/raw/). The phone frame, the background and the captions are added afterwards by `tools/generate-store-screenshots.py`, so the framed images are **mockups**; the two **Statistics** images also have **sample progress data** drawn into them (HSK 1–2 mastered, HSK 3 halfway) — the app itself always starts empty.</sub>
 
 ## Why another HSK app?
 
