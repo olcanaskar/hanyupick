@@ -3,21 +3,21 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 15 — uygulama ikonu: varsayılan Expo ikonları yerine kırmızı 汉 tasarımı** (`6ba9312`: `assets/` içindeki 5 PNG yeniden üretildi — 1024×1024 kırmızı köşegen geçiş (#DC2626 → #991B1B) üzerine krem (#FBF5EB) **汉**, adaptive icon katmanları + yuvarlatılmış favicon; `tools/generate-icons.py` ikonların tek üreticisi (Python + Pillow, Microsoft YaHei Bold, 4× supersampling) · `app.json`: `adaptiveIcon.backgroundColor` `#E6F4FE` → `#B91C1C`). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata. **⏳ cihazda doğrulanmadı** — Expo Go uygulama ikonunu göstermez, doğrulama bir development/EAS build gerektirir; kayıt §19.
+Son güncelleme: **Faz 16 — HanyuPick adı, mağaza kimlikleri ve EAS Build yapılandırması** (`d92efe6`: `app.json` — görünen ad `ChineseQuizApp` → **`HanyuPick`**, slug → `hanyupick`, `android.package` + `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`** · `bf3e7a2`: **`eas.json`** — `preview` (internal dağıtım → paylaşılabilir **APK**) ve `production` (`autoIncrement` + uzaktan sürüm kaynağı) profilleri, ilk Play yüklemesi internal track'e, `development` profili bilinçli olarak yok). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo-doctor` 20/21, `expo config` kimlikleri çözüyor. **⏳ cihazda doğrulanmadı** — ad/paket/ikon gibi native alanlar yalnızca bir EAS build'inde görünür; kayıt §20.
 
-Önceki faz: **Faz 14 — İstatistik pop-up'ı: temiz açılış + sığan takvim balonu** (`f5176c7`: kart içeriği asenkron geldiği için animasyon küçük "Loading…" kartında başlayıp veri gelince kart büyüyüp yeniden konumlanıyordu → "bug'lı" açılış; içerik artık modal açılmadan önce ısıtılır, ay/gün sıfırlaması açılıştan kapanış sonuna taşındı, bayat veriyi temizleme kaldırıldı · `19b097c`: takvimde ortadaki sütuna tıklayınca gün balonu ScrollView'dan taşıp kesiliyordu; yön/genişlik artık ölçülen grid'den hesaplanır — ortadaki sütun da sola açar, gerektiğinde balon daralır). **247 test yeşil**, lint 0 hata / **14 uyarı**, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §18, kontrol listesi §16.
+Önceki faz: **Faz 15 — uygulama ikonu: varsayılan Expo ikonları yerine kırmızı 汉 tasarımı** (`6ba9312`: `assets/` içindeki 5 PNG yeniden üretildi — 1024×1024 kırmızı köşegen geçiş (#DC2626 → #991B1B) üzerine krem (#FBF5EB) **汉**, adaptive icon katmanları + yuvarlatılmış favicon; `tools/generate-icons.py` ikonların tek üreticisi (Python + Pillow, Microsoft YaHei Bold, 4× supersampling) · `app.json`: `adaptiveIcon.backgroundColor` `#E6F4FE` → `#B91C1C`). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata. **⏳ cihazda doğrulanmadı** — Expo Go uygulama ikonunu göstermez, doğrulama bir development/EAS build gerektirir; kayıt §19.
 
-Ondan önceki faz: **Faz 13 — hsk1–4'te kelimesini göstermeyen 6 örnek cümle düzeltildi + `expo` 57.0.30** (`5146c40` altı cümle yeniden yazıldı, "cümle kendi kelimesini içerir" testi hsk5-6'dan **altı seviyeye** genişletildi · `1692806` `npx expo install --fix` ile `expo` 57.0.29 → **`~57.0.30`**, tek değişen paket, `expo-doctor` 19/21 → **20/21**). **247 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §17, kontrol listesi §16.
+Ondan önceki faz: **Faz 14 — İstatistik pop-up'ı: temiz açılış + sığan takvim balonu** (`f5176c7`: kart içeriği asenkron geldiği için animasyon küçük "Loading…" kartında başlayıp veri gelince kart büyüyüp yeniden konumlanıyordu → "bug'lı" açılış; içerik artık modal açılmadan önce ısıtılır, ay/gün sıfırlaması açılıştan kapanış sonuna taşındı, bayat veriyi temizleme kaldırıldı · `19b097c`: takvimde ortadaki sütuna tıklayınca gün balonu ScrollView'dan taşıp kesiliyordu; yön/genişlik artık ölçülen grid'den hesaplanır — ortadaki sütun da sola açar, gerektiğinde balon daralır). **247 test yeşil**, lint 0 hata / **14 uyarı**, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §18, kontrol listesi §16.
 
-Daha önceki faz: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
+Daha önceki faz: **Faz 13 — hsk1–4'te kelimesini göstermeyen 6 örnek cümle düzeltildi + `expo` 57.0.30** (`5146c40` altı cümle yeniden yazıldı, "cümle kendi kelimesini içerir" testi hsk5-6'dan **altı seviyeye** genişletildi · `1692806` `npx expo install --fix` ile `expo` 57.0.29 → **`~57.0.30`**, tek değişen paket, `expo-doctor` 19/21 → **20/21**). **247 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §17, kontrol listesi §16.
 
-Daha eski faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
+Daha eski faz: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
 
 ---
 
 ## 1. Proje özeti
 
-HSK 1–6 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması.
+HSK 1–6 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması — **görünen ad: `HanyuPick`** (paket kimliği `io.github.olcanasqar.hanyupick`, Faz 16, §20; git deposu/klasörü `ChineseQuizApp` adında kaldı — ad yalnızca ikonun altında görünür).
 **5.000 kelimelik** sabit kütüphane (id 1–5000, boşluk yok; **HSK 1–6 resmî Hanban 2012 listeleri** — §10, §9 ve §8), 6 soru yönü, yanlışları tekrar etme (Review),
 JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı, ayarlar pop-up'ı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub).
 
@@ -122,6 +122,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
+- **Faz 16 (HanyuPick adı + mağaza kimlikleri + `eas.json`) commit'leri:** `d92efe6` (`app.json`: ad/slug + `android.package`/`ios.bundleIdentifier`) · `bf3e7a2` (`eas.json`) — **⏳ cihaz doğrulaması bekliyor** (native alanlar yalnızca EAS build'inde görünür; bkz. §20, §16).
 - **Faz 15 (uygulama ikonu) commit'i:** `6ba9312` (`assets/*.png` + `tools/generate-icons.py` + `app.json`) — **⏳ cihaz doğrulaması bekliyor** (Expo Go uygulama ikonunu göstermez; bkz. §19, §16).
 - **Faz 14 (İstatistik pop-up'ı: temiz açılış + sığan takvim balonu) commit'leri:** `f5176c7` + `19b097c` (`components/StatsModal.js`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §18, §16).
 - **Faz 13 (hsk1–4'te 6 kaymış örnek düzeltmesi + `expo` 57.0.30) commit'leri:** `5146c40` (`data/examples/hsk1_examples.js`, `hsk3_examples.js`, `hsk4_examples.js` + `__tests__/exampleService.test.js`) · `1692806` (`package.json` + `package-lock.json`: `expo` `~57.0.30`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §17, §16).
@@ -537,7 +538,7 @@ Her maddeyi **ayrı commit** olarak yap.
 8. ABOUT → GitHub butonu tarayıcıda repo sayfasını açmalı (private repo: giriş yapılmış hesapta açılır).
 9. Uygulamayı kapatıp aç → ayarlar (ses seviyesi + titreşim) **korunmalı**.
 
-**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go). `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §20).
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go). `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §21).
 
 ---
 
@@ -579,7 +580,7 @@ Her maddeyi **ayrı commit** olarak yap.
 9. Home → 📊 İstatistik → streak kartı, ‹ › ay butonları, bir güne dokununca çıkan detay balonu ve ustalık çubukları kırmızı tonlarında olmalı; takvimde "az" açık kırmızı, "çok" koyu kırmızı, "aktivite yok" gri kalmalı; balondaki Correct yeşil / Wrong kırmızı ayrımı korunmalı.
 10. Bu iki pop-up'ın metinleri okunaklı olmalı (koyu kırmızı üstüne beyaz gün rakamları vb.).
 
-**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go) — Home sürüklenmiyor, quiz/sözlük/Draw/İstatistik kırmızı temada, GitHub butonunda gerçek logo görünüyor. `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §20).
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go) — Home sürüklenmiyor, quiz/sözlük/Draw/İstatistik kırmızı temada, GitHub butonunda gerçek logo görünüyor. `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §21).
 
 ---
 
@@ -590,6 +591,8 @@ Her maddeyi **ayrı commit** olarak yap.
   - `StatsModal`'da seviye çubukları ve ısı takvimi bilinçli olarak tek renk değil **rampadır** (HSK 1→6 ve az→çok koyulaşır); özel desteler rampanın dışında `#2C3E50` alır. Heat eşikleri `getHeatColor()` + `HEAT_COLORS` içinde **iki yerde** duruyor — değiştirirken ikisini birlikte güncelle.
 - **GitHub logosu elle çizilir (Faz 12):** `components/SettingsModal.js`'teki `GitHubMark` bileşeni resmi "mark-github" (octicon) yolunu `react-native-svg` ile çizer — ikon fontu/emoji yok, yeni bağımlılık yok. `react-native-svg` zaten `HandwritingModal` için kuruluydu (Expo Go'da hazır gelir); ikon dekoratif olduğu için erişilebilirlik etiketi butonun kendisindedir.
 - **`npx expo-doctor` artık 21/21 DEĞİL — Faz 13'ten sonra 20/21.** Tek başarısız kontrol uygulama kodundan bağımsızdır: `package.json`'daki `tsc` script'i `node_modules/.bin` ile isim çakışıyor (uzun süredir var, dokümandaki "21/21" notu bu yüzden yanıltıcıydı; `npm run tsc` sorunsuz çalışır). ~~**(b)** `expo` patch sürümü **57.0.29** ↔ beklenen **`~57.0.30`**~~ → **ÇÖZÜLDÜ (Faz 13, `1692806`)**: `npx expo install --fix` ile `expo` **`~57.0.30`**'a yükseltildi (tek değişen paket). Bu bağımlılık değişikliği **✅ cihazda doğrulandı** (Faz 13, 2026-10-17; §17).
+- **Uygulama adı ve paket kimlikleri sabitlendi (Faz 16, §20):** görünen ad **`HanyuPick`**, slug `hanyupick`, `android.package` = `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`**. ⚠️ **Paket adı mağazaya ilk yayından sonra değiştirilemez** (değiştirmek yeni bir uygulama demektir); o yüzden build yokken sabitlendi. Git deposu/klasör adı `ChineseQuizApp` olarak kaldı — `components/SettingsModal.js`'teki `REPOSITORY_URL` **depoyu** gösterir, uygulama adını değil.
+- **`eas.json` VAR (Faz 16, §20):** `preview` (internal dağıtım → paylaşılabilir **APK**; Expo Go'nun göstermediği ikonu/adı telefonda görmenin en kısa yolu) ve `production` (mağaza + `autoIncrement`) profilleri. **`development` profili bilinçli olarak YOK**: `developmentClient: true` `expo-dev-client` bağımlılığını şart koşar ve o kurulmadı. **EAS Update (`expo-updates`) de yok** — OTA düzeltme göndermek istenirse kurulur, ama ilk kurulum yine yeni bir build gerektirir. EAS projesi henüz bağlı değil (`extra.eas.projectId` yok): ilk kez `npx eas-cli@latest login` + **`npx eas-cli@latest init`** (projeyi oluşturur/bağlar) gerekir — `eas build:configure` artık gereksizdir, çünkü `eas.json` ve paket adları zaten hazır.
 - **Uzak yedek (remote) KURULDU** — `origin` = GitHub private repo (bkz. §2). Geçmiş artık tek diskte değil; ama **düzenli `git push` unutulmamalı** (yerel commit'ler otomatik gitmez).
 - **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
   - Madde madde tekrar doğrulamak istenirse:
@@ -774,11 +777,54 @@ Kullanıcı isteği: *"uygulamada hâlâ varsayılan uygulama ikonu kullanılıy
 - **`app.json`:** `android.adaptiveIcon.backgroundColor` `#E6F4FE` → **`#B91C1C`** (palet kırmızısı). Zemin görseli de verildiği için launcher onu kullanır; renk, görseli yok sayan durumlar için yedektir.
 - **Kod tarafı doğrulama:** `npm test` **247 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · `npx expo config --type public` beş asset yolunu da çözüyor · üretilen PNG'lerin boyut/mod/saydamlık/güvenli bölge kontrolü geçti (geçici betik: `%TEMP%\opencode\verify-icons.py`).
 
-**⚠️ Bu değişiklik cihazda doğrulanamaz (Expo Go):** Expo Go her zaman **kendi** ikonunu gösterir; yeni ikon yalnızca bir **development/EAS build**'de (ör. `npx eas-cli@latest build --profile development --platform android`) veya store build'inde görünür (web favicon'u hemen değişir). Bu yüzden `known-good` **bu commit için ilerletilmedi**.
+**⚠️ Bu değişiklik cihazda doğrulanamaz (Expo Go):** Expo Go her zaman **kendi** ikonunu gösterir; yeni ikon yalnızca bir **EAS build**'inde (Faz 16'dan sonra en kolay yol: `npx eas-cli@latest build --profile preview --platform android` → paylaşılabilir APK) veya store build'inde görünür (web favicon'u hemen değişir). Bu yüzden `known-good` **bu commit için ilerletilmedi** (Faz 16 ile aynı build'de doğrulanacak — §20).
 
 ---
 
-## 20. Yeni oturumda nasıl devam edilir
+## 20. Faz 16 — HanyuPick adı, mağaza kimlikleri ve EAS Build yapılandırması
+
+Kullanıcı EAS Build'in başka ne işe yaradığını sordu; anlatım sonrası istedi: *"tamamdır bunu da halledelim, işimize yarayacak bir şey gibi duruyor"*.
+
+### Ad ve paket kimliği (`d92efe6`) — `app.json`
+
+| Alan | Eskiden | Şimdi |
+| --- | --- | --- |
+| `expo.name` (ikonun altındaki ad) | `ChineseQuizApp` | **`HanyuPick`** |
+| `expo.slug` (Expo/EAS proje adresi) | `ChineseQuizApp` | **`hanyupick`** |
+| `android.package` + `ios.bundleIdentifier` | *yok* (EAS ilk build'de sorardı) | **`io.github.olcanasqar.hanyupick`** |
+
+- Ad kullanıcıdan geldi: **汉语 (Hànyǔ = Çince) + pick** — "doğru şıkkı seç".
+- Paket adı GitHub hesabının (`olcanasqar`) **ters-DNS** biçimidir (`io.github.olcanasqar` ← `olcanasqar.github.io`): GitHub kullanıcı adları global olarak tek olduğu için bu ad gerçekten benzersizdir (alan adı sahibi olmayanlar için standart yöntem).
+- ⚠️ **Paket adı ilk mağaza yayınından sonra değiştirilemez** (yeni paket adı = yeni uygulama; ilerleme/yorumlar taşınmaz). Bu yüzden hiç build yokken sabitlendi — **build/publish öncesi hâlâ değiştirilebilir**.
+- **Git deposu/klasör adı değişmedi** (`ChineseQuizApp`): Settings'teki GitHub bağlantısı **depoyu** gösterir, uygulama adını değil.
+
+### `eas.json` (`bf3e7a2`)
+
+- **`preview`** → **internal dağıtım**: paylaşılabilir **APK** (indirme linki/QR; Play Store gerekmez). Yeni ikonu, uygulama adını ve paket adını telefonda görmenin en kısa yolu.
+- **`production`** → mağaza build'i (Android'de **AAB**) + `autoIncrement`. `cli.appVersionSource: "remote"` ile `versionCode`/`buildNumber` **EAS'te** tutulur (yerelde hiç yoksa EAS ilk build'de 1'den başlatır) → `app.json`'da elle sürüm artırma yok.
+- **`submit.production.android.track: "internal"`** → ilk Play yüklemesi internal testing track'ine gider (vitrine çıkmak için track değiştirilir). iOS tarafı ilk submit'te `appleId`/`ascAppId` gibi bilgileri interaktif sorar.
+- **Neden `development` profili yok:** `developmentClient: true` **`expo-dev-client`** bağımlılığını şart koşar; kullanıcı şimdilik istemedi (test döngüsü Expo Go'da kalıyor). Native modül eklenmesi gerekince: `npx expo install expo-dev-client` + profil tanımı.
+- **Neden EAS Update (`expo-updates`) yok:** kurulması yeni bir build gerektirir (kanal/runtime version build'in içine gömülür); şimdilik gerek yok. İstenirse ayrı bir iş olarak yapılır.
+
+### Doğrulama
+
+`npm test` **247 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · `app.json` + `eas.json` JSON geçerli · `npx expo config --type public` adı/slug'ı/`package`/`bundleIdentifier`'ı çözüyor · `npx expo-doctor` **20/21** (tek başarısız kontrol yine `tsc` script adı çakışması — §16; ilk denemede iki kontrol "server response" hatasıyla düştü, `--verbose` ile tekrarlandıklarında **geçtiler** → şema denetimi temiz).
+
+**⚠️ Cihaz doğrulaması (Expo Go) mümkün değil:** Expo Go kendi adını/ikonunu gösterir. Ad/paket/ikon yalnızca bir **EAS build**'inde görünür → `known-good` bu commit'ler için ilerletilmedi (§16).
+
+### Kullanıcıda bekleyen ilk EAS adımları
+
+```bash
+npx eas-cli@latest login
+npx eas-cli@latest init                                          # EAS projesini oluşturur/bağlar (extra.eas.projectId)
+npx eas-cli@latest build --profile preview --platform android    # ikon + ad telefonda; APK linki paylaşılabilir
+npx eas-cli@latest build --profile production --platform android # mağaza için AAB
+npx eas-cli@latest submit --platform android                     # ilk yükleme: internal track
+```
+
+---
+
+## 21. Yeni oturumda nasıl devam edilir
 
 1. Bu dosyayı oku (`NOTES.md`).
 2. `git log --oneline` ve `git status` ile durumu doğrula.
@@ -786,4 +832,4 @@ Kullanıcı isteği: *"uygulamada hâlâ varsayılan uygulama ikonu kullanılıy
 4. Bitince: doğrula (`npm test`, `npm run lint`, `npm run tsc`, varsa Babel parse) → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
 5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
 
-**`known-good` durumu:** Faz 13 + Faz 14 doğrulama commit'i (`docs: mark Faz 13 and Faz 14 as device-verified`, 2026-10-17). Önceki değer `5d0b991` (Faz 11 + Faz 12 doğrulaması) idi. Tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-2026-10-17_1652.tar.gz` olarak tazelendi, eskisi (`…_1600.tar.gz`) silindi; yalnızca `known-good` etiketi değiştiğinde bu satır güncellenir — ayrıntı için §16. Faz 15 (ikon) commit'i (`6ba9312`) doğrulanmadı (Expo Go ikonu göstermez) — etiket onun öncesinde duruyor.
+**`known-good` durumu:** Faz 13 + Faz 14 doğrulama commit'i (`docs: mark Faz 13 and Faz 14 as device-verified`, 2026-10-17). Önceki değer `5d0b991` (Faz 11 + Faz 12 doğrulaması) idi. Tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-2026-10-17_1652.tar.gz` olarak tazelendi, eskisi (`…_1600.tar.gz`) silindi; yalnızca `known-good` etiketi değiştiğinde bu satır güncellenir — ayrıntı için §16. Faz 15 (ikon, `6ba9312`) ve Faz 16 (ad/paket kimlikleri/`eas.json`, `d92efe6` + `bf3e7a2`) commit'leri doğrulanmadı: Expo Go ne ikonu ne uygulama adını gösterir, doğrulama bir **EAS build**'i gerektirir (§19, §20) — etiket onların öncesinde duruyor. **İlk EAS build'i yapıldığında** bu üç değişiklik birlikte doğrulanıp `known-good` ilerletilebilir.

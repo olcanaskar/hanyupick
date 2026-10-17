@@ -109,6 +109,13 @@ Do not introduce `expo-router`.
 
 Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run the EAS CLI as `npx eas-cli@latest <command>` (this project uses npm), substituting it for the bare `eas` in the docs. Docs: https://docs.expo.dev/eas/index.md
 
+- **`eas.json` exists** (Faz 16, `bf3e7a2`): `preview` = internal distribution → a shareable **APK** (no store needed); `production` = store build (AAB) with `autoIncrement`; `cli.appVersionSource: "remote"` keeps `versionCode`/`buildNumber` on EAS, so they are deliberately absent from `app.json`. `submit.production.android.track: "internal"` keeps the first Play upload on the internal testing track.
+- **There is no `development` profile on purpose:** `developmentClient: true` requires the `expo-dev-client` dependency, which is not installed (the test loop is still Expo Go). Add the dependency and the profile together when a native module needs a dev build.
+- `expo-updates` is **not** installed, so no EAS Update and no `channel` fields yet.
+- The EAS project is not linked yet (`extra.eas.projectId` is absent): the first run is `npx eas-cli@latest login` followed by `npx eas-cli@latest init` — **not** `eas build:configure`, because `eas.json`, `android.package` and `ios.bundleIdentifier` are already in place.
+- **App identity (Faz 16):** the display name and slug are `HanyuPick` / `hanyupick` and both store identifiers are `io.github.olcanasqar.hanyupick`. That identifier is **permanent once the app is published** — changing it means publishing a different app. The git repository keeps the name `ChineseQuizApp`, so `SettingsModal`'s `REPOSITORY_URL` (the repo) and `app.json`'s `name` (the app) intentionally differ.
+- The display name, the package identifiers and the icon are **native values**: Expo Go shows its own name and icon, so none of them can be verified there — only in an EAS/development build (NOTES §19, §20).
+
 ## Workflow
 
 - Work directly on `main`; **one commit per fix**, with a descriptive message.
