@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 14 — İstatistik pop-up'ı içeriği hazır olarak açılıyor** (`f5176c7`: kart içeriği asenkron geldiği için animasyon küçük "Loading…" kartında başlayıp veri gelince kart büyüyüp yeniden konumlanıyordu → "bug'lı" açılış; içerik artık modal açılmadan önce ısıtılır, ay/gün sıfırlaması açılıştan kapanış sonuna taşındı, bayat veriyi temizleme kaldırıldı). **247 test yeşil**, lint 0 hata / **14 uyarı**, `tsc` 0 hata, `expo export` hatasız. **Cihaz doğrulaması bekliyor** — kayıt §18, kontrol listesi §16.
+Son güncelleme: **Faz 14 — İstatistik pop-up'ı: temiz açılış + sığan takvim balonu** (`f5176c7`: kart içeriği asenkron geldiği için animasyon küçük "Loading…" kartında başlayıp veri gelince kart büyüyüp yeniden konumlanıyordu → "bug'lı" açılış; içerik artık modal açılmadan önce ısıtılır, ay/gün sıfırlaması açılıştan kapanış sonuna taşındı, bayat veriyi temizleme kaldırıldı · `19b097c`: takvimde ortadaki sütuna tıklayınca gün balonu ScrollView'dan taşıp kesiliyordu; yön/genişlik artık ölçülen grid'den hesaplanır — ortadaki sütun da sola açar, gerektiğinde balon daralır). **247 test yeşil**, lint 0 hata / **14 uyarı**, `tsc` 0 hata, `expo export` hatasız. **Cihaz doğrulaması bekliyor** — kayıt §18, kontrol listesi §16.
 
 Önceki faz: **Faz 13 — hsk1–4'te kelimesini göstermeyen 6 örnek cümle düzeltildi + `expo` 57.0.30** (`5146c40` altı cümle yeniden yazıldı, "cümle kendi kelimesini içerir" testi hsk5-6'dan **altı seviyeye** genişletildi · `1692806` `npx expo install --fix` ile `expo` 57.0.29 → **`~57.0.30`**, tek değişen paket, `expo-doctor` 19/21 → **20/21**). **247 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız. **Cihaz doğrulaması bekliyor** — kayıt §17, kontrol listesi §16.
 
@@ -121,7 +121,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 14 (İstatistik pop-up'ı içeriği hazır açılıyor) commit'i:** `f5176c7` (`components/StatsModal.js`) — **cihazda doğrulama bekliyor ⏳** (bkz. §18, §16).
+- **Faz 14 (İstatistik pop-up'ı: temiz açılış + sığan takvim balonu) commit'leri:** `f5176c7` + `19b097c` (`components/StatsModal.js`) — **cihazda doğrulama bekliyor ⏳** (bkz. §18, §16).
 - **Faz 13 (hsk1–4'te 6 kaymış örnek düzeltmesi + `expo` 57.0.30) commit'leri:** `5146c40` (`data/examples/hsk1_examples.js`, `hsk3_examples.js`, `hsk4_examples.js` + `__tests__/exampleService.test.js`) · `1692806` (`package.json` + `package-lock.json`: `expo` `~57.0.30`) — **cihazda doğrulama bekliyor ⏳** (bkz. §17, §16).
 - **Faz 12 (Home kaydırmasız + kırmızı tema + GitHub ikonu) commit'leri:** `ccc7d11` (Home'un dış `ScrollView`'ı → `View`) · `c8e7424` (quiz teması amber → kırmızı: `components/Header.js`, `components/ExampleBox.js`, `components/QuestionCard.js`, `screens/QuizScreen.js`) · `be8bf1a` (sözlük teması amber → kırmızı: `screens/VocabularyScreen.js`) · `c3a644b` (Draw pop-up'ı: `components/HandwritingModal.js`) · `21ede78` (İstatistik pop-up'ı: `components/StatsModal.js`) · `be870a9` (GitHub butonu: emoji → gerçek logo, `components/SettingsModal.js`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §15, §16).
 - **Faz 11 (Ayarlar pop-up'ı) commit'leri:** `54907fb` (`services/settingsService.js` + `__tests__/settingsService.test.js`) · `6379bed` (`services/speechService.js` + `QuestionCard`/`VocabularyScreen`/`QuizScreen` tek noktaya bağlandı + `App.js` açılışta `getSettings()`) · `d962454` (`services/hapticsService.js` + `QuizScreen` kapısı) · `7111834` (ayarlar ekranı + `@react-native-community/slider`) · `f6d4d99` (`StatsModal`'dan reset bölümünün kaldırılması) · `8443912` (`hapticsService`/`speechService` testleri) · `afe51c1` (**ekran → pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, `Settings` rotası kaldırıldı) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §14, §16).
@@ -671,12 +671,13 @@ Her maddeyi **ayrı commit** olarak yap.
    1. **Düzeltilen cümleler:** HSK 1'de **二** (id 27) bilerek yanlış cevaplanınca "我有二十个苹果。" görünmeli; HSK 3'te **帮忙** → "他很愿意帮忙。", **只有……才……** → "只有努力，才能成功。"; HSK 4'te **百分之** → "百分之三十的学生没来。", **合格** → "他考试合格了。", **内** → "请在三天内完成。".
    2. **Kalıplar bozulmadı:** HSK 2'de 因为……所以…… / 虽然……但是……, HSK 3'te 不但……而且…… cümleleri eskisi gibi kalıbı göstermeli.
    3. **Uygulama açılışı ve regresyon:** `expo` 57.0.30 ile uygulama sorunsuz açılmalı; quiz / sözlük arama + el yazısı / istatistik / ayarlar / özel deste aktarma eskisi gibi çalışmalı.
-- **Cihaz testi (Faz 14: İstatistik pop-up'ı açılışı) ⏳ BEKLİYOR** (kullanıcı, Expo Go). Kontrol listesi:
+- **Cihaz testi (Faz 14: İstatistik pop-up'ı + takvim balonu) ⏳ BEKLİYOR** (kullanıcı, Expo Go). Kontrol listesi:
    1. **Temiz açılış (asıl konu):** Home'dan 📊 İstatistikler'e bas → kart **tek parça hâlinde, içeriği dolu olarak** yaylanarak açılmalı; önce küçük/"Loading…" hâlinde belirip sonra büyümesi ya da ortada kayması **olmamalı** (Ayarlar ve özel deste pop-up'ları gibi temiz).
    2. **Tekrar açılışlar:** kapat → birkaç kez yeniden aç; her seferinde aynı temiz açılış olmalı. Ayrıca birkaç soru doğru/yanlış cevaplayıp tekrar aç → sayılar **güncel** gelmeli (bayat kalmamalı).
    3. **Ay/gün sıfırlaması:** geri okuyla geçmiş bir aya git, takvimde bir güne dokun (balon açılsın), sonra pop-up'ı kapat → yeniden aç: **bu ay** ve **balonsuz** başlamalı (eskisi gibi). Kapanış animasyonu bozulmamalı.
    4. **Kapanış:** ✕ ve boş alana dokunma ile kapanma eskisi gibi (aşağı kayma + solma) olmalı.
    5. **Boş veri:** Ayarlar → "İlerlemeyi sıfırla" sonrası İstatistikler → "No problematic words right now. Well done!" görünmeli ve kart yine temiz açılmalı.
+   6. **Takvim balonu (bu turun 2. konusu):** bütün ayı gösteren takvimde **ortadaki sütundan** bir güne dokun → gün balonu **sola** açılmalı ve **hiçbir kenarı kesilmemeli** (eskiden sağa açılıp kartın dışına taşıyor, kenarı kesiliyordu). Soldaki sütunlar sağa, sağdaki sütunlar sola açılmaya devam etmeli; balon seçili hücrenin yanında ok işaretiyle durmalı. Çok dar bir ekranda balon biraz daralıp son satırı alt satıra kayabilir — kesilme olmamalı.
 - **Bilinçli olarak kapsam dışı (4.5):** `accessibilityState` (seçili sekme/şık), doğru-yanlış **duyurusu** (`announceForAccessibility`) ve modal içinde odak yönetimi eklenmedi. Bunlar istenirse ayrı bir "4.5b" olarak yapılabilir (durum + duyuru katmanı).
 - **Bileşenler için otomatik test yok** (jest yalnızca `services/`'i çalıştırır). Faz 4.1'de `react-test-renderer` ile **geçici** bir render kontrolü yapıldı (yükleme→içerik + aç/kapa) ve dosya silindi — `react-test-renderer` bildirilmiş bir bağımlılık değil ve React 19'da kullanımdan kaldırıldı. Kalıcı istatistiksel kontrol istenirse `@testing-library/react-native` bilinçli olarak eklenip birkaç ekran için duman testi yazılabilir (ayrı karar).
 - ~~**Ölü prop adları** (`Header` `onSelectLevel`/`onToggleMode`)~~ → **ÇÖZÜLDÜ (`e0249c4`)** · ~~**`hsk5.json`'da 17 ikiz kayıt**~~ → **ÇÖZÜLDÜ (`9044490`)**: küçük id korunarak tek kayda indirildi, anlam metni daha açıklayıcı olan seçildi, silinen id'ler için göç yazıldı (§7 "ek temizlikler E").
@@ -716,7 +717,7 @@ Faz 9 (hsk5) ve Faz 10 (hsk6) "cümle kendi kelimesini birebir içerir" kuralın
 
 ---
 
-## 18. Faz 14 — İstatistik pop-up'ı içeriği hazır olarak açılıyor
+## 18. Faz 14 — İstatistik pop-up'ı: temiz açılış + sığan takvim balonu
 
 Kullanıcı bildirimi: *"statistics bölümü açılırken sanki anlık bir bug gibi bir şey oluyor, custom decks veya settings kadar temiz açılmıyor; kapanırken sorun yok."*
 
@@ -732,7 +733,18 @@ Kullanıcı bildirimi: *"statistics bölümü açılırken sanki anlık bir bug 
 - **Bayat veriyi temizleme kaldırıldı:** içerik açılışta `null`'a çekilmez (asıl sıçramanın kaynağı buydu); diskten bir kez daha okunup tazelenir. Aynı düzen, yalnız değerler → boyut değişmez.
 - **Ay/gün sıfırlaması açılıştan kapanış sonrasına taşındı** (effect cleanup): açılışta **hiçbir React state güncellemesi kalmaz** ve geçmiş aya bakıp kapatmışken oluşan takvim "zıplaması" da gider; sıfırlama çıkış animasyonu bittikten sonra (kart görünmezken) yapılır.
 
-**Kural:** bu kart içeriğine göre boyutlandığı için **açılış animasyonu içerik hazır olmadan başlatılmamalıdır**; ileride veri yükleyen yeni bir pop-up eklenirse aynı desen kullanılmalı (ısıt + içerik kapısı + fallback).
+### Takvim gün balonu kartın dışına taşıyordu (aynı oturumda, doğrulama sırasında bulundu — `19b097c`)
+
+Kullanıcı bildirimi: *"bütün ayı içeren takvimde ortadaki sütüna tıklayınca sağa doğru açılan günlük bilgi kutucuğunun bir kenarı sığmıyor, onu sığan hale getir ve sola doğru açılır yap."*
+
+- **Neden:** balon hücrenin kardeşi olarak `position: 'absolute'` konumlanır ve takvim bir `ScrollView` içindedir — ScrollView taşan kısmı **kırpar**. Yön kuralı `colIdx >= 4 ? sola : sağa` idi; ortadaki sütun (7 sütunun 4.'sü, `colIdx = 3`) sağa açılıyor ve 140 px'lik balon sağ kenardan taşıp kesiliyordu (390 px ekranda ~7 px, 360 px'te ~20 px).
+- **Çözüm:** yön ve genişlik artık **ölçülen** grid'den hesaplanır (`heatmapBody` → `onLayout` → `calendarGridWidth`; saf yardımcı `getTooltipLayout`): 0-2. sütunlar sağa, **3-6. sütunlar sola** (ortadaki dâhil) açılır. Seçilen tarafta kalan boşluk 140 px'in altındaysa balon **tam o boşluğa** daraltılır → kenarı hiçbir genişlikte kesilmez (çok dar ekranlarda son satır alt satıra kayar). `minWidth` + `maxWidth` birlikte verilir: Yoga ikisini de kırptığı için sıralama belirsizliği kalmaz.
+- **Tek kaynak:** `CALENDAR_COLUMNS`, `CALENDAR_GAP`, `CALENDAR_PADDING`, `TOOLTIP_MIN_WIDTH`, `TOOLTIP_OFFSET` sabitleri hem stil sayfasında hem hesapta kullanılır — stil ile matematik ayrışamaz.
+- **Doğrulama:** 320-1024 px arası 13 ekran genişliğinde 7 sütunun tamamı için taşma yok (geçici betik: `%TEMP%\opencode\tooltip-check.js`). 412 px ve üzerinde balon yine doğal **140 px** genişliğinde; yalnızca daha dar ekranlarda daralır.
+
+**Kural (açılış):** bu kart içeriğine göre boyutlandığı için **açılış animasyonu içerik hazır olmadan başlatılmamalıdır**; ileride veri yükleyen yeni bir pop-up eklenirse aynı desen kullanılmalı (ısıt + içerik kapısı + fallback).
+
+**Kural (balon):** bir `ScrollView` içinde `absolute` konumlanan kutu (takvim gün balonu, ileride benzerleri) taşarsa **kırpılır**; yön/genişliği sabit varsaymak yerine ölçülen kutuya göre hesaplayın (`getTooltipLayout` gibi) ve stil sabitlerini tek kaynaktan besleyin.
 
 **Doğrulama:** `npm test` **247 yeşil** · lint **0 hata / 14 uyarı** (StatsModal'ın `set-state-in-effect` uyarısı kalktı) · `tsc` **0 hata** · Babel parse ✅ · `npx expo export --platform android` hatasız.
 
@@ -748,4 +760,4 @@ Kullanıcı bildirimi: *"statistics bölümü açılırken sanki anlık bir bug 
 4. Bitince: doğrula (`npm test`, `npm run lint`, `npm run tsc`, varsa Babel parse) → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
 5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
 
-**`known-good` durumu:** Faz 11 + Faz 12 doğrulama commit'i (`docs: mark Faz 11 and Faz 12 as device-verified`, 2026-10-17). Önceki değer `6ceea02` (Faz 10) idi. **Faz 13** (`5146c40` örnek düzeltmesi + `1692806` `expo` 57.0.30) ve **Faz 14** (`f5176c7` İstatistik pop-up'ı açılışı) henüz cihazda doğrulanmadığı için `known-good` **ilerletilmedi**; doğrulama gelince bu satır güncellenir ve tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz` olarak tazelenip **eskisi silinir**; ayrıntı için §16.
+**`known-good` durumu:** Faz 11 + Faz 12 doğrulama commit'i (`docs: mark Faz 11 and Faz 12 as device-verified`, 2026-10-17). Önceki değer `6ceea02` (Faz 10) idi. **Faz 13** (`5146c40` örnek düzeltmesi + `1692806` `expo` 57.0.30) ve **Faz 14** (`f5176c7` İstatistik pop-up'ı açılışı + `19b097c` takvim balonu) henüz cihazda doğrulanmadığı için `known-good` **ilerletilmedi**; doğrulama gelince bu satır güncellenir ve tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz` olarak tazelenip **eskisi silinir**; ayrıntı için §16.
