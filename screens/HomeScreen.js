@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StatsModal from '../components/StatsModal';
+import SettingsModal from '../components/SettingsModal';
 import CustomDeckModal from '../components/CustomDeckModal';
 import FloatingBackground from '../components/FloatingBackground';
 import { getCustomDecks } from '../services/importService';
@@ -43,6 +44,7 @@ const BASE_LEVELS = [
 
 export default function HomeScreen({ navigation, reviewPool = [] }) {
   const [isStatsVisible, setIsStatsVisible] = useState(false);
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [isCustomDeckVisible, setIsCustomDeckVisible] = useState(false);
   const [levels, setLevels] = useState(BASE_LEVELS);
   const [selectedLevelIndex, setSelectedLevelIndex] = useState(0);
@@ -176,7 +178,7 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
               <Text style={styles.badge}>HSK FLASHCARDS</Text>
               <TouchableOpacity
                 style={styles.settingsBtn}
-                onPress={() => navigation.navigate('Settings')}
+                onPress={() => setIsSettingsVisible(true)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 accessibilityRole="button"
                 accessibilityLabel="Settings"
@@ -190,6 +192,9 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
 
           {/* İstatistik Pop-up (Modal) */}
           <StatsModal visible={isStatsVisible} onClose={() => setIsStatsVisible(false)} />
+
+          {/* Ayarlar Pop-up (Modal) — Faz 11 */}
+          <SettingsModal visible={isSettingsVisible} onClose={() => setIsSettingsVisible(false)} />
 
           {/* Custom Decks Pop-up (Modal) */}
           <CustomDeckModal

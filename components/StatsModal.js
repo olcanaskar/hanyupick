@@ -139,8 +139,8 @@ export default function StatsModal({ visible, onClose }) {
     setSelectedMonthDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
-  // Not (Faz 11): "İlerlemeyi sıfırla" artık burada değil, Ayarlar ekranındadır
-  // (`screens/SettingsScreen.js`). Aynı akışı kullanır: `clearAllStats()` +
+  // Not (Faz 11): "İlerlemeyi sıfırla" artık burada değil, Ayarlar pop-up'ındadır
+  // (`components/SettingsModal.js`). Aynı akışı kullanır: `clearAllStats()` +
   // yanlış havuzunun sahibi olan App.js'e `onProgressReset` olayı.
 
   // Referanslar SABİTLENİR: `statsData?.x || {}` her render'da yeni bir nesne üretir ve
