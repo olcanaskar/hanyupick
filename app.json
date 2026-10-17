@@ -8,10 +8,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "io.github.olcanasqar.hanyupick"
+      "bundleIdentifier": "io.github.olcanaskar.hanyupick"
     },
     "android": {
-      "package": "io.github.olcanasqar.hanyupick",
+      "package": "io.github.olcanaskar.hanyupick",
       "adaptiveIcon": {
         "backgroundColor": "#B91C1C",
         "foregroundImage": "./assets/android-icon-foreground.png",
