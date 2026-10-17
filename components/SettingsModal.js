@@ -45,7 +45,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 // Repo şu an private olsa da adres sabittir; ileride public yapılınca da aynı
 // buton çalışır. (Butona basan kişinin erişimi yoksa tarayıcı 404 gösterir.)
-const REPOSITORY_URL = 'https://github.com/olcanasqar/hanyupick';
+const REPOSITORY_URL = 'https://github.com/olcanaskar/hanyupick';
 
 /**
  * GitHub'ın asıl logosu (emoji yerine vektör çizim). Tek renk `fill` ile boyanır,
