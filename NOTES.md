@@ -3,15 +3,15 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 14 — İstatistik pop-up'ı: temiz açılış + sığan takvim balonu** (`f5176c7`: kart içeriği asenkron geldiği için animasyon küçük "Loading…" kartında başlayıp veri gelince kart büyüyüp yeniden konumlanıyordu → "bug'lı" açılış; içerik artık modal açılmadan önce ısıtılır, ay/gün sıfırlaması açılıştan kapanış sonuna taşındı, bayat veriyi temizleme kaldırıldı · `19b097c`: takvimde ortadaki sütuna tıklayınca gün balonu ScrollView'dan taşıp kesiliyordu; yön/genişlik artık ölçülen grid'den hesaplanır — ortadaki sütun da sola açar, gerektiğinde balon daralır). **247 test yeşil**, lint 0 hata / **14 uyarı**, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §18, kontrol listesi §16.
+Son güncelleme: **Faz 15 — uygulama ikonu: varsayılan Expo ikonları yerine kırmızı 汉 tasarımı** (`6ba9312`: `assets/` içindeki 5 PNG yeniden üretildi — 1024×1024 kırmızı köşegen geçiş (#DC2626 → #991B1B) üzerine krem (#FBF5EB) **汉**, adaptive icon katmanları + yuvarlatılmış favicon; `tools/generate-icons.py` ikonların tek üreticisi (Python + Pillow, Microsoft YaHei Bold, 4× supersampling) · `app.json`: `adaptiveIcon.backgroundColor` `#E6F4FE` → `#B91C1C`). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata. **⏳ cihazda doğrulanmadı** — Expo Go uygulama ikonunu göstermez, doğrulama bir development/EAS build gerektirir; kayıt §19.
 
-Önceki faz: **Faz 13 — hsk1–4'te kelimesini göstermeyen 6 örnek cümle düzeltildi + `expo` 57.0.30** (`5146c40` altı cümle yeniden yazıldı, "cümle kendi kelimesini içerir" testi hsk5-6'dan **altı seviyeye** genişletildi · `1692806` `npx expo install --fix` ile `expo` 57.0.29 → **`~57.0.30`**, tek değişen paket, `expo-doctor` 19/21 → **20/21**). **247 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §17, kontrol listesi §16.
+Önceki faz: **Faz 14 — İstatistik pop-up'ı: temiz açılış + sığan takvim balonu** (`f5176c7`: kart içeriği asenkron geldiği için animasyon küçük "Loading…" kartında başlayıp veri gelince kart büyüyüp yeniden konumlanıyordu → "bug'lı" açılış; içerik artık modal açılmadan önce ısıtılır, ay/gün sıfırlaması açılıştan kapanış sonuna taşındı, bayat veriyi temizleme kaldırıldı · `19b097c`: takvimde ortadaki sütuna tıklayınca gün balonu ScrollView'dan taşıp kesiliyordu; yön/genişlik artık ölçülen grid'den hesaplanır — ortadaki sütun da sola açar, gerektiğinde balon daralır). **247 test yeşil**, lint 0 hata / **14 uyarı**, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §18, kontrol listesi §16.
 
-Ondan önceki faz: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
+Ondan önceki faz: **Faz 13 — hsk1–4'te kelimesini göstermeyen 6 örnek cümle düzeltildi + `expo` 57.0.30** (`5146c40` altı cümle yeniden yazıldı, "cümle kendi kelimesini içerir" testi hsk5-6'dan **altı seviyeye** genişletildi · `1692806` `npx expo install --fix` ile `expo` 57.0.29 → **`~57.0.30`**, tek değişen paket, `expo-doctor` 19/21 → **20/21**). **247 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız. **✅ cihazda doğrulandı** (2026-10-17) — kayıt §17, kontrol listesi §16.
 
-Daha önceki faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
+Daha önceki faz: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
 
-Daha eski faz: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §13). hsk6'da eksik olan **1945 örnek** yazıldı, Faz 6'dan kalan **385 kaymış/kusurlu kayıt** değiştirildi (170 doğru kayıt korundu) → hsk6 **2500/2500**. Faz 9'un kaydı §12'dedir.
+Daha eski faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
 
 ---
 
@@ -27,6 +27,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
 - **Bileşenler:** `components/` (Header, QuestionCard, ScoreBoard, ExampleBox, StatsModal, **SettingsModal** (Faz 11), CustomDeckModal, HandwritingModal, FloatingBackground).
 - **Servisler:** `services/wordRepository.js` (**HSK verisinin/seviye eşlemesinin tek kaynağı**, Faz 3.1), `services/reviewPool.js` (**yanlış havuzunun tek veri şekli + göç**, Faz 3.2), `services/quizBuilder.js` (şık üretimi), `services/statsManager.js`, `services/importService.js`, `services/exampleService.js`, `services/dateUtils.js`, `services/handwritingService.js`, `services/floatingParticles.js`, `services/wordIdMigrations.js` (**kelime id'lerinin tüm göç tabloları** — Faz 4 ikiz birleştirme + Faz 6 hsk5 yeniden dengeleme + Faz 7 hsk1–4 hizalama; fazlar **sürüm sırasıyla** uygulanır, §9, §10), `services/settingsService.js` (**ayarların tek kaynağı + `@hsk_settings`**, Faz 11), `services/speechService.js` (**`expo-speech`'e dokunan tek yer** — ses seviyesi ayardan gelir, Faz 11), `services/hapticsService.js` (**`expo-haptics`'e dokunan tek yer** — kullanıcı ayarı kapalıysa susar, Faz 11).
 - **Veri:** `data/hsk1..6.json` (**5.000 kelime**, id 1–5000 boşluksuz; hsk1–4 = resmî 150/150/300/600, hsk5 = resmî 1300, hsk6 = resmî 2500 — §10, §9, §8), `data/examples/hsk1..6_examples.js` (id ile anahtarlı örnek cümleler; **hsk1–4 1200/1200** (Faz 8), **hsk5 1300/1300** (Faz 9), **hsk6 2500/2500** (Faz 10) — §13, §12, §11, §10, §9).
+- **İkon / varlıklar:** `assets/` içindeki ikonlar **elle düzenlenmez**; `tools/generate-icons.py` (Python + Pillow) tek üreticidir — palet/font değişince betik yeniden çalıştırılır (Faz 15, §19).
 
 ### Önemli sabitler / veri akışı
 
@@ -121,6 +122,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
+- **Faz 15 (uygulama ikonu) commit'i:** `6ba9312` (`assets/*.png` + `tools/generate-icons.py` + `app.json`) — **⏳ cihaz doğrulaması bekliyor** (Expo Go uygulama ikonunu göstermez; bkz. §19, §16).
 - **Faz 14 (İstatistik pop-up'ı: temiz açılış + sığan takvim balonu) commit'leri:** `f5176c7` + `19b097c` (`components/StatsModal.js`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §18, §16).
 - **Faz 13 (hsk1–4'te 6 kaymış örnek düzeltmesi + `expo` 57.0.30) commit'leri:** `5146c40` (`data/examples/hsk1_examples.js`, `hsk3_examples.js`, `hsk4_examples.js` + `__tests__/exampleService.test.js`) · `1692806` (`package.json` + `package-lock.json`: `expo` `~57.0.30`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §17, §16).
 - **Faz 12 (Home kaydırmasız + kırmızı tema + GitHub ikonu) commit'leri:** `ccc7d11` (Home'un dış `ScrollView`'ı → `View`) · `c8e7424` (quiz teması amber → kırmızı: `components/Header.js`, `components/ExampleBox.js`, `components/QuestionCard.js`, `screens/QuizScreen.js`) · `be8bf1a` (sözlük teması amber → kırmızı: `screens/VocabularyScreen.js`) · `c3a644b` (Draw pop-up'ı: `components/HandwritingModal.js`) · `21ede78` (İstatistik pop-up'ı: `components/StatsModal.js`) · `be870a9` (GitHub butonu: emoji → gerçek logo, `components/SettingsModal.js`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §15, §16).
@@ -535,7 +537,7 @@ Her maddeyi **ayrı commit** olarak yap.
 8. ABOUT → GitHub butonu tarayıcıda repo sayfasını açmalı (private repo: giriş yapılmış hesapta açılır).
 9. Uygulamayı kapatıp aç → ayarlar (ses seviyesi + titreşim) **korunmalı**.
 
-**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go). `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §19).
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go). `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §20).
 
 ---
 
@@ -577,7 +579,7 @@ Her maddeyi **ayrı commit** olarak yap.
 9. Home → 📊 İstatistik → streak kartı, ‹ › ay butonları, bir güne dokununca çıkan detay balonu ve ustalık çubukları kırmızı tonlarında olmalı; takvimde "az" açık kırmızı, "çok" koyu kırmızı, "aktivite yok" gri kalmalı; balondaki Correct yeşil / Wrong kırmızı ayrımı korunmalı.
 10. Bu iki pop-up'ın metinleri okunaklı olmalı (koyu kırmızı üstüne beyaz gün rakamları vb.).
 
-**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go) — Home sürüklenmiyor, quiz/sözlük/Draw/İstatistik kırmızı temada, GitHub butonunda gerçek logo görünüyor. `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §19).
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go) — Home sürüklenmiyor, quiz/sözlük/Draw/İstatistik kırmızı temada, GitHub butonunda gerçek logo görünüyor. `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §20).
 
 ---
 
@@ -752,7 +754,31 @@ Kullanıcı bildirimi: *"bütün ayı içeren takvimde ortadaki sütüna tıklay
 
 ---
 
-## 19. Yeni oturumda nasıl devam edilir
+## 19. Faz 15 — uygulama ikonu: varsayılan Expo ikonları değiştirildi
+
+Kullanıcı isteği: *"uygulamada hâlâ varsayılan uygulama ikonu kullanılıyor, sıfırdan bir ikon tasarlayabilir misin?"*
+
+**Tasarım:** uygulamanın kırmızı rampasından köşegen geçiş (**#DC2626 → #991B1B**) üzerine krem (**#FBF5EB**) **汉** (hàn = Çince/Çinli) karakteri — Microsoft YaHei Bold, mürekkep kutusu tuvale tam ortalı, 4× supersampling (48 px'te de okunur). Üç aday (kırmızı + 汉 · beyaz kart + kırmızı 汉 · 汉 + tik rozeti) 1024 px taslak olarak çizildi, kullanıcı **A**'yı seçti.
+
+**Üretilen dosyalar (`assets/`; dördü 1024×1024, favicon 96×96):**
+
+| Dosya | İçerik | Not |
+| --- | --- | --- |
+| `icon.png` | kırmızı geçiş + krem 汉 | **alfa kanalı yok** (RGB) — App Store saydamlığı kabul etmez |
+| `android-icon-background.png` | yalnızca kırmızı geçiş | adaptive icon zemini (RGB) |
+| `android-icon-foreground.png` | saydam zeminde krem 汉 | mürekkep kutusu 603×586 px → **72/108 dp güvenli bölgesinin (683 px) içinde** |
+| `android-icon-monochrome.png` | saydam zeminde **beyaz** 汉 | themed icon; renkli piksel yok (tonu Android uygular) |
+| `favicon.png` | yuvarlatılmış köşeli ikon | web |
+
+- **Tek üretici:** `tools/generate-icons.py` — PNG'ler **elle düzenlenmez** (kural `AGENTS.md`'de). Betik `FONT_CANDIDATES` ile platformlar arası font arar, her katmanı 4× çizip LANCZOS ile küçültür; gereksinim `python -m pip install pillow`.
+- **`app.json`:** `android.adaptiveIcon.backgroundColor` `#E6F4FE` → **`#B91C1C`** (palet kırmızısı). Zemin görseli de verildiği için launcher onu kullanır; renk, görseli yok sayan durumlar için yedektir.
+- **Kod tarafı doğrulama:** `npm test` **247 yeşil** · lint **0 hata / 14 uyarı** · `tsc` **0 hata** · `npx expo config --type public` beş asset yolunu da çözüyor · üretilen PNG'lerin boyut/mod/saydamlık/güvenli bölge kontrolü geçti (geçici betik: `%TEMP%\opencode\verify-icons.py`).
+
+**⚠️ Bu değişiklik cihazda doğrulanamaz (Expo Go):** Expo Go her zaman **kendi** ikonunu gösterir; yeni ikon yalnızca bir **development/EAS build**'de (ör. `npx eas-cli@latest build --profile development --platform android`) veya store build'inde görünür (web favicon'u hemen değişir). Bu yüzden `known-good` **bu commit için ilerletilmedi**.
+
+---
+
+## 20. Yeni oturumda nasıl devam edilir
 
 1. Bu dosyayı oku (`NOTES.md`).
 2. `git log --oneline` ve `git status` ile durumu doğrula.
@@ -760,4 +786,4 @@ Kullanıcı bildirimi: *"bütün ayı içeren takvimde ortadaki sütüna tıklay
 4. Bitince: doğrula (`npm test`, `npm run lint`, `npm run tsc`, varsa Babel parse) → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
 5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
 
-**`known-good` durumu:** Faz 13 + Faz 14 doğrulama commit'i (`docs: mark Faz 13 and Faz 14 as device-verified`, 2026-10-17). Önceki değer `5d0b991` (Faz 11 + Faz 12 doğrulaması) idi. Tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-2026-10-17_1652.tar.gz` olarak tazelendi, eskisi (`…_1600.tar.gz`) silindi; yalnızca `known-good` etiketi değiştiğinde bu satır güncellenir — ayrıntı için §16.
+**`known-good` durumu:** Faz 13 + Faz 14 doğrulama commit'i (`docs: mark Faz 13 and Faz 14 as device-verified`, 2026-10-17). Önceki değer `5d0b991` (Faz 11 + Faz 12 doğrulaması) idi. Tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-2026-10-17_1652.tar.gz` olarak tazelendi, eskisi (`…_1600.tar.gz`) silindi; yalnızca `known-good` etiketi değiştiğinde bu satır güncellenir — ayrıntı için §16. Faz 15 (ikon) commit'i (`6ba9312`) doğrulanmadı (Expo Go ikonu göstermez) — etiket onun öncesinde duruyor.
