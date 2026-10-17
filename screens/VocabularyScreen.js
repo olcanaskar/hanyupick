@@ -245,6 +245,9 @@ export default function VocabularyScreen({ navigation }) {
   );
 }
 
+// Renk paleti (Faz 12): quiz yüzeyiyle aynı — kırmızı rampası (#991B1B / #DC2626 /
+// #B91C1C / #FCA5A5 / #FEF2F2) + nötr griler (#2C3E50 / #7F8C8D / #9CA3AF / #E2E8F0).
+// Amber/altın tonları yalnızca Home'daki Custom Word Decks kartında kalır.
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -289,8 +292,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1.5,
-    borderColor: '#FCD34D',
-    shadowColor: '#B45309',
+    borderColor: '#FCA5A5',
+    shadowColor: '#991B1B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -304,7 +307,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
+    color: '#2C3E50',
   },
   clearIcon: {
     fontSize: 14,
@@ -316,12 +319,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#FEF2F2',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#FCD34D',
+    borderColor: '#FCA5A5',
     marginLeft: 4,
   },
   drawBtnIcon: {
@@ -330,7 +333,7 @@ const styles = StyleSheet.create({
   drawBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#B45309',
+    color: '#B91C1C',
   },
   categoriesWrapper: {
     marginTop: 14,
@@ -349,16 +352,16 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   categoryChipSelected: {
-    backgroundColor: '#FEF3C7',
-    borderColor: '#FCD34D',
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FCA5A5',
   },
   categoryChipText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#7F8C8D',
   },
   categoryChipTextSelected: {
-    color: '#B45309',
+    color: '#B91C1C',
   },
   resultsInfo: {
     paddingHorizontal: 22,
@@ -366,11 +369,11 @@ const styles = StyleSheet.create({
   },
   resultsCountText: {
     fontSize: 12,
-    color: '#78716C',
+    color: '#7F8C8D',
   },
   boldText: {
     fontWeight: '800',
-    color: '#B45309',
+    color: '#B91C1C',
   },
   listContainer: {
     paddingHorizontal: 20,
@@ -405,38 +408,38 @@ const styles = StyleSheet.create({
   hanziText: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1F2937',
+    color: '#2C3E50',
   },
   tagBadge: {
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#FEF2F2',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#FCD34D',
+    borderColor: '#FCA5A5',
   },
   tagText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#B45309',
+    color: '#B91C1C',
   },
   pinyinText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#D97706',
+    color: '#DC2626',
     marginBottom: 2,
   },
   meaningText: {
     fontSize: 13,
-    color: '#4B5563',
+    color: '#7F8C8D',
   },
   soundBtn: {
     width: 42,
     height: 42,
     borderRadius: 12,
-    backgroundColor: '#FFFBEB',
+    backgroundColor: '#FEF2F2',
     borderWidth: 1.5,
-    borderColor: '#FCD34D',
+    borderColor: '#FCA5A5',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -455,7 +458,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#374151',
+    color: '#2C3E50',
     marginBottom: 4,
   },
   emptySubtext: {
