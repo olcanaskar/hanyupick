@@ -18,27 +18,32 @@ import { ALL_WORDS, LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRe
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 // Seviye renkleri yalnızca bu ekrana özgü sunum bilgisidir; seviye listesi
-// wordRepository'den gelir.
+// wordRepository'den gelir. Faz 12: gökkuşağı yerine uygulamanın kırmızı rampası —
+// HSK 1'den 6'ya doğru KOYULAŞIR (ilerleme hissi) ve hepsi `#F8F9FA` zemin üzerinde
+// okunur kalır. Çubuk uzunluğu zaten yüzdeyi gösterdiği için renk bilgi taşımaz.
 const LEVEL_COLORS = {
-  hsk1: '#DC2626',
-  hsk2: '#EA580C',
-  hsk3: '#D97706',
-  hsk4: '#2563EB',
-  hsk5: '#7C3AED',
-  hsk6: '#0891B2',
+  hsk1: '#F87171',
+  hsk2: '#EF4444',
+  hsk3: '#DC2626',
+  hsk4: '#B91C1C',
+  hsk5: '#991B1B',
+  hsk6: '#7F1D1D',
 };
 
-// Özel desteler için tek renk: HSK seviye renklerinin hiçbiriyle çakışmaz.
-const CUSTOM_DECK_COLOR = '#0F766E';
+// Özel desteler bir HSK seviyesi değildir: kırmızı rampanın DIŞINDA, uygulamanın
+// nötr koyu tonunu alır ki altı seviyeden ayırt edilebilsin (bölümdeki
+// "CUSTOM DECKS" ayracı da zaten bunu söyler).
+const CUSTOM_DECK_COLOR = '#2C3E50';
 
-const HEAT_COLORS = ['#F1F5F9', '#FEF3C7', '#FCD34D', '#D97706', '#92400E'];
+// Isı ölçeği (aktivite az → çok): nötr zeminden koyu kırmızıya.
+const HEAT_COLORS = ['#E9ECEF', '#FEE2E2', '#FCA5A5', '#DC2626', '#7F1D1D'];
 
 const getHeatColor = (total) => {
-  if (total === 0) return '#F1F5F9';       // Aktivite yok
-  if (total <= 10) return '#FEF3C7';       // Çok az (açık krem)
-  if (total <= 25) return '#FCD34D';       // Az (altın sarısı)
-  if (total <= 50) return '#D97706';       // Orta (kehribar)
-  return '#92400E';                        // Çok (koyu bronz)
+  if (total === 0) return '#E9ECEF';       // Aktivite yok
+  if (total <= 10) return '#FEE2E2';       // Çok az (kırmızı-100)
+  if (total <= 25) return '#FCA5A5';       // Az (kırmızı-300)
+  if (total <= 50) return '#DC2626';       // Orta (kırmızı-600)
+  return '#7F1D1D';                        // Çok (koyu kırmızı)
 };
 
 export default function StatsModal({ visible, onClose }) {
@@ -547,7 +552,7 @@ export default function StatsModal({ visible, onClose }) {
                                   <Text style={styles.tooltipDate}>{cell.dayShort}</Text>
                                   <View style={styles.tooltipDivider} />
                                   <View style={styles.tooltipRow}>
-                                    <View style={[styles.tooltipDot, { backgroundColor: '#16A34A' }]} />
+                                    <View style={[styles.tooltipDot, { backgroundColor: '#047857' }]} />
                                     <Text style={styles.tooltipLabel}>Correct</Text>
                                     <Text style={styles.tooltipValueCorrect}>{cell.correct}</Text>
                                   </View>
@@ -619,7 +624,7 @@ export default function StatsModal({ visible, onClose }) {
               </>
             ) : (
               <View style={styles.loadingBox}>
-                <ActivityIndicator size="small" color="#D97706" />
+                <ActivityIndicator size="small" color="#DC2626" />
                 <Text style={styles.loadingText}>Loading…</Text>
               </View>
             )}
@@ -664,7 +669,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderColor: '#F3F4F6',
+    borderColor: '#E9ECEF',
   },
   title: {
     fontSize: 16,
@@ -698,9 +703,9 @@ const styles = StyleSheet.create({
   streakCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF7ED',
+    backgroundColor: '#FEF2F2',
     borderWidth: 1.5,
-    borderColor: '#FFEDD5',
+    borderColor: '#FEE2E2',
     borderRadius: 16,
     padding: 14,
     marginBottom: 18,
@@ -715,16 +720,16 @@ const styles = StyleSheet.create({
   streakValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#C2410C',
+    color: '#B91C1C',
   },
   streakSubtitle: {
     fontSize: 12,
-    color: '#9A3412',
+    color: '#991B1B',
   },
   sectionHeader: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#6B7280',
+    color: '#7F8C8D',
     letterSpacing: 1,
     marginBottom: 10,
     marginTop: 6,
@@ -744,7 +749,7 @@ const styles = StyleSheet.create({
   masteryDividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#E9ECEF',
   },
   masteryDividerLabel: {
     fontSize: 10,
@@ -753,7 +758,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   masteryRow: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8F9FA',
     padding: 12,
     borderRadius: 12,
   },
@@ -769,16 +774,16 @@ const styles = StyleSheet.create({
     marginRight: 8,
     fontSize: 14,
     fontWeight: '700',
-    color: '#374151',
+    color: '#2C3E50',
   },
   masteryCount: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#7F8C8D',
     fontWeight: '600',
   },
   progressBarBg: {
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#E9ECEF',
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -789,7 +794,7 @@ const styles = StyleSheet.create({
   calendarRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8F9FA',
     padding: 12,
     borderRadius: 14,
     marginBottom: 18,
@@ -812,7 +817,7 @@ const styles = StyleSheet.create({
   },
   dayPillBoxEmpty: {
     height: 48,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F8F9FA',
     borderColor: '#E2E8F0',
   },
   pillTop: {
@@ -834,7 +839,7 @@ const styles = StyleSheet.create({
   pillTextCorrect: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#16A34A',
+    color: '#047857',
   },
   pillTextWrong: {
     fontSize: 11,
@@ -844,16 +849,16 @@ const styles = StyleSheet.create({
   pillTextEmpty: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#9CA3AF',
   },
   dayText: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#7F8C8D',
     fontWeight: '600',
   },
   // Takvim Alanı Stilleri
   heatmapContainer: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8F9FA',
     padding: 14,
     borderRadius: 14,
     marginBottom: 18,
@@ -869,19 +874,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 2,
     borderRadius: 8,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#FEF2F2',
   },
   monthNavBtnDisabled: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: '#E9ECEF',
     opacity: 0.5,
   },
   monthNavText: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#B45309',
+    color: '#B91C1C',
   },
   monthNavTextDisabled: {
-    color: '#94A3B8',
+    color: '#9CA3AF',
   },
   calendarMonthTitle: {
     fontSize: 13,
@@ -902,7 +907,7 @@ const styles = StyleSheet.create({
   weekdayText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#6B7280',
+    color: '#7F8C8D',
     letterSpacing: 0.3,
   },
   heatmapBody: {
@@ -941,13 +946,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   calendarCellSelected: {
-    borderColor: '#1E293B',
+    borderColor: '#2C3E50',
     borderWidth: 2,
   },
   calendarDayText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#334155',
+    color: '#2C3E50',
   },
   calendarDayTextLight: {
     color: '#FFFFFF',
@@ -961,16 +966,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     transform: [{ translateY: -40 }],
-    backgroundColor: '#FFFBEB',
+    backgroundColor: '#FEF2F2',
     borderWidth: 1.5,
-    borderColor: '#FCD34D',
+    borderColor: '#FCA5A5',
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
     minWidth: 140,
     zIndex: 100,
     elevation: 12,
-    shadowColor: '#B45309',
+    shadowColor: '#991B1B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -996,12 +1001,12 @@ const styles = StyleSheet.create({
   tooltipArrowBorderLeft: {
     left: -8,
     borderRightWidth: 8,
-    borderRightColor: '#FCD34D',
+    borderRightColor: '#FCA5A5',
   },
   tooltipArrowBorderRight: {
     right: -8,
     borderLeftWidth: 8,
-    borderLeftColor: '#FCD34D',
+    borderLeftColor: '#FCA5A5',
   },
   tooltipArrow: {
     position: 'absolute',
@@ -1018,23 +1023,23 @@ const styles = StyleSheet.create({
   tooltipArrowLeft: {
     left: -6,
     borderRightWidth: 6,
-    borderRightColor: '#FFFBEB',
+    borderRightColor: '#FEF2F2',
   },
   tooltipArrowRight: {
     right: -6,
     borderLeftWidth: 6,
-    borderLeftColor: '#FFFBEB',
+    borderLeftColor: '#FEF2F2',
   },
   tooltipDate: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#B45309',
+    color: '#B91C1C',
     letterSpacing: 0.5,
     marginBottom: 4,
   },
   tooltipDivider: {
     height: 1,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#FEE2E2',
     marginBottom: 6,
   },
   tooltipRow: {
@@ -1050,7 +1055,7 @@ const styles = StyleSheet.create({
   },
   tooltipLabel: {
     fontSize: 11,
-    color: '#78716C',
+    color: '#7F8C8D',
     flex: 1,
   },
   tooltipValueCorrect: {
@@ -1065,16 +1070,16 @@ const styles = StyleSheet.create({
   },
   tooltipTotal: {
     fontSize: 10,
-    color: '#92400E',
+    color: '#991B1B',
     marginTop: 5,
     paddingTop: 5,
     borderTopWidth: 1,
-    borderTopColor: '#FEF3C7',
+    borderTopColor: '#FEE2E2',
     fontStyle: 'italic',
   },
   tooltipEmpty: {
     fontSize: 10,
-    color: '#A8A29E',
+    color: '#9CA3AF',
     marginTop: 3,
     fontStyle: 'italic',
   },
@@ -1087,7 +1092,7 @@ const styles = StyleSheet.create({
   },
   heatmapLegendLabel: {
     fontSize: 10,
-    color: '#6B7280',
+    color: '#7F8C8D',
     fontWeight: '600',
     marginHorizontal: 4,
   },
@@ -1100,7 +1105,7 @@ const styles = StyleSheet.create({
   },
   heatmapHint: {
     fontSize: 10,
-    color: '#94A3B8',
+    color: '#9CA3AF',
     textAlign: 'center',
     marginTop: 8,
     fontStyle: 'italic',
@@ -1135,11 +1140,11 @@ const styles = StyleSheet.create({
   problemPinyin: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#374151',
+    color: '#2C3E50',
   },
   problemMeaning: {
     fontSize: 12,
-    color: '#6B7280',
+    color: '#7F8C8D',
   },
   warningTag: {
     fontSize: 11,
