@@ -27,6 +27,7 @@ import {
   View,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
+import Svg, { Path } from 'react-native-svg';
 
 import {
   SETTINGS_CHANGED_EVENT,
@@ -44,6 +45,28 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 // Repo şu an private olsa da adres sabittir; ileride public yapılınca da aynı
 // buton çalışır. (Butona basan kişinin erişimi yoksa tarayıcı 404 gösterir.)
 const REPOSITORY_URL = 'https://github.com/olcanasqar/ChineseQuizApp';
+
+/**
+ * GitHub'ın asıl logosu (emoji yerine vektör çizim). Tek renk `fill` ile boyanır,
+ * böylece yanındaki metinle aynı tonu alır (bkz. `linkButtonText`).
+ * Yol, GitHub'ın resmi "mark-github" (octicon) işaretidir — 16x16 tuval.
+ *
+ * Görsel olduğu için erişilebilirlik ağacına girmez; butonun kendisi
+ * (`accessibilityLabel="Open the GitHub repository in your browser"`) zaten
+ * tek erişilebilirlik öğesidir ve çocuklarını gizler.
+ *
+ * @param {{ size?: number, color?: string }} props
+ */
+function GitHubMark({ size = 16, color = '#2C3E50' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 16 16">
+      <Path
+        fill={color}
+        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+      />
+    </Svg>
+  );
+}
 
 // Slider adımı: %5'lik dilimler (0.00–1.00 aralığı).
 const VOLUME_STEP = 0.05;
@@ -353,7 +376,7 @@ export default function SettingsModal({ visible, onClose }) {
                 accessibilityRole="button"
                 accessibilityLabel="Open the GitHub repository in your browser"
               >
-                <Text style={styles.linkButtonIcon}>🐙</Text>
+                <GitHubMark size={16} />
                 <Text style={styles.linkButtonText}>Open GitHub repository</Text>
               </TouchableOpacity>
               <Text style={styles.linkUrl} accessible={true}>
@@ -567,9 +590,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 12,
     marginTop: 12,
-  },
-  linkButtonIcon: {
-    fontSize: 15,
   },
   linkButtonText: {
     fontSize: 13,
