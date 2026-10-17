@@ -27,7 +27,7 @@ const hsk1Examples = {
   "24": { "hanzi": "这里有很多人。", "pinyin": "Zhèlǐ yǒu hěn duō rén.", "meaning": "There are many people here." },
   "25": { "hanzi": "这个多少钱？", "pinyin": "Zhège duōshao qián?", "meaning": "How much is this?" },
   "26": { "hanzi": "他是我儿子。", "pinyin": "Tā shì wǒ érzi.", "meaning": "He is my son." },
-  "27": { "hanzi": "我有两个苹果。", "pinyin": "Wǒ yǒu èr gè píngguǒ.", "meaning": "I have two apples." },
+  "27": { "hanzi": "我有二十个苹果。", "pinyin": "Wǒ yǒu èrshí gè píngguǒ.", "meaning": "I have twenty apples." },
   "28": { "hanzi": "我们在饭馆吃饭。", "pinyin": "Wǒmen zài fànguǎn chīfàn.", "meaning": "We eat in a restaurant." },
   "29": { "hanzi": "我坐飞机去北京。", "pinyin": "Wǒ zuò fēijī qù Běijīng.", "meaning": "I go to Beijing by plane." },
   "30": { "hanzi": "请等我五分钟。", "pinyin": "Qǐng děng wǒ wǔ fēnzhōng.", "meaning": "Please wait five minutes for me." },

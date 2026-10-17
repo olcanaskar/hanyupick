@@ -127,18 +127,31 @@ describe('getExampleByWordId', () => {
     expect(getExampleByWordId('hsk6', 5000).hanzi).toContain('作息');
   });
 
+  // Faz 13: hsk1-4'te kalan 6 kayıt başka bir kelimenin cümlesini gösteriyordu
+  // (ör. 606 百分之 -> "三分之一", 772 合格 -> "及格"), yeniden yazıldı.
+  test('Faz 13 pinleri: yeniden yazılan hsk1-4 örnekleri doğru kelimeye bağlı', () => {
+    expect(getExampleByWordId('hsk1', 27).hanzi).toBe('我有二十个苹果。');
+    expect(getExampleByWordId('hsk3', 312).hanzi).toBe('他很愿意帮忙。');
+    expect(getExampleByWordId('hsk3', 585).hanzi).toContain('只有');
+    expect(getExampleByWordId('hsk3', 585).hanzi).toContain('才');
+    expect(getExampleByWordId('hsk4', 606).hanzi).toBe('百分之三十的学生没来。');
+    expect(getExampleByWordId('hsk4', 772).hanzi).toBe('他考试合格了。');
+    expect(getExampleByWordId('hsk4', 914).hanzi).toBe('请在三天内完成。');
+  });
+
   // hsk5 tamamlandıktan sonra kapsam kontrolü yetmez: kaymış bir kayıt da
-  // "dolu" görünür. Bu yüzden her hsk5 örneğinin cümlesi kendi kelimesini
-  // birebir içermelidir (Faz 9'da 1300/1300 sağlandı). Faz 10'da hsk6 da
-  // tamamlandı, aynı kural orada da geçerlidir (2500/2500). hsk1-4'te eski
-  // (Faz 7 öncesi) birkaç kayıt bu kuralı tutmaz; kapsamları tamdır ama
-  // cümle-kelime eşleşmesi yalnız hsk5-6 için garanti edilir.
-  test('hsk5 + hsk6: her örneğin cümlesi kendi kelimesini içerir (Faz 9 + Faz 10)', () => {
+  // "dolu" görünür. Bu yüzden her örnek cümle kendi kelimesini birebir
+  // içermelidir: hsk5 1300/1300 (Faz 9), hsk6 2500/2500 (Faz 10) ve Faz 13'te
+  // hsk1-4 1200/1200 — artık kural ALTI SEVİYEDE geçerli. Kalıp notasyonu
+  // taşıyan çok parçalı kelimeler (ör. `虽然……但是……`) hariç tutulur: "……"
+  // gerçek bir cümlede birebir geçemez.
+  test('hsk1-6: her örneğin cümlesi kendi kelimesini içerir (Faz 9 + 10 + 13)', () => {
     const broken = [];
-    for (const level of ['hsk5', 'hsk6']) {
-      for (const word of LEVEL_POOLS[level]) {
+    for (const [level, pool] of Object.entries(LEVEL_POOLS)) {
+      for (const word of pool) {
+        if (word.hanzi.includes('…')) continue; // kalıp notasyonu
         const example = EXAMPLES_BY_LEVEL[level][word.id];
-        if (!example || !example.hanzi.includes(word.hanzi)) broken.push(word.id);
+        if (!example || !example.hanzi.includes(word.hanzi)) broken.push(`${level}:${word.id}`);
       }
     }
 
