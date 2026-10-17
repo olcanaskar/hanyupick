@@ -3,13 +3,15 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 13 — hsk1–4'te kelimesini göstermeyen 6 örnek cümle düzeltildi + `expo` 57.0.30** (`5146c40` altı cümle yeniden yazıldı, "cümle kendi kelimesini içerir" testi hsk5-6'dan **altı seviyeye** genişletildi · `1692806` `npx expo install --fix` ile `expo` 57.0.29 → **`~57.0.30`**, tek değişen paket, `expo-doctor` 19/21 → **20/21**). **247 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız. **Cihaz doğrulaması bekliyor** — kayıt §17, kontrol listesi §16.
+Son güncelleme: **Faz 14 — İstatistik pop-up'ı içeriği hazır olarak açılıyor** (`f5176c7`: kart içeriği asenkron geldiği için animasyon küçük "Loading…" kartında başlayıp veri gelince kart büyüyüp yeniden konumlanıyordu → "bug'lı" açılış; içerik artık modal açılmadan önce ısıtılır, ay/gün sıfırlaması açılıştan kapanış sonuna taşındı, bayat veriyi temizleme kaldırıldı). **247 test yeşil**, lint 0 hata / **14 uyarı**, `tsc` 0 hata, `expo export` hatasız. **Cihaz doğrulaması bekliyor** — kayıt §18, kontrol listesi §16.
 
-Önceki faz: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
+Önceki faz: **Faz 13 — hsk1–4'te kelimesini göstermeyen 6 örnek cümle düzeltildi + `expo` 57.0.30** (`5146c40` altı cümle yeniden yazıldı, "cümle kendi kelimesini içerir" testi hsk5-6'dan **altı seviyeye** genişletildi · `1692806` `npx expo install --fix` ile `expo` 57.0.29 → **`~57.0.30`**, tek değişen paket, `expo-doctor` 19/21 → **20/21**). **247 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız. **Cihaz doğrulaması bekliyor** — kayıt §17, kontrol listesi §16.
 
-Ondan önceki faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
+Ondan önceki faz: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11` Home'un dış `ScrollView`'ı → `View` · `c8e7424` quiz teması amber → kırmızı · `be8bf1a` aynı palet sözlüğe (arama kutusu, Draw butonu, seviye çipleri, pinyin, 🔊) · `c3a644b` **Draw** pop-up'ı (aday çubuğu, çipler, tuval çerçevesi) · `21ede78` **İstatistik** pop-up'ı (turuncu streak kartı, amber ay-butonları/balon/ısı ölçeği ve gökkuşağı seviye renkleri → kırmızı rampası) · `be870a9` Ayarlar'daki GitHub butonunda 🐙 yerine **gerçek logo** (`react-native-svg`, yeni bağımlılık yok); `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı**; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
 
-Daha önceki faz: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §13). hsk6'da eksik olan **1945 örnek** yazıldı, Faz 6'dan kalan **385 kaymış/kusurlu kayıt** değiştirildi (170 doğru kayıt korundu) → hsk6 **2500/2500**. Faz 9'un kaydı §12'dedir.
+Daha önceki faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
+
+Daha eski faz: **Faz 10 — hsk6'nın eksik örnek cümleleri yazıldı** (18 batch commit'i + pinyin düzeltmeleri + `3ce3529`; **cihazda doğrulandı ✅** (2026-10-17) — kayıt §13). hsk6'da eksik olan **1945 örnek** yazıldı, Faz 6'dan kalan **385 kaymış/kusurlu kayıt** değiştirildi (170 doğru kayıt korundu) → hsk6 **2500/2500**. Faz 9'un kaydı §12'dedir.
 
 ---
 
@@ -119,6 +121,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
+- **Faz 14 (İstatistik pop-up'ı içeriği hazır açılıyor) commit'i:** `f5176c7` (`components/StatsModal.js`) — **cihazda doğrulama bekliyor ⏳** (bkz. §18, §16).
 - **Faz 13 (hsk1–4'te 6 kaymış örnek düzeltmesi + `expo` 57.0.30) commit'leri:** `5146c40` (`data/examples/hsk1_examples.js`, `hsk3_examples.js`, `hsk4_examples.js` + `__tests__/exampleService.test.js`) · `1692806` (`package.json` + `package-lock.json`: `expo` `~57.0.30`) — **cihazda doğrulama bekliyor ⏳** (bkz. §17, §16).
 - **Faz 12 (Home kaydırmasız + kırmızı tema + GitHub ikonu) commit'leri:** `ccc7d11` (Home'un dış `ScrollView`'ı → `View`) · `c8e7424` (quiz teması amber → kırmızı: `components/Header.js`, `components/ExampleBox.js`, `components/QuestionCard.js`, `screens/QuizScreen.js`) · `be8bf1a` (sözlük teması amber → kırmızı: `screens/VocabularyScreen.js`) · `c3a644b` (Draw pop-up'ı: `components/HandwritingModal.js`) · `21ede78` (İstatistik pop-up'ı: `components/StatsModal.js`) · `be870a9` (GitHub butonu: emoji → gerçek logo, `components/SettingsModal.js`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §15, §16).
 - **Faz 11 (Ayarlar pop-up'ı) commit'leri:** `54907fb` (`services/settingsService.js` + `__tests__/settingsService.test.js`) · `6379bed` (`services/speechService.js` + `QuestionCard`/`VocabularyScreen`/`QuizScreen` tek noktaya bağlandı + `App.js` açılışta `getSettings()`) · `d962454` (`services/hapticsService.js` + `QuizScreen` kapısı) · `7111834` (ayarlar ekranı + `@react-native-community/slider`) · `f6d4d99` (`StatsModal`'dan reset bölümünün kaldırılması) · `8443912` (`hapticsService`/`speechService` testleri) · `afe51c1` (**ekran → pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, `Settings` rotası kaldırıldı) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §14, §16).
@@ -532,7 +535,7 @@ Her maddeyi **ayrı commit** olarak yap.
 8. ABOUT → GitHub butonu tarayıcıda repo sayfasını açmalı (private repo: giriş yapılmış hesapta açılır).
 9. Uygulamayı kapatıp aç → ayarlar (ses seviyesi + titreşim) **korunmalı**.
 
-**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go). `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §18).
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go). `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §19).
 
 ---
 
@@ -574,7 +577,7 @@ Her maddeyi **ayrı commit** olarak yap.
 9. Home → 📊 İstatistik → streak kartı, ‹ › ay butonları, bir güne dokununca çıkan detay balonu ve ustalık çubukları kırmızı tonlarında olmalı; takvimde "az" açık kırmızı, "çok" koyu kırmızı, "aktivite yok" gri kalmalı; balondaki Correct yeşil / Wrong kırmızı ayrımı korunmalı.
 10. Bu iki pop-up'ın metinleri okunaklı olmalı (koyu kırmızı üstüne beyaz gün rakamları vb.).
 
-**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go) — Home sürüklenmiyor, quiz/sözlük/Draw/İstatistik kırmızı temada, GitHub butonunda gerçek logo görünüyor. `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §18).
+**Sonuç:** ✅ **cihazda doğrulandı** (2026-10-17, kullanıcı, Expo Go) — Home sürüklenmiyor, quiz/sözlük/Draw/İstatistik kırmızı temada, GitHub butonunda gerçek logo görünüyor. `known-good` bu doğrulama commit'ine ilerletildi (önceki: `6ceea02`) ve tek yedek arşivi tazelendi (bkz. §19).
 
 ---
 
@@ -668,6 +671,12 @@ Her maddeyi **ayrı commit** olarak yap.
    1. **Düzeltilen cümleler:** HSK 1'de **二** (id 27) bilerek yanlış cevaplanınca "我有二十个苹果。" görünmeli; HSK 3'te **帮忙** → "他很愿意帮忙。", **只有……才……** → "只有努力，才能成功。"; HSK 4'te **百分之** → "百分之三十的学生没来。", **合格** → "他考试合格了。", **内** → "请在三天内完成。".
    2. **Kalıplar bozulmadı:** HSK 2'de 因为……所以…… / 虽然……但是……, HSK 3'te 不但……而且…… cümleleri eskisi gibi kalıbı göstermeli.
    3. **Uygulama açılışı ve regresyon:** `expo` 57.0.30 ile uygulama sorunsuz açılmalı; quiz / sözlük arama + el yazısı / istatistik / ayarlar / özel deste aktarma eskisi gibi çalışmalı.
+- **Cihaz testi (Faz 14: İstatistik pop-up'ı açılışı) ⏳ BEKLİYOR** (kullanıcı, Expo Go). Kontrol listesi:
+   1. **Temiz açılış (asıl konu):** Home'dan 📊 İstatistikler'e bas → kart **tek parça hâlinde, içeriği dolu olarak** yaylanarak açılmalı; önce küçük/"Loading…" hâlinde belirip sonra büyümesi ya da ortada kayması **olmamalı** (Ayarlar ve özel deste pop-up'ları gibi temiz).
+   2. **Tekrar açılışlar:** kapat → birkaç kez yeniden aç; her seferinde aynı temiz açılış olmalı. Ayrıca birkaç soru doğru/yanlış cevaplayıp tekrar aç → sayılar **güncel** gelmeli (bayat kalmamalı).
+   3. **Ay/gün sıfırlaması:** geri okuyla geçmiş bir aya git, takvimde bir güne dokun (balon açılsın), sonra pop-up'ı kapat → yeniden aç: **bu ay** ve **balonsuz** başlamalı (eskisi gibi). Kapanış animasyonu bozulmamalı.
+   4. **Kapanış:** ✕ ve boş alana dokunma ile kapanma eskisi gibi (aşağı kayma + solma) olmalı.
+   5. **Boş veri:** Ayarlar → "İlerlemeyi sıfırla" sonrası İstatistikler → "No problematic words right now. Well done!" görünmeli ve kart yine temiz açılmalı.
 - **Bilinçli olarak kapsam dışı (4.5):** `accessibilityState` (seçili sekme/şık), doğru-yanlış **duyurusu** (`announceForAccessibility`) ve modal içinde odak yönetimi eklenmedi. Bunlar istenirse ayrı bir "4.5b" olarak yapılabilir (durum + duyuru katmanı).
 - **Bileşenler için otomatik test yok** (jest yalnızca `services/`'i çalıştırır). Faz 4.1'de `react-test-renderer` ile **geçici** bir render kontrolü yapıldı (yükleme→içerik + aç/kapa) ve dosya silindi — `react-test-renderer` bildirilmiş bir bağımlılık değil ve React 19'da kullanımdan kaldırıldı. Kalıcı istatistiksel kontrol istenirse `@testing-library/react-native` bilinçli olarak eklenip birkaç ekran için duman testi yazılabilir (ayrı karar).
 - ~~**Ölü prop adları** (`Header` `onSelectLevel`/`onToggleMode`)~~ → **ÇÖZÜLDÜ (`e0249c4`)** · ~~**`hsk5.json`'da 17 ikiz kayıt**~~ → **ÇÖZÜLDÜ (`9044490`)**: küçük id korunarak tek kayda indirildi, anlam metni daha açıklayıcı olan seçildi, silinen id'ler için göç yazıldı (§7 "ek temizlikler E").
@@ -707,7 +716,31 @@ Faz 9 (hsk5) ve Faz 10 (hsk6) "cümle kendi kelimesini birebir içerir" kuralın
 
 ---
 
-## 18. Yeni oturumda nasıl devam edilir
+## 18. Faz 14 — İstatistik pop-up'ı içeriği hazır olarak açılıyor
+
+Kullanıcı bildirimi: *"statistics bölümü açılırken sanki anlık bir bug gibi bir şey oluyor, custom decks veya settings kadar temiz açılmıyor; kapanırken sorun yok."*
+
+**Neden (teşhis):** kartın yüksekliği içeriğe göre belirlenir (`contentCard`: `maxHeight: '85%'`, `modalContainer` içinde ortalanmış). İçerik ise asenkron gelir:
+
+1. Açılışta `statsData` ya **önceki açılıştan kalan** veriydi ya da `null`'du; effect onu `null`'a çekiyordu → kart sırayla **dolu** → **"Loading…" boyutunda küçük** → **dolu** hâle geçiyor, boyut/konum sıçrıyordu.
+2. Açılış animasyonu bu **küçük kartta** başlıyor, veri gelince kart büyüyüp yeniden ortalanıyordu → "bozuk/takılıyor" hissi. Ayarlar ve özel deste pop-up'larının içeriği sabit olduğu için onlar temiz açılıyordu.
+
+**Çözüm** (`components/StatsModal.js`, `f5176c7`):
+
+- **Isıtma:** modal Home ile birlikte zaten mount olduğu için `getStats()` + `getCustomDecks()` **pop-up açılmadan önce** yüklenir → kart **ilk açılışta da dolu** gelir.
+- **Animasyon kapısı:** içerik hazırsa animasyon **hemen** başlar (kart tam boyutuyla belirir — Faz 4.1'in "hemen belirsin" davranışı korunur). Hazır değilse (nadir: açılışın ilk milisaniyelerinde basıldıysa) animasyon **içerikle birlikte** oynar, kart yarı çizilip sonra büyümez. **150 ms fallback**: okuma çok yavaşlar/başarısız olursa kart yine de (yükleme göstergesiyle) belirir → pop-up **asla görünmez kalmaz**.
+- **Bayat veriyi temizleme kaldırıldı:** içerik açılışta `null`'a çekilmez (asıl sıçramanın kaynağı buydu); diskten bir kez daha okunup tazelenir. Aynı düzen, yalnız değerler → boyut değişmez.
+- **Ay/gün sıfırlaması açılıştan kapanış sonrasına taşındı** (effect cleanup): açılışta **hiçbir React state güncellemesi kalmaz** ve geçmiş aya bakıp kapatmışken oluşan takvim "zıplaması" da gider; sıfırlama çıkış animasyonu bittikten sonra (kart görünmezken) yapılır.
+
+**Kural:** bu kart içeriğine göre boyutlandığı için **açılış animasyonu içerik hazır olmadan başlatılmamalıdır**; ileride veri yükleyen yeni bir pop-up eklenirse aynı desen kullanılmalı (ısıt + içerik kapısı + fallback).
+
+**Doğrulama:** `npm test` **247 yeşil** · lint **0 hata / 14 uyarı** (StatsModal'ın `set-state-in-effect` uyarısı kalktı) · `tsc` **0 hata** · Babel parse ✅ · `npx expo export --platform android` hatasız.
+
+**Cihaz doğrulaması bekliyor** — kontrol listesi §16'da.
+
+---
+
+## 19. Yeni oturumda nasıl devam edilir
 
 1. Bu dosyayı oku (`NOTES.md`).
 2. `git log --oneline` ve `git status` ile durumu doğrula.
@@ -715,4 +748,4 @@ Faz 9 (hsk5) ve Faz 10 (hsk6) "cümle kendi kelimesini birebir içerir" kuralın
 4. Bitince: doğrula (`npm test`, `npm run lint`, `npm run tsc`, varsa Babel parse) → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
 5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
 
-**`known-good` durumu:** Faz 11 + Faz 12 doğrulama commit'i (`docs: mark Faz 11 and Faz 12 as device-verified`, 2026-10-17). Önceki değer `6ceea02` (Faz 10) idi. **Faz 13** (`5146c40` örnek düzeltmesi + `1692806` `expo` 57.0.30) henüz cihazda doğrulanmadığı için `known-good` **ilerletilmedi**; doğrulama gelince bu satır güncellenir ve tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz` olarak tazelenip **eskisi silinir**; ayrıntı için §16.
+**`known-good` durumu:** Faz 11 + Faz 12 doğrulama commit'i (`docs: mark Faz 11 and Faz 12 as device-verified`, 2026-10-17). Önceki değer `6ceea02` (Faz 10) idi. **Faz 13** (`5146c40` örnek düzeltmesi + `1692806` `expo` 57.0.30) ve **Faz 14** (`f5176c7` İstatistik pop-up'ı açılışı) henüz cihazda doğrulanmadığı için `known-good` **ilerletilmedi**; doğrulama gelince bu satır güncellenir ve tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz` olarak tazelenip **eskisi silinir**; ayrıntı için §16.
