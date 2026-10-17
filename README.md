@@ -49,7 +49,7 @@ There is no iOS build yet; on iPhone the app has to be built from source — see
   </tr>
 </table>
 
-<sub>Screenshots taken on a phone running the APK published above. The levels are empty because the phone had a fresh install.</sub>
+<sub>Captured on a phone running the APK published above — the untouched captures are kept in [`docs/screenshots/raw/`](docs/screenshots/raw/). The phone frame, the background and the captions are added afterwards by `tools/generate-store-screenshots.py`, so the framed images are **mockups**; the two **Statistics** images also have **sample progress data** drawn into them (HSK 1–2 mastered, HSK 3 halfway) — the app itself always starts empty.</sub>
 
 ## Why another HSK app?
 
@@ -125,6 +125,14 @@ python -m pip install pillow
 python tools/generate-icons.py
 ```
 
+The **README gallery is generated the same way**, from the raw device captures under `docs/screenshots/raw/`:
+
+```bash
+python tools/generate-store-screenshots.py
+```
+
+It strips the phone's system bars, adds the frame and captions, and draws the sample progress used in the two Statistics images — see the note under [Screenshots](#screenshots).
+
 ## Project structure
 
 | Path | Contents |
@@ -136,6 +144,7 @@ python tools/generate-icons.py
 | `data/` | `hsk1..6.json` (5,000 words) and `examples/hsk*_examples.js` (example sentences keyed by word id). |
 | `__tests__/` | Jest tests (services only, by design — screens are verified on a device). |
 | `tools/generate-icons.py` | The single source of the icons and the splash image. |
+| `tools/generate-store-screenshots.py` | The single source of the store-style README gallery (from `docs/screenshots/raw/`). |
 
 Everything that has one source of truth really has one: `services/wordRepository.js` for levels and
 word pools, `services/modes.js` for the six quiz directions, `services/statsManager.js` for the
