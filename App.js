@@ -15,6 +15,7 @@ import { getSettings } from './services/settingsService';
 import HomeScreen from './screens/HomeScreen';
 import QuizScreen from './screens/QuizScreen';
 import VocabularyScreen from './screens/VocabularyScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 const STORAGE_KEY = '@hsk_review_pool';
 
@@ -160,6 +161,9 @@ export default function App() {
 
           {/* Vocabulary Ekranı eklendi */}
           <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
+
+          {/* Ayarlar (Faz 11): ses seviyesi, titreşim, ilerlemeyi sıfırla, GitHub */}
+          <Stack.Screen name="Settings" component={SettingsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

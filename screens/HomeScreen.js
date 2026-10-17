@@ -174,6 +174,15 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
           <View style={styles.header}>
             <View style={styles.topRow}>
               <Text style={styles.badge}>HSK FLASHCARDS</Text>
+              <TouchableOpacity
+                style={styles.settingsBtn}
+                onPress={() => navigation.navigate('Settings')}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                accessibilityRole="button"
+                accessibilityLabel="Settings"
+              >
+                <Text style={styles.settingsBtnIcon}>⚙️</Text>
+              </TouchableOpacity>
             </View>
             <Text style={styles.title} accessibilityRole="header">中文 Learning</Text>
             <Text style={styles.subtitle}>Choose your level and start practicing</Text>
@@ -428,6 +437,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#991B1B',
     letterSpacing: 2,
+  },
+  // Faz 11: ayarlara giriş. Rozetin sağında, göze batmayan beyaz daire.
+  settingsBtn: {
+    padding: 6,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+  },
+  settingsBtnIcon: {
+    fontSize: 18,
   },
   title: {
     fontSize: 34,
