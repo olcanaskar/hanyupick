@@ -13,7 +13,7 @@ import { DeviceEventEmitter } from 'react-native';
 
 export const SETTINGS_STORAGE_KEY = '@hsk_settings';
 
-// Ayar değişince yayılan olay (App.js ve SettingsScreen dinler).
+// Ayar değişince yayılan olay (App.js ve SettingsModal dinler).
 export const SETTINGS_CHANGED_EVENT = 'onSettingsChange';
 
 export const SPEECH_VOLUME_MIN = 0;
