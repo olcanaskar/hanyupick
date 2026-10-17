@@ -27,6 +27,17 @@
         "projectId": "ea29583b-1b9a-43c1-8d61-6915c3745c27"
       }
     },
-    "owner": "olcanaskar"
+    "owner": "olcanaskar",
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FBF5EB",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain"
+        }
+      ]
+    ]
   }
 }

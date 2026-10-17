@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { DeviceEventEmitter } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,6 +18,16 @@ import QuizScreen from './screens/QuizScreen';
 import VocabularyScreen from './screens/VocabularyScreen';
 
 const STORAGE_KEY = '@hsk_review_pool';
+
+// Faz 18: splash ekranı (app.json'daki `expo-splash-screen` plugin'i ile yapılandırılır)
+// uygulama hazır olana kadar görünür kalır ve en az SPLASH_MIN_MS boyunca sabit durur.
+// `preventAutoHideAsync` MODÜL kapsamında çağrılır — bileşen içinde çağrılırsa splash
+// çoktan gizlenmiş olabilir (Expo belgeleri). Hata olursa sessizce devam edilir:
+// splash davranışı bozulsa bile uygulama açılmalı.
+SplashScreen.preventAutoHideAsync().catch(() => {});
+SplashScreen.setOptions({ duration: 300, fade: true });
+
+const SPLASH_MIN_MS = 1000;
 
 const Stack = createStackNavigator();
 
@@ -96,6 +107,19 @@ export default function App() {
   // (bkz. services/settingsService.js).
   useEffect(() => {
     getSettings();
+  }, []);
+
+  // Faz 18: splash ekranı sabit ~1 sn görünür kalır, sonra gizlenir. Ana ekran bu
+  // sürede çizilmiş olur; splash zemini (#FBF5EB) Home'un zeminiyle aynı olduğu
+  // için geçiş fark edilmez.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      SplashScreen.hideAsync().catch((error) => {
+        console.warn('Splash ekranı gizlenemedi:', error);
+      });
+    }, SPLASH_MIN_MS);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // 2. reviewPool değiştikçe diske kaydet
