@@ -46,11 +46,70 @@ const getHeatColor = (total) => {
   return '#7F1D1D';                        // Çok (koyu kırmızı)
 };
 
+// Sabit takvim grid'inin ölçüleri: 7 eşit sütun, aralarında `CALENDAR_GAP` px boşluk
+// (`styles.calendarWeekRow.gap`) ve `styles.heatmapContainer`'ın `CALENDAR_PADDING` px
+// iç boşluğu. Stil tarafı da bu sabitleri kullanır (tek kaynak).
+const CALENDAR_COLUMNS = 7;
+const CALENDAR_GAP = 4;
+const CALENDAR_PADDING = 14;
+
+// Gün detay balonunun (tooltip) doğal genişliği (`styles.tooltip.minWidth`) ve
+// hücreye bakan kenarının hücreden uzaklığı: hücre genişliğinin %110'u
+// (`styles.tooltipLeft` / `styles.tooltipRight`).
+const TOOLTIP_MIN_WIDTH = 140;
+const TOOLTIP_OFFSET = 1.1;
+
+/**
+ * Gün detay balonunun hangi tarafa açılacağını ve en fazla ne kadar geniş
+ * olabileceğini hesaplar.
+ *
+ * Sağ yarıdaki sütunlar balonu sağa, sol yarıdakiler (ortadaki 4. sütun dâhil)
+ * sola doğru açar: ortadaki sütunda sağa açmak balonu kartın/ScrollView'ın dışına
+ * taşırıyordu ve kenarı kesiliyordu (Faz 14).
+ *
+ * Balon bir ScrollView'ın içinde yaşadığı için taşan kısmı KIRPILIR; bu yüzden
+ * seçilen tarafta kalan boşluk bir üst sınır olarak verilir. Normal genişliklerde
+ * bu sınır `TOOLTIP_MIN_WIDTH`in altına inmez (görünüm değişmez); yalnızca çok dar
+ * ekranlarda balon daralıp metin alt satıra kayar, kenar yine kesilmez. Balonun
+ * hemen dışında `CALENDAR_PADDING` px daha yer vardır (grid, kabının iç
+ * boşluğunun içindedir).
+ *
+ * @param {number} colIdx 0-6 arası sütun indeksi
+ * @param {number} cellWidth Ölçülen hücre genişliği (0 = henüz ölçülmedi)
+ * @param {number} gridWidth Ölçülen grid genişliği (0 = henüz ölçülmedi)
+ * @returns {{ opensLeft: boolean, width: number|null }} `width`: yalnızca
+ *   daraltılması gerektiğinde kesin genişlik (px), yoksa `null` (doğal genişlik).
+ */
+function getTooltipLayout(colIdx, cellWidth, gridWidth) {
+  const opensLeft = colIdx >= Math.floor(CALENDAR_COLUMNS / 2); // 0-2 sağa, 3-6 sola
+
+  if (!cellWidth || !gridWidth) return { opensLeft, width: null }; // ölçüm öncesi varsayılan
+
+  const cellLeft = colIdx * (cellWidth + CALENDAR_GAP);
+  const cellRight = cellLeft + cellWidth;
+  const anchor = TOOLTIP_OFFSET * cellWidth; // balonun hücreye bakan kenarının dışta kalan payı
+
+  const available = opensLeft
+    ? CALENDAR_PADDING + (cellRight - anchor) // sağ kenarından ScrollView'ın sol kenarına kadar
+    : CALENDAR_PADDING + (gridWidth - cellLeft - anchor); // sol kenarından ScrollView'ın sağ kenarına
+
+  // Yalnızca gerektiğinde daralt (tam sayıya yuvarla: kırpma sınırında yarım piksel
+  // taşmasın). Normal genişliklerde balon doğal genişliğinde kalır → görünüm değişmez.
+  return {
+    opensLeft,
+    width: available < TOOLTIP_MIN_WIDTH ? Math.floor(available) : null,
+  };
+}
+
 export default function StatsModal({ visible, onClose }) {
   const [statsData, setStatsData] = useState(null);
   const [customDecks, setCustomDecks] = useState({});
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedMonthDate, setSelectedMonthDate] = useState(new Date());
+  // Takvim grid'inin ölçülen genişliği: gün detay balonunun yerleşimi (hangi tarafa
+  // açılacağı ve en fazla ne kadar geniş olabileceği) bundan hesaplanır — bkz.
+  // `getTooltipLayout`. Ölçüm gelene kadar (0) balon varsayılan genişlikte çizilir.
+  const [calendarGridWidth, setCalendarGridWidth] = useState(0);
 
   // Animasyon Değerleri (Ölçek, Dikey Kayma ve Opaklık)
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
@@ -353,6 +412,12 @@ export default function StatsModal({ visible, onClose }) {
     return weeks;
   }, [dailyStats, selectedMonthDate]);
 
+  // Hücre genişliği grid'den türetilir (ölçüm gelmeden 0 → balon varsayılan).
+  const calendarCellWidth =
+    calendarGridWidth > 0
+      ? (calendarGridWidth - (CALENDAR_COLUMNS - 1) * CALENDAR_GAP) / CALENDAR_COLUMNS
+      : 0;
+
   // Ay gezinme butonu için: seçili ay içinde miyiz?
   const todayObj = new Date();
   const isCurrentMonth =
@@ -524,8 +589,11 @@ export default function StatsModal({ visible, onClose }) {
                     ))}
                   </View>
 
-                  {/* Takvim Grid'i */}
-                  <View style={styles.heatmapBody}>
+                  {/* Takvim Grid'i (genişliği ölçülür: balon yerleşimi buna göre hesaplanır) */}
+                  <View
+                    style={styles.heatmapBody}
+                    onLayout={(e) => setCalendarGridWidth(e.nativeEvent.layout.width)}
+                  >
                     {calendarWeeks.map((week, weekIdx) => (
                       <View key={weekIdx} style={styles.calendarWeekRow}>
                         {week.map((cell, colIdx) => {
@@ -535,6 +603,11 @@ export default function StatsModal({ visible, onClose }) {
 
                           const isSelected = selectedDay?.dateStr === cell.dateStr;
                           const heatColor = getHeatColor(cell.total);
+                          const { opensLeft, width: tooltipWidth } = getTooltipLayout(
+                            colIdx,
+                            calendarCellWidth,
+                            calendarGridWidth
+                          );
 
                           return (
                             <View
@@ -576,13 +649,17 @@ export default function StatsModal({ visible, onClose }) {
                                 <View
                                   style={[
                                     styles.tooltip,
-                                    colIdx >= 4 ? styles.tooltipLeft : styles.tooltipRight,
+                                    opensLeft ? styles.tooltipLeft : styles.tooltipRight,
+                                    // Daraltma gerektiğinde kesin genişlik: `minWidth` ile
+                                    // `maxWidth` birlikte verilir ki hangisi önce uygulanırsa
+                                    // uygulansın sonuç aynı olsun (Yoga'da ikisi de kırpar).
+                                    tooltipWidth ? { minWidth: tooltipWidth, maxWidth: tooltipWidth } : null,
                                   ]}
                                 >
                                   <View
                                     style={[
                                       styles.tooltipArrowBorder,
-                                      colIdx >= 4
+                                      opensLeft
                                         ? styles.tooltipArrowBorderRight
                                         : styles.tooltipArrowBorderLeft,
                                     ]}
@@ -590,9 +667,7 @@ export default function StatsModal({ visible, onClose }) {
                                   <View
                                     style={[
                                       styles.tooltipArrow,
-                                      colIdx >= 4
-                                        ? styles.tooltipArrowRight
-                                        : styles.tooltipArrowLeft,
+                                      opensLeft ? styles.tooltipArrowRight : styles.tooltipArrowLeft,
                                     ]}
                                   />
                                   <Text style={styles.tooltipDate}>{cell.dayShort}</Text>
@@ -905,7 +980,7 @@ const styles = StyleSheet.create({
   // Takvim Alanı Stilleri
   heatmapContainer: {
     backgroundColor: '#F8F9FA',
-    padding: 14,
+    padding: CALENDAR_PADDING, // balon yerleşimi bu değeri bilir (CALENDAR_PADDING)
     borderRadius: 14,
     marginBottom: 18,
   },
@@ -962,7 +1037,7 @@ const styles = StyleSheet.create({
   calendarWeekRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 4,
+    gap: CALENDAR_GAP, // balon yerleşimi bu değeri bilir (CALENDAR_GAP)
   },
   calendarCellEmpty: {
     flex: 1,
@@ -1018,7 +1093,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    minWidth: 140,
+    minWidth: TOOLTIP_MIN_WIDTH,
     zIndex: 100,
     elevation: 12,
     shadowColor: '#991B1B',
@@ -1027,10 +1102,10 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   tooltipRight: {
-    left: '110%',
+    left: `${TOOLTIP_OFFSET * 100}%`, // hücrenin sağında (balon yerleşimi bu değeri bilir)
   },
   tooltipLeft: {
-    right: '110%',
+    right: `${TOOLTIP_OFFSET * 100}%`, // hücrenin solunda
   },
   tooltipArrowBorder: {
     position: 'absolute',
