@@ -57,58 +57,104 @@ export default function StatsModal({ visible, onClose }) {
   const translateYAnim = useRef(new Animated.Value(35)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
+  // İçerik (istatistikler + özel desteler) en az bir kez yüklendi mi? Açılış
+  // animasyonunun kapısı budur (aşağıdaki iki effect'e bakınız).
+  const statsLoadedRef = useRef(false);
+
+  // 1. İçeriği pop-up AÇILMADAN önce ısıt (Faz 14): kart ilk açılışta da DOLU
+  //    gelmeli, yoksa animasyon "Loading…" boyutunda başlayıp veri gelince kart
+  //    büyür/ortadan kayar → açılış "bug'lı/takılıyor" gibi görünür (Ayarlar ve
+  //    özel deste pop-up'larının içeriği sabit olduğu için onlar temiz açılır).
   useEffect(() => {
-    if (!visible) return;
-
-    scaleAnim.setValue(0.85);
-    translateYAnim.setValue(35);
-    opacityAnim.setValue(0);
-    setSelectedDay(null);
-    setSelectedMonthDate(new Date());
-
-    // ANİMASYON VERİDEN BAĞIMSIZ BAŞLAR (Faz 4.1): eskiden `Animated.parallel` ancak
-    // `getStats()` çözüldüğünde çağrılıyordu, yani veri okunana kadar hiçbir şey
-    // çizilmiyordu → yavaş bir diskte "İstatistik"e basmak işlemiyor gibi görünüyordu.
-    // Artık kart hemen belirir, içeriği veri gelince dolar.
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        bounciness: 9,
-        speed: 12,
-        useNativeDriver: true,
-      }),
-      Animated.spring(translateYAnim, {
-        toValue: 0,
-        bounciness: 9,
-        speed: 12,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 180,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Önceki açılıştan kalan veriyi TEMİZLE: kart artık hemen göründüğü için bayat
-    // sayılar bir an görünüp sonra değişebilirdi (flicker). İçerik yerine kısa bir
-    // yükleme göstergesi çizilir (bkz. `loadingBox`).
-    setStatsData(null);
-
     let cancelled = false;
 
-    // İstatistiklerin yanında özel desteler de yüklenir: özel kelimelerin
-    // `wordStats` kayıtları zaten vardı (QuizScreen id olarak 'custom_...' yazar),
-    // eksik olan yalnızca gösterimdi (Faz 3.6b).
     Promise.all([getStats(), getCustomDecks()]).then(([data, decks]) => {
-      if (cancelled) return; // modal kapandıysa state yazma
+      if (cancelled) return;
 
+      statsLoadedRef.current = true;
       setStatsData(data);
       setCustomDecks(decks);
     });
 
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  // 2. Açılış: animasyon içerik HAZIR olduğunda başlar.
+  useEffect(() => {
+    if (!visible) return;
+
+    scaleAnim.setValue(0.85);
+    translateYAnim.setValue(35);
+    opacityAnim.setValue(0);
+
+    let cancelled = false;
+    let entranceStarted = false;
+    let fallbackTimer = null;
+
+    // Kartın hemen belirmesi Faz 4.1'de bilinçliydi ("İstatistik"e basmak işlemiyor
+    // gibi görünmesin). O davranış korunur, ama veri okunana kadar beklemek yerine
+    // içerik ÖNCEDEN ısıtıldığı için animasyon normalde veriyle AYNI ANDA oynar.
+    const playEntrance = () => {
+      if (cancelled || entranceStarted) return;
+
+      entranceStarted = true;
+      if (fallbackTimer) clearTimeout(fallbackTimer);
+
+      Animated.parallel([
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          bounciness: 9,
+          speed: 12,
+          useNativeDriver: true,
+        }),
+        Animated.spring(translateYAnim, {
+          toValue: 0,
+          bounciness: 9,
+          speed: 12,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    };
+
+    // İçerik hazırsa animasyon HEMEN başlar (kart tam boyutuyla, içerik değişmez).
+    // Değilse (ilk açılış) veri gelene kadar beklenir; animasyon içerikle birlikte
+    // oynar, böylece kart yarı çizilip sonra büyümez. `fallbackTimer`: okuma çok
+    // yavaşlar ya da başarısız olursa kart yine de (yükleme göstergesiyle) belirsin,
+    // pop-up görünmez kalmasın.
+    if (statsLoadedRef.current) playEntrance();
+    else fallbackTimer = setTimeout(playEntrance, 150);
+
+    // İstatistiklerin yanında özel desteler de yüklenir: özel kelimelerin
+    // `wordStats` kayıtları zaten vardı (QuizScreen id olarak 'custom_...' yazar),
+    // eksik olan yalnızca gösterimdi (Faz 3.6b). Diskteki veri açılışta bir kez
+    // daha okunur: ısıtma ile pop-up açılması arasında değişmiş olabilir.
+    Promise.all([getStats(), getCustomDecks()]).then(([data, decks]) => {
+      if (cancelled) return; // modal kapandıysa state yazma
+
+      statsLoadedRef.current = true;
+      setStatsData(data);
+      setCustomDecks(decks);
+      playEntrance();
+    });
+
+    return () => {
+      cancelled = true;
+      if (fallbackTimer) clearTimeout(fallbackTimer);
+
+      // Ay/gün seçimi BURADA sıfırlanır, açılışta değil: açılışta sıfırlamak kart
+      // göründükten sonra bir kare içinde takvimi "zıplatıyordu" (kullanıcı geçmiş
+      // bir aya bakıp kapatmışsa). Bu cleanup, kapanış animasyonu BİTTİKTEN sonra
+      // (`handleClose` → `onClose`) çalışır; kart artık görünmez, dolayısıyla
+      // sıfırlama ekranda hiç görünmez ve bir sonraki açılış temiz başlar.
+      setSelectedDay(null);
+      setSelectedMonthDate(new Date());
     };
   }, [visible]);
 
