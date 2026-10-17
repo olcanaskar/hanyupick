@@ -1,15 +1,17 @@
 {
   "expo": {
-    "name": "ChineseQuizApp",
-    "slug": "ChineseQuizApp",
+    "name": "HanyuPick",
+    "slug": "hanyupick",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "io.github.olcanasqar.hanyupick"
     },
     "android": {
+      "package": "io.github.olcanasqar.hanyupick",
       "adaptiveIcon": {
         "backgroundColor": "#B91C1C",
         "foregroundImage": "./assets/android-icon-foreground.png",
