@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
-import * as Speech from 'expo-speech';
 import ExampleBox from './ExampleBox';
 import { getExampleByWordId } from '../services/exampleService';
 import { FIELD_LABELS, getAnswerType, getHintField, getPromptType } from '../services/modes';
+import { speakHanzi } from '../services/speechService';
 
 const { width } = Dimensions.get('window');
 
@@ -69,11 +69,8 @@ export default function QuestionCard({
   if (!word) return null;
 
   const playAudio = () => {
-    Speech.stop();
-    Speech.speak(word.hanzi, {
-      language: 'zh-CN',
-      rate: 0.85,
-    });
+    // Ses seviyesi kullanıcı ayarından gelir (services/speechService.js).
+    speakHanzi(word.hanzi);
   };
 
   // Karta tıklandığında: Doğruysa sağa, yanlışsa sola kay

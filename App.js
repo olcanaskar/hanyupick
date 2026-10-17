@@ -11,6 +11,7 @@ import {
   markWordIdMigrationsApplied,
 } from './services/wordIdMigrations';
 import { mergeWordStatsIds, removeWordStatsByIds } from './services/statsManager';
+import { getSettings } from './services/settingsService';
 import HomeScreen from './screens/HomeScreen';
 import QuizScreen from './screens/QuizScreen';
 import VocabularyScreen from './screens/VocabularyScreen';
@@ -88,6 +89,13 @@ export default function App() {
     };
 
     loadReviewPool();
+  }, []);
+
+  // Ayarları açılışta bir kez oku: ses seviyesi ve titreşim `getCachedSettings()`
+  // ile SENKRON okunduğu için önbellek ilk sorudan önce dolu olmalı
+  // (bkz. services/settingsService.js).
+  useEffect(() => {
+    getSettings();
   }, []);
 
   // 2. reviewPool değiştikçe diske kaydet

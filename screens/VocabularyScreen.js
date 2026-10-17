@@ -10,10 +10,10 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Speech from 'expo-speech';
 import FloatingBackground from '../components/FloatingBackground';
 import HandwritingModal from '../components/HandwritingModal';
 import { getCustomDecks } from '../services/importService';
+import { speakHanzi } from '../services/speechService';
 
 // HSK seviye listesi ve kelime havuzları tek kaynaktan (Faz 3.1)
 import { LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
@@ -96,16 +96,8 @@ export default function VocabularyScreen({ navigation }) {
     });
   }, [allWordsPool, searchQuery, selectedCategory]);
 
-  // Çince Seslendirme (TTS)
-  const speakHanzi = (hanzi) => {
-    Speech.stop();
-    Speech.speak(hanzi, {
-      language: 'zh-CN',
-      pitch: 1.0,
-      rate: 0.85,
-    });
-  };
-
+  // Çince seslendirme tek servisten (services/speechService.js) — ses seviyesi
+  // kullanıcı ayarından gelir.
   const renderWordItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardMain}>

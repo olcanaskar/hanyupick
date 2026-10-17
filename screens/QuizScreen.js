@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { StyleSheet, View, Text, StatusBar, ScrollView, DeviceEventEmitter } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import * as Speech from 'expo-speech';
 
 import { recordAnswer } from '../services/statsManager';
 import { CUSTOM_ID_PREFIX, getCustomDecks, isCustomDeckLevel } from '../services/importService';
@@ -27,6 +26,7 @@ import {
   resolveReviewWord,
 } from '../services/reviewPool';
 import { DEFAULT_MODE, getAnswerType } from '../services/modes';
+import { warmUpSpeech } from '../services/speechService';
 
 /**
  * @param {{
@@ -154,10 +154,9 @@ export default function QuizScreen({
     setQuestionSeq((prev) => prev + 1);
   }, [level, mode, setAnswered]);
 
-  // Ses motorunu arka planda önceden ısıtma (Warm-up)
+  // Ses motorunu arka planda önceden ısıtma (Warm-up) — tek servis üzerinden.
   useEffect(() => {
-    Speech.getAvailableVoicesAsync().catch(() => {});
-    Speech.speak(' ', { language: 'zh-CN', volume: 0 });
+    warmUpSpeech();
   }, []);
 
   // Seviye veya mod değiştiğinde yeni soru üret
