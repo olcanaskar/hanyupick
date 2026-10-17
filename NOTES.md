@@ -1,9 +1,11 @@
-# NOTES — ChineseQuizApp Geliştirme Notları
+# NOTES — HanyuPick Geliştirme Notları
 
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 16 — HanyuPick adı, mağaza kimlikleri ve EAS Build yapılandırması** (`d92efe6`: `app.json` — görünen ad `ChineseQuizApp` → **`HanyuPick`**, slug → `hanyupick`, `android.package` + `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`** · `bf3e7a2`: **`eas.json`** — `preview` (internal dağıtım → paylaşılabilir **APK**) ve `production` (`autoIncrement` + uzaktan sürüm kaynağı) profilleri, ilk Play yüklemesi internal track'e, `development` profili bilinçli olarak yok · `972280c`: **EAS projesi bağlandı** — `@olcanaskar/hanyupick`, `app.json`'da `owner` + `extra.eas.projectId`). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo-doctor` 20/21, `expo config` kimlikleri çözüyor. **⏳ cihazda doğrulanmadı** — ad/paket/ikon gibi native alanlar yalnızca bir EAS build'inde görünür; kayıt §20.
+> **İsimler:** uygulama **HanyuPick** · git deposu **`olcanasqar/hanyupick`** · EAS projesi **`@olcanaskar/hanyupick`** (Expo hesabı bir harf farklı: `olcanaskar`) · **yerel klasör hâlâ `C:\Projects\App\ChineseQuizApp`** (arşiv adları klasörden gelir).
+
+Son güncelleme: **Faz 16 — HanyuPick adı, mağaza kimlikleri, EAS yapılandırması ve depo taşıma** (`d92efe6`: `app.json` — görünen ad `ChineseQuizApp` → **`HanyuPick`**, slug → `hanyupick`, `android.package` + `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`** · `bf3e7a2`: **`eas.json`** — `preview` (internal dağıtım → paylaşılabilir **APK**) ve `production` (`autoIncrement` + uzaktan sürüm kaynağı) profilleri, ilk Play yüklemesi internal track'e, `development` profili bilinçli olarak yok · `972280c`: **EAS projesi bağlandı** — `@olcanaskar/hanyupick`, `app.json`'da `owner` + `extra.eas.projectId` · `12721ef`: **GitHub deposu `olcanasqar/ChineseQuizApp` → `olcanasqar/hanyupick`**, `SettingsModal`'ın bağlantısı + `package.json` adı güncellendi). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo-doctor` 20/21, `expo config` kimlikleri çözüyor. **⏳ cihazda doğrulanmadı** — ad/paket/ikon gibi native alanlar yalnızca bir EAS build'inde görünür; kayıt §20.
 
 Önceki faz: **Faz 15 — uygulama ikonu: varsayılan Expo ikonları yerine kırmızı 汉 tasarımı** (`6ba9312`: `assets/` içindeki 5 PNG yeniden üretildi — 1024×1024 kırmızı köşegen geçiş (#DC2626 → #991B1B) üzerine krem (#FBF5EB) **汉**, adaptive icon katmanları + yuvarlatılmış favicon; `tools/generate-icons.py` ikonların tek üreticisi (Python + Pillow, Microsoft YaHei Bold, 4× supersampling) · `app.json`: `adaptiveIcon.backgroundColor` `#E6F4FE` → `#B91C1C`). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata. **⏳ cihazda doğrulanmadı** — Expo Go uygulama ikonunu göstermez, doğrulama bir development/EAS build gerektirir; kayıt §19.
 
@@ -17,7 +19,7 @@ Daha eski faz: **Faz 12 — Home kaydırmasız, tüm ekran/pop-up'lar kırmızı
 
 ## 1. Proje özeti
 
-HSK 1–6 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması — **görünen ad: `HanyuPick`** (paket kimliği `io.github.olcanasqar.hanyupick`, Faz 16, §20; git deposu/klasörü `ChineseQuizApp` adında kaldı — ad yalnızca ikonun altında görünür).
+HSK 1–6 Çince kelime kartlarıyla çalışan Expo/React Native mobil uygulaması — **adı: `HanyuPick`** (paket kimliği `io.github.olcanasqar.hanyupick`, Faz 16, §20; git deposu da **`olcanasqar/hanyupick`**, ama **yerel klasör hâlâ `C:\Projects\App\ChineseQuizApp`**).
 **5.000 kelimelik** sabit kütüphane (id 1–5000, boşluk yok; **HSK 1–6 resmî Hanban 2012 listeleri** — §10, §9 ve §8), 6 soru yönü, yanlışları tekrar etme (Review),
 JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatistik ekranı, ayarlar pop-up'ı (titreşim / ses seviyesi / ilerlemeyi sıfırla / GitHub).
 
@@ -51,7 +53,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
     `$env:Path += ";C:\Program Files\Git\cmd"`
 - Proje başlangıçta **git deposu değildi**; `git init -b main` ile başlatıldı.
 - Git kimliği: `Olcan Askar` / `aabdullaholcan@gmail.com` (global + repo-local).
-- **Remote (uzak depo) VAR:** `https://github.com/olcanasqar/ChineseQuizApp.git` (private). Kimlik: HTTPS + Git Credential Manager (`credential.helper=manager`) — anahtar/token yönetimi yok. Push: `git push origin main`; etiket için `git push origin known-good`. **Normalde bunu hook otomatik yapar (aşağıya bak).**
+- **Remote (uzak depo) VAR:** `https://github.com/olcanasqar/hanyupick.git` (private; **Faz 16'da `olcanasqar/ChineseQuizApp` → `olcanasqar/hanyupick` olarak yeniden adlandırıldı**, eski adres GitHub tarafından yönlendirilir; yerel `origin` yeni adrese çevrildi). Kimlik: HTTPS + Git Credential Manager (`credential.helper=manager`) — anahtar/token yönetimi yok. Push: `git push origin main`; etiket için `git push origin known-good`. **Normalde bunu hook otomatik yapar (aşağıya bak).**
   - **Geçmiş yeniden yazıldı** (2026-10-15, `git filter-branch --env-filter`): ilk 19 commit'in `developer@localhost` e-postası `aabdullaholcan@gmail.com` yapıldı → **20/20 commit** artık GitHub hesabına bağlı. GitHub'ın dokümanına göre `@localhost` gibi generic adresler hesaba **eklenemez**, bu yüzden tek çözüm buydu.
     - Kanıt: rewrite öncesi/sonrası **tree hash birebir aynı** (`8ac1a016…`) → dosya içeriği değişmedi; 20 commit mesajı da korundu; `npm test` 60/60 yeşil.
     - Yan etki: **tüm commit hash'leri değişti** (bkz. §3), `known-good` yeni karşılığına taşındı, uzak tarafa **force push** gerekti.
@@ -62,7 +64,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
   - Tek seferlik atlama: `SKIP_AUTOPUSH=1 git commit -m "..."` · kalıcı kaldırma: `rm .git/hooks/post-commit`.
   - **Elle `git push` hâlâ gerekir:** (1) `amend` / `rebase` / geçmiş yeniden yazımı → hook çalışmaz *ve* `main` için force gerekir, (2) çevrimdışı kalınan commit'ler (internet gelince `git push origin main`), (3) hook kaldırılmışsa.
   - Doğrulandı (2026-10-15): commit sonrası uzak gerçekten güncellendi (`origin/main` = yerel); `known-good` hem ileri hem geri taşınıp senkronlandı; `SKIP_AUTOPUSH=1` hook'u sessizce atlıyor.
-- **Yerel arşiv yedek:** `C:\Projects\App\` altında zaman damgalı `ChineseQuizApp-backup-*.tar.gz` (en yenisini kullan; **kural: tek arşiv tutulur, yeni alınınca eskisi silinir**). İçerik: `.git` + `known-good` dahil; `node_modules`/`android`/`.expo` hariç. Doğrulama: açıp `git log -1`, `git tag`, `git status` → commit/etiket HEAD ile aynı ve çalışma alanı temiz olmalı.
+- **Yerel arşiv yedek:** `C:\Projects\App\` altında zaman damgalı `ChineseQuizApp-backup-*.tar.gz` (ad **klasörden** gelir; klasör hâlâ `ChineseQuizApp` — en yenisini kullan; **kural: tek arşiv tutulur, yeni alınınca eskisi silinir**). İçerik: `.git` + `known-good` dahil; `node_modules`/`android`/`.expo` hariç. Doğrulama: açıp `git log -1`, `git tag`, `git status` → commit/etiket HEAD ile aynı ve çalışma alanı temiz olmalı.
   - Yeni yedek almak için:
     `tar -czf C:\Projects\App\ChineseQuizApp-backup-<tarih>.tar.gz -C C:\Projects\App --exclude=ChineseQuizApp/node_modules --exclude=ChineseQuizApp/android --exclude=ChineseQuizApp/.expo ChineseQuizApp`
   - **Uyarı:** `C:\Projects\App\backup\` klasöründeki eski elle kopya **bozuk ve eksik** (`data\hsk5.json` 0 bayt, `hsk5_examples.js` yok). Yedek sanılıp güvenilmemeli.
@@ -122,7 +124,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 16 (HanyuPick adı + mağaza kimlikleri + `eas.json`) commit'leri:** `d92efe6` (`app.json`: ad/slug + `android.package`/`ios.bundleIdentifier`) · `bf3e7a2` (`eas.json`) · `972280c` (**EAS projesi bağlandı**: `app.json`'a `owner` + `extra.eas.projectId`, `@olcanaskar/hanyupick`) — **⏳ cihaz doğrulaması bekliyor** (native alanlar yalnızca EAS build'inde görünür; bkz. §20, §16).
+- **Faz 16 (HanyuPick adı + mağaza kimlikleri + `eas.json` + depo taşıma) commit'leri:** `d92efe6` (`app.json`: ad/slug + `android.package`/`ios.bundleIdentifier`) · `bf3e7a2` (`eas.json`) · `972280c` (**EAS projesi bağlandı**: `app.json`'a `owner` + `extra.eas.projectId`, `@olcanaskar/hanyupick`) · `12721ef` (**GitHub deposu yeniden adlandırıldı**: `SettingsModal` `REPOSITORY_URL` + `package.json`/`package-lock.json` adı) — **⏳ cihaz doğrulaması bekliyor** (native alanlar yalnızca EAS build'inde görünür; bkz. §20, §16).
 - **Faz 15 (uygulama ikonu) commit'i:** `6ba9312` (`assets/*.png` + `tools/generate-icons.py` + `app.json`) — **⏳ cihaz doğrulaması bekliyor** (Expo Go uygulama ikonunu göstermez; bkz. §19, §16).
 - **Faz 14 (İstatistik pop-up'ı: temiz açılış + sığan takvim balonu) commit'leri:** `f5176c7` + `19b097c` (`components/StatsModal.js`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §18, §16).
 - **Faz 13 (hsk1–4'te 6 kaymış örnek düzeltmesi + `expo` 57.0.30) commit'leri:** `5146c40` (`data/examples/hsk1_examples.js`, `hsk3_examples.js`, `hsk4_examples.js` + `__tests__/exampleService.test.js`) · `1692806` (`package.json` + `package-lock.json`: `expo` `~57.0.30`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §17, §16).
@@ -591,7 +593,7 @@ Her maddeyi **ayrı commit** olarak yap.
   - `StatsModal`'da seviye çubukları ve ısı takvimi bilinçli olarak tek renk değil **rampadır** (HSK 1→6 ve az→çok koyulaşır); özel desteler rampanın dışında `#2C3E50` alır. Heat eşikleri `getHeatColor()` + `HEAT_COLORS` içinde **iki yerde** duruyor — değiştirirken ikisini birlikte güncelle.
 - **GitHub logosu elle çizilir (Faz 12):** `components/SettingsModal.js`'teki `GitHubMark` bileşeni resmi "mark-github" (octicon) yolunu `react-native-svg` ile çizer — ikon fontu/emoji yok, yeni bağımlılık yok. `react-native-svg` zaten `HandwritingModal` için kuruluydu (Expo Go'da hazır gelir); ikon dekoratif olduğu için erişilebilirlik etiketi butonun kendisindedir.
 - **`npx expo-doctor` artık 21/21 DEĞİL — Faz 13'ten sonra 20/21.** Tek başarısız kontrol uygulama kodundan bağımsızdır: `package.json`'daki `tsc` script'i `node_modules/.bin` ile isim çakışıyor (uzun süredir var, dokümandaki "21/21" notu bu yüzden yanıltıcıydı; `npm run tsc` sorunsuz çalışır). ~~**(b)** `expo` patch sürümü **57.0.29** ↔ beklenen **`~57.0.30`**~~ → **ÇÖZÜLDÜ (Faz 13, `1692806`)**: `npx expo install --fix` ile `expo` **`~57.0.30`**'a yükseltildi (tek değişen paket). Bu bağımlılık değişikliği **✅ cihazda doğrulandı** (Faz 13, 2026-10-17; §17).
-- **Uygulama adı ve paket kimlikleri sabitlendi (Faz 16, §20):** görünen ad **`HanyuPick`**, slug `hanyupick`, `android.package` = `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`**. ⚠️ **Paket adı mağazaya ilk yayından sonra değiştirilemez** (değiştirmek yeni bir uygulama demektir); o yüzden build yokken sabitlendi. Git deposu/klasör adı `ChineseQuizApp` olarak kaldı — `components/SettingsModal.js`'teki `REPOSITORY_URL` **depoyu** gösterir, uygulama adını değil.
+- **Uygulama adı ve paket kimlikleri sabitlendi (Faz 16, §20):** görünen ad **`HanyuPick`**, slug `hanyupick`, `android.package` = `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`**. ⚠️ **Paket adı mağazaya ilk yayından sonra değiştirilemez** (değiştirmek yeni bir uygulama demektir); o yüzden build yokken sabitlendi. Git deposu da **`olcanasqar/hanyupick`** oldu (Faz 16, `12721ef`) ve `components/SettingsModal.js`'teki `REPOSITORY_URL` yeni adresi gösterir. Değişmeyen tek şey **yerel klasör adıdır** (`C:\Projects\App\ChineseQuizApp`) — yedek arşivleri bu yüzden hâlâ `ChineseQuizApp-backup-*.tar.gz`.
 - **`eas.json` VAR (Faz 16, §20):** `preview` (internal dağıtım → paylaşılabilir **APK**; Expo Go'nun göstermediği ikonu/adı telefonda görmenin en kısa yolu) ve `production` (mağaza + `autoIncrement`) profilleri. **`development` profili bilinçli olarak YOK**: `developmentClient: true` `expo-dev-client` bağımlılığını şart koşar ve o kurulmadı. **EAS Update (`expo-updates`) de yok** — OTA düzeltme göndermek istenirse kurulur, ama ilk kurulum yine yeni bir build gerektirir. **EAS projesi bağlandı** (Faz 16, `972280c`): `@olcanaskar/hanyupick`, ID `ea29583b-1b9a-43c1-8d61-6915c3745c27`; `app.json`'daki `owner` + `extra.eas.projectId` **CLI'nin yazdığı alanlardır** (elle düzenlenmez; yeniden bağlamak için `npx eas-cli@latest init`). Dikkat: **Expo hesabı `olcanaskar`, GitHub hesabı `olcanasqar`** — bir harf farklı; paket adı GitHub'ı izler.
 - **Uzak yedek (remote) KURULDU** — `origin` = GitHub private repo (bkz. §2). Geçmiş artık tek diskte değil; ama **düzenli `git push` unutulmamalı** (yerel commit'ler otomatik gitmez).
 - **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
@@ -781,7 +783,7 @@ Kullanıcı isteği: *"uygulamada hâlâ varsayılan uygulama ikonu kullanılıy
 
 ---
 
-## 20. Faz 16 — HanyuPick adı, mağaza kimlikleri ve EAS Build yapılandırması
+## 20. Faz 16 — HanyuPick adı, mağaza kimlikleri, EAS Build yapılandırması ve depo adı
 
 Kullanıcı EAS Build'in başka ne işe yaradığını sordu; anlatım sonrası istedi: *"tamamdır bunu da halledelim, işimize yarayacak bir şey gibi duruyor"*.
 
@@ -796,7 +798,15 @@ Kullanıcı EAS Build'in başka ne işe yaradığını sordu; anlatım sonrası 
 - Ad kullanıcıdan geldi: **汉语 (Hànyǔ = Çince) + pick** — "doğru şıkkı seç".
 - Paket adı GitHub hesabının (`olcanasqar`) **ters-DNS** biçimidir (`io.github.olcanasqar` ← `olcanasqar.github.io`): GitHub kullanıcı adları global olarak tek olduğu için bu ad gerçekten benzersizdir (alan adı sahibi olmayanlar için standart yöntem).
 - ⚠️ **Paket adı ilk mağaza yayınından sonra değiştirilemez** (yeni paket adı = yeni uygulama; ilerleme/yorumlar taşınmaz). Bu yüzden hiç build yokken sabitlendi — **build/publish öncesi hâlâ değiştirilebilir**.
-- **Git deposu/klasör adı değişmedi** (`ChineseQuizApp`): Settings'teki GitHub bağlantısı **depoyu** gösterir, uygulama adını değil.
+- **Git deposu da yeni isme taşındı** — adres değişikliği ve uygulama tarafındaki yansıması için bir sonraki başlığa bakın.
+
+### GitHub deposu yeniden adlandırıldı (`12721ef`)
+
+- Depo, **mevcut git kimliğiyle GitHub REST API** üzerinden `olcanasqar/ChineseQuizApp` → **`olcanasqar/hanyupick`** olarak yeniden adlandırıldı (`gh` CLI makinede kurulu değil; token hiçbir çıktıya basılmadı). Private kaldı, varsayılan dal `main`.
+- Açıklama: **"HanyuPick - HSK 1-6 Chinese vocabulary quiz app built with Expo and React Native"**; topics: `expo`, `react-native`, `chinese`, `hsk`, `vocabulary`, `language-learning`, `quiz`.
+- GitHub eski adresi **yönlendirir** (eski linkler çalışmaya devam eder), ama yerel `origin` yine de yeni adrese çevrildi: `git remote set-url origin https://github.com/olcanasqar/hanyupick.git` (hook'un push'u yeni adresle doğrulandı).
+- Uygulama tarafı: `components/SettingsModal.js` `REPOSITORY_URL` → yeni adres; `package.json` + `package-lock.json` adı → `hanyupick` (npm adı yalnızca kozmetik: `npm test` çıktısında görünür, davranışı etkilemez).
+- **Yerel klasör adı DEĞİŞMEDİ** (`C:\Projects\App\ChineseQuizApp`): Windows, çalışan bir terminalin içinde durduğu klasörün adlandırılmasına izin vermez; ayrıca klasör adı tüm yedek komutunu ve doküman yollarını etkiler. Kullanıcı isterse (terminal klasörden çıktıktan sonra) ayrı bir iş olarak yapılabilir — o zaman yedek arşiv adı da `hanyupick-backup-*.tar.gz` olur.
 
 ### `eas.json` (`bf3e7a2`)
 
@@ -837,4 +847,4 @@ APK build'i sırasında "Generate a new Android Keystore?" sorusuna **evet** den
 4. Bitince: doğrula (`npm test`, `npm run lint`, `npm run tsc`, varsa Babel parse) → commit → bu dosyadaki ilgili kutuyu işaretle ve "Son güncelleme" satırını değiştir.
 5. Bir şey ters giderse: `git reset --hard known-good` (veya ilgili commit'i `git revert`).
 
-**`known-good` durumu:** Faz 13 + Faz 14 doğrulama commit'i (`docs: mark Faz 13 and Faz 14 as device-verified`, 2026-10-17). Önceki değer `5d0b991` (Faz 11 + Faz 12 doğrulaması) idi. Tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-2026-10-17_1652.tar.gz` olarak tazelendi, eskisi (`…_1600.tar.gz`) silindi; yalnızca `known-good` etiketi değiştiğinde bu satır güncellenir — ayrıntı için §16. Faz 15 (ikon, `6ba9312`) ve Faz 16 (ad/paket kimlikleri/`eas.json`, `d92efe6` + `bf3e7a2`) commit'leri doğrulanmadı: Expo Go ne ikonu ne uygulama adını gösterir, doğrulama bir **EAS build**'i gerektirir (§19, §20) — etiket onların öncesinde duruyor. **İlk EAS build'i yapıldığında** bu üç değişiklik birlikte doğrulanıp `known-good` ilerletilebilir.
+**`known-good` durumu:** Faz 13 + Faz 14 doğrulama commit'i (`docs: mark Faz 13 and Faz 14 as device-verified`, 2026-10-17). Önceki değer `5d0b991` (Faz 11 + Faz 12 doğrulaması) idi. Tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-2026-10-17_1652.tar.gz` olarak tazelendi, eskisi (`…_1600.tar.gz`) silindi; yalnızca `known-good` etiketi değiştiğinde bu satır güncellenir — ayrıntı için §16. Faz 15 (ikon, `6ba9312`) ve Faz 16 (ad/paket kimlikleri/`eas.json`/depo adı, `d92efe6` + `bf3e7a2` + `972280c` + `12721ef`) commit'leri doğrulanmadı: Expo Go ne ikonu ne uygulama adını gösterir, doğrulama bir **EAS build**'i gerektirir (§19, §20) — etiket onların öncesinde duruyor. **İlk EAS build'i yapıldığında** bu değişiklikler birlikte doğrulanıp `known-good` ilerletilebilir (depo taşıma ve `SettingsModal` bağlantısı JS tarafında olduğu için o build'de otomatik olarak doğru gelir).

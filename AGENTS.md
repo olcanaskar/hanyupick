@@ -1,6 +1,8 @@
-# ChineseQuizApp — agent guide
+# HanyuPick — agent guide
 
 An Expo/React Native app (**SDK 57**) for studying HSK 1-6 vocabulary: a fixed library of 5,000 words (ids 1-5000, six levels; **all six levels follow the official Hanban 2012 lists** — 150 + 150 + 300 + 600 + 1300 + 2500 words, see `NOTES.md` §10, §9, §8), 6 quiz directions, a mistake-review pool, custom decks imported from JSON, vocabulary search with handwriting input, a stats screen, and a settings pop-up (vibration, speech volume, reset progress, GitHub link).
+
+Names, because they differ on purpose: the app is **HanyuPick** (`app.json` `name`/`slug`, store identifiers `io.github.olcanasqar.hanyupick`), the git repository is **`olcanasqar/hanyupick`**, the Expo/EAS project is **`@olcanaskar/hanyupick`** (mind the one-letter account difference), and the **local working folder is still `C:\Projects\App\ChineseQuizApp`** — folder renames only happen when the user asks.
 
 Plain **JavaScript** — JSX lives in `.js` files; there is no TypeScript source, but `tsconfig.json` type-checks the JS itself (`checkJs`). Navigation is **React Navigation (Stack)**, not Expo Router.
 
@@ -113,7 +115,7 @@ Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submi
 - **There is no `development` profile on purpose:** `developmentClient: true` requires the `expo-dev-client` dependency, which is not installed (the test loop is still Expo Go). Add the dependency and the profile together when a native module needs a dev build.
 - `expo-updates` is **not** installed, so no EAS Update and no `channel` fields yet.
 - The EAS project is linked as **`@olcanaskar/hanyupick`** (`eas init`, Faz 16): `owner` and `extra.eas.projectId` in `app.json` are **CLI-managed** — re-link with `npx eas-cli@latest init`, never by hand. `eas build:configure` is not needed because `eas.json`, `android.package` and `ios.bundleIdentifier` already exist. Mind the one-letter difference between the Expo account (`olcanaskar`) and the GitHub handle (`olcanasqar`).
-- **App identity (Faz 16):** the display name and slug are `HanyuPick` / `hanyupick` and both store identifiers are `io.github.olcanasqar.hanyupick`. That identifier is **permanent once the app is published** — changing it means publishing a different app. The git repository keeps the name `ChineseQuizApp`, so `SettingsModal`'s `REPOSITORY_URL` (the repo) and `app.json`'s `name` (the app) intentionally differ.
+- **App identity (Faz 16):** the display name and slug are `HanyuPick` / `hanyupick` and both store identifiers are `io.github.olcanasqar.hanyupick`. That identifier is **permanent once the app is published** — changing it means publishing a different app. The git repository was renamed to `olcanasqar/hanyupick` in the same phase (and `components/SettingsModal.js`' `REPOSITORY_URL` follows it), so repo name and app name now agree; only the local folder still says `ChineseQuizApp`.
 - The display name, the package identifiers and the icon are **native values**: Expo Go shows its own name and icon, so none of them can be verified there — only in an EAS/development build (NOTES §19, §20).
 
 ## Workflow
@@ -122,5 +124,5 @@ Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submi
 - The `known-good` tag marks the last verified state. Advance it only once `npm test` / `npm run lint` / `npm run tsc` are green and the user has confirmed the device check; roll back with `git reset --hard known-good`.
 - `.git/hooks/post-commit` (local only) pushes `main` and the `known-good` tag after every commit.
 - `NOTES.md` is the handoff document — read it first, update it when a phase lands.
-- Keep exactly one `ChineseQuizApp-backup-*.tar.gz` in `C:\Projects\App`: delete the older archive when taking a new one.
+- Keep exactly one `ChineseQuizApp-backup-*.tar.gz` in `C:\Projects\App`: delete the older archive when taking a new one. (The archive is named after the local folder, which is still `ChineseQuizApp` even though the app and the repo are `hanyupick`.)
 - `eslint.config.js` deliberately relaxes three rules, with the reasons inline: `react-hooks/refs` is off (the code uses React Native's `Animated` ref API, which the rule cannot model), and `react-hooks/set-state-in-effect` / `react-hooks/exhaustive-deps` are warnings rather than errors. `npm run lint` is expected to stay at **0 errors**.
