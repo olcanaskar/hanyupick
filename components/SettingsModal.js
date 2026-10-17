@@ -27,6 +27,7 @@ import {
   View,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
+import * as Clipboard from 'expo-clipboard';
 import Svg, { Path } from 'react-native-svg';
 
 import {
@@ -181,16 +182,27 @@ export default function SettingsModal({ visible, onClose }) {
   };
 
   const openRepository = async () => {
+    // ÖN KONTROL YOK: `Linking.canOpenURL()` Android 11+ (SDK 30) paket görünürlüğü
+    // kurallarında, uygulamanın manifest'i `<queries>` ile tarayıcıyı bildirmediği
+    // sürece `false` döner. Expo Go'nun manifest'i bildirdiği için orada çalışır,
+    // standalone APK'da çalışmazdı (kullanıcı bildirimi, Faz 17 — NOTES §21).
+    // `Linking.openURL()` niyeti doğrudan başlattığı için bu filtreden etkilenmez;
+    // bu yüzden URL'yi doğrudan açıyoruz, başarısız olursa adresi panoya kopyalayıp
+    // kullanıcının tarayıcıya yapıştırabilmesini sağlıyoruz.
     try {
-      const supported = await Linking.canOpenURL(REPOSITORY_URL);
-      if (!supported) {
-        Alert.alert('Could not open link', 'No app on this device can open the repository page.');
-        return;
-      }
       await Linking.openURL(REPOSITORY_URL);
     } catch (error) {
       console.error('Bağlantı açılamadı:', error);
-      Alert.alert('Could not open link', 'Please try again later.');
+      try {
+        await Clipboard.setStringAsync(REPOSITORY_URL);
+        Alert.alert(
+          'Could not open link',
+          `No app could open the repository page, so the address was copied to your clipboard:\n\n${REPOSITORY_URL}`
+        );
+      } catch (copyError) {
+        console.error('Adres kopyalanamadı:', copyError);
+        Alert.alert('Could not open link', `Open this address in a browser:\n\n${REPOSITORY_URL}`);
+      }
     }
   };
 
