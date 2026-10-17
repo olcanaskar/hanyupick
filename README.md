@@ -4,7 +4,7 @@
 
 # HanyuPick
 
-**Learn the 5,000 words of the official HSK 1–6 lists — one quiz at a time.**
+**Learn the 5,000 words of the official HSK 1–6 lists**
 
 An offline-first flashcard app for Chinese vocabulary, with a mistake pool that keeps asking only
 what you got wrong.
