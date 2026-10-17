@@ -366,20 +366,22 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
+  // Doğru/yanlış renkleri ScoreBoard ile BİREBİR aynıdır (tek palet, Faz 11):
+  // doğru = yeşim (#ECFDF5/#059669/#047857), yanlış = mühür kırmızısı (#FEF2F2/#DC2626/#B91C1C).
   correctButton: {
-    backgroundColor: '#E8F5E9',
-    borderColor: '#2E7D32',
+    backgroundColor: '#ECFDF5',
+    borderColor: '#059669',
   },
   correctText: {
-    color: '#1B5E20',
+    color: '#047857',
     fontWeight: '700',
   },
   wrongButton: {
-    backgroundColor: '#FFEBEE',
-    borderColor: '#D32F2F',
+    backgroundColor: '#FEF2F2',
+    borderColor: '#DC2626',
   },
   wrongText: {
-    color: '#C62828',
+    color: '#B91C1C',
     fontWeight: '700',
   },
   dimmedButton: {
@@ -388,7 +390,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   dimmedText: {
-    color: '#9E9E9E',
+    color: '#BDC3C7',
   },
   footerArea: {
     minHeight: 28,
@@ -399,6 +401,6 @@ const styles = StyleSheet.create({
   continueText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#888',
+    color: '#7F8C8D',
   },
 });

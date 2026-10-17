@@ -25,8 +25,8 @@ export default function ExampleBox({ example }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFBEB', // Sıcak, açık altın/krem zemin
-    borderColor: '#FCD34D',     // Yumuşak altın sarısı kenarlık
+    backgroundColor: '#FEF2F2', // Faz 11: kart içi kutu da uygulamanın kırmızı paletinde
+    borderColor: '#FCA5A5',
     borderWidth: 1.5,
     borderRadius: 16,
     padding: 14,
@@ -39,24 +39,24 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#B45309',            // Asil bronz/altın başlık
+    color: '#991B1B',
     letterSpacing: 1.1,
   },
   hanziText: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#2C3E50',
     marginBottom: 2,
   },
   pinyinText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#D97706',            // Altın/Kehribar Pinyin vurgusu
+    color: '#DC2626',
     marginBottom: 4,
   },
   meaningText: {
     fontSize: 13,
-    color: '#64748B',
+    color: '#7F8C8D',
     fontStyle: 'italic',
   },
 });

@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   subText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#B45309',
+    color: '#B91C1C',
     marginBottom: 12,
     textAlign: 'center',
     letterSpacing: 0.5,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
   },
   emptySubtitle: {
     fontSize: 15,
-    color: '#78350F',
+    color: '#7F1D1D',
     textAlign: 'center',
     lineHeight: 22,
   },
