@@ -37,19 +37,20 @@ There is no iOS build yet; on iPhone the app has to be built from source — see
 <table>
   <tr>
     <td align="center" width="25%"><img src="docs/screenshots/home.jpg" width="200" alt="Home screen with the level picker and the review, decks, vocabulary and statistics cards" /><br /><sub><b>Home</b> — level, review pool, decks, search, stats</sub></td>
-    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-pinyin.jpg" width="200" alt="Quiz asking for the correct pinyin of a character" /><br /><sub><b>汉字 → Pinyin</b></sub></td>
-    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-english.jpg" width="200" alt="Quiz asking for the correct English meaning of a character" /><br /><sub><b>汉字 → English</b></sub></td>
-    <td align="center" width="25%"><img src="docs/screenshots/quiz-pinyin-to-english.jpg" width="200" alt="Quiz asking for the correct English meaning of a pinyin" /><br /><sub><b>Pinyin → English</b></sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-pinyin.jpg" width="200" alt="Quiz asking for the correct pinyin of a character" /><br /><sub><b>Hanzi → Pinyin</b></sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-pinyin-to-hanzi.jpg" width="200" alt="Quiz asking for the correct character of a pinyin" /><br /><sub><b>Pinyin → Hanzi</b></sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-english.jpg" width="200" alt="Quiz asking for the correct English meaning of a character" /><br /><sub><b>Hanzi → English</b></sub></td>
   </tr>
   <tr>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-english-to-hanzi.jpg" width="200" alt="Quiz asking for the correct character of an English meaning" /><br /><sub><b>English → Hanzi</b></sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-pinyin-to-english.jpg" width="200" alt="Quiz asking for the correct English meaning of a pinyin" /><br /><sub><b>Pinyin → English</b></sub></td>
+    <td align="center" width="25%"><img src="docs/screenshots/quiz-english-to-pinyin.jpg" width="200" alt="Quiz asking for the correct pinyin of an English meaning" /><br /><sub><b>English → Pinyin</b></sub></td>
     <td align="center" width="25%"><img src="docs/screenshots/vocabulary.jpg" width="200" alt="Vocabulary list with search bar, level filter chips and speaker buttons" /><br /><sub><b>Vocabulary</b> — 5,000 words, level filters, 🔊</sub></td>
+  </tr>
+  <tr>
     <td align="center" width="25%"><img src="docs/screenshots/handwriting.jpg" width="200" alt="Handwriting pad with the character 你 drawn by hand and five candidates" /><br /><sub><b>Handwriting</b> — look a word up by drawing it</sub></td>
     <td align="center" width="25%"><img src="docs/screenshots/statistics-mastery.jpg" width="200" alt="Statistics pop-up with the streak banner and the mastery bars for HSK 1-6" /><br /><sub><b>Statistics</b> — streak &amp; mastery</sub></td>
     <td align="center" width="25%"><img src="docs/screenshots/statistics-calendar.jpg" width="200" alt="Statistics pop-up with the seven-day strip, the activity calendar and the heat legend" /><br /><sub><b>Activity calendar</b> — practice history</sub></td>
-    <tr>
-    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-pinyin-answered.jpg" width="200" alt="Quiz answered, the correct pinyin highlighted in green" /><br /><sub><b>Hanzi → Pinyin</b> — answered</sub></td>
-    <td align="center" width="25%"><img src="docs/screenshots/quiz-hanzi-to-english-answered.jpg" width="200" alt="Quiz answered, the correct meaning highlighted in green" /><br /><sub><b>Hanzi → English</b> — answered</sub></td>
-    <td align="center" width="25%"><img src="docs/screenshots/quiz-pinyin-to-english-answered.jpg" width="200" alt="Quiz answered, the correct option highlighted in green" /><br /><sub><b>Pinyin → English</b> — answered</sub></td>
     <td align="center" width="25%"></td>
   </tr>
 </table>

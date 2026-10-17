@@ -1035,7 +1035,7 @@ Betik `.js`/JSX'e dokunmadığı için Babel parse gerekmedi; `npm test` (247) +
 
 **Commit'ler:** `10ac80c` (betik + 8 vitrin görseli + README/AGENTS/NOTES) · `3b0b797` (galeri uygulamaya girmez). CI **✅ success** (`10ac80c`, `3b0b797`).
 
-**2026-10-17 (ek):** 3 quiz-yanıt karesi daha eklendi — `quiz-hanzi-to-{pinyin,english}-answered` ve `quiz-pinyin-to-english-answered` (top-strip MSE ile eşleştirildi; aynı 3 modun "doğru cevap yeşil" durumu). README galeri tablosu 3. satıra çıktı; alttaki mockup/raw `<sub>` notu kaldırıldı (kullanıcı isteği). Betik `SCREENS` listesine 3 satır eklendi. CI yeşil. known-good bu commit'e (`267d384`) ilerletildi (docs-only; cihaz kontrolü etkilenmez) ve tek yedek arşivi tazelendi.
+**2026-10-17 (ek, düzeltme):** Kullanıcı "bu yeni 3 screenshot answered dosyaları değildi" dedi ve mod seçme ekranındaki **yön okunun farklı** olduğunu (kategori sekmeleri aynı ama iç mod forward/reverse farklı) açıkladı. Piksel kanıtıyla da doğrulandı: mod sekmeleri aynı kategoriyi gösteriyor, ama soru/options bölgesi mevcut 3 modun *ters* yönüne (pinyin→hanzi, english→hanzi, english→pinyin) ait. Dolayısıyla 3 yeni ekran **farklı modlar** (eksik 3 mod), "yanıtlanmış varyant" değil. Dosyalar yeniden adlandırıldı: `quiz-hanzi-to-{pinyin,english}-answered` → `quiz-{pinyin,english}-to-{hanzi,hanzi,pinyin}` (raw + showcase). README galeri tablosu yeniden düzenlendi: 6 mod sıralı (hanzi→pinyin, pinyin→hanzi, hanzi→english, english→hanzi, pinyin→english, english→pinyin) + home/vocabulary/handwriting/2 stats = 11 görsel. Betik `SCREENS` listesi güncellendi. CI yeşil. known-good bu commit'e ilerletildi (docs-only).
 
 ---
 
