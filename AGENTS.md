@@ -44,6 +44,7 @@ npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored
 | `data/` | `hsk1..6.json` (5.000 words, ids 1-5000 without gaps; all six levels = the official Hanban 2012 lists, in list order) + `examples/hsk*_examples.js` (keyed by word id; hsk1-4 1200/1200, hsk5 1300/1300, hsk6 2500/2500 — 5000/5000) |
 | `__tests__/` | jest tests (services only) |
 | `README.md`, `LICENSE`, `.github/workflows/ci.yml` | the public front page (English; its install path is the **APK on the latest GitHub release** — developer setup is a secondary section), the MIT license (© 2026 Olcan Askar) and the CI workflow that runs the three checks on every push and pull request |
+| `docs/screenshots/` | the README gallery images — real device screenshots sent by the user (not generated, not app assets; the icons and the splash live in `assets/` and come from the script) |
 | `tsconfig.json`, `eslint.config.js` | the `npm run tsc` and `npm run lint` configs |
 | `assets/` + `tools/generate-icons.py` | the app icons and the splash image, plus the script that generates them (Python + Pillow) — the PNGs are generated output, see the icon and splash rules under Rules |
 
