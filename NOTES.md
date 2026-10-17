@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 12 — Home kaydırmasız + quiz ekranı kırmızı tema** (`ccc7d11`: Home'un dış `ScrollView`'ı kaldırıldı — içerik zaten tek ekrana sığıyordu, sürüklenen ekran yanlış hissettiriyordu · `c8e7424`: quiz ekranının amber teması (mod sekmeleri, seviye menüsü, Review şeridi, "EXAMPLE SENTENCE" kutusu, ipucu ve boş-durum metinleri) uygulamanın **kırmızı paletine** çevrildi; `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı** yapıldı; **cihaz doğrulaması bekliyor ⏳** — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
+Son güncelleme: **Faz 12 — Home kaydırmasız, quiz + sözlük kırmızı temalı, gerçek GitHub ikonu** (`ccc7d11`: Home'un dış `ScrollView`'ı kaldırıldı — içerik zaten tek ekrana sığıyordu, sürüklenen ekran yanlış hissettiriyordu · `c8e7424`: quiz ekranının amber teması (mod sekmeleri, seviye menüsü, Review şeridi, "EXAMPLE SENTENCE" kutusu, ipucu ve boş-durum metinleri) uygulamanın **kırmızı paletine** çevrildi; `QuestionCard`'ın doğru/yanlış renkleri `ScoreBoard` ile **birebir aynı** yapıldı · `be8bf1a`: aynı kırmızı palet **sözlük ekranına** da uygulandı (arama kutusu, Draw butonu, seviye çipleri, kart etiketi, pinyin, 🔊) · `be870a9`: Ayarlar'daki GitHub butonunda 🐙 emojisi yerine **gerçek GitHub logosu** (`react-native-svg`, yeni bağımlılık yok); **cihaz doğrulaması bekliyor ⏳** — kayıt §15, kontrol listesi §16). **246 test yeşil**, lint 0 hata / 15 uyarı, `tsc` 0 hata, `expo export` hatasız.
 
 Önceki faz: **Faz 11 — Ayarlar pop-up'ı** (`54907fb` ayar servisi + testleri · `6379bed` ses tek noktaya · `d962454` titreşim kapısı · `7111834` ekran → `afe51c1` ile **pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, rota yok · `f6d4d99` reset'in `StatsModal`'dan taşınması · `8443912` servis testleri; cihaz doğrulaması **bekliyor ⏳** — kayıt §14). İçerik: **titreşim aç/kapa**, **sesli okuma seviyesi** (slider + "Test volume"), **ilerlemeyi sıfırla** (artık yalnız burada) ve **GitHub bağlantısı**; Home'daki ⚙️ İstatistikler gibi bir pop-up açar.
 
@@ -117,7 +117,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 12 (Home kaydırmasız + quiz kırmızı tema) commit'leri:** `ccc7d11` (Home'un dış `ScrollView`'ı → `View`) · `c8e7424` (quiz teması amber → kırmızı: `components/Header.js`, `components/ExampleBox.js`, `components/QuestionCard.js`, `screens/QuizScreen.js`) — **cihazda doğrulama bekliyor ⏳** (bkz. §15, §16).
+- **Faz 12 (Home kaydırmasız + kırmızı tema + GitHub ikonu) commit'leri:** `ccc7d11` (Home'un dış `ScrollView`'ı → `View`) · `c8e7424` (quiz teması amber → kırmızı: `components/Header.js`, `components/ExampleBox.js`, `components/QuestionCard.js`, `screens/QuizScreen.js`) · `be8bf1a` (sözlük teması amber → kırmızı: `screens/VocabularyScreen.js`) · `be870a9` (GitHub butonu: emoji → gerçek logo, `components/SettingsModal.js`) — **cihazda doğrulama bekliyor ⏳** (bkz. §15, §16).
 - **Faz 11 (Ayarlar pop-up'ı) commit'leri:** `54907fb` (`services/settingsService.js` + `__tests__/settingsService.test.js`) · `6379bed` (`services/speechService.js` + `QuestionCard`/`VocabularyScreen`/`QuizScreen` tek noktaya bağlandı + `App.js` açılışta `getSettings()`) · `d962454` (`services/hapticsService.js` + `QuizScreen` kapısı) · `7111834` (ayarlar ekranı + `@react-native-community/slider`) · `f6d4d99` (`StatsModal`'dan reset bölümünün kaldırılması) · `8443912` (`hapticsService`/`speechService` testleri) · `afe51c1` (**ekran → pop-up**: `components/SettingsModal.js`, `screens/SettingsScreen.js` silindi, `Settings` rotası kaldırıldı) — **cihazda doğrulama bekliyor ⏳** (bkz. §14, §16).
 - **Faz 10 (hsk6 örnek cümleleri, 2500/2500) commit'leri:** 18 batch commit'i (`a36c34b` id 2501–2801 → `37f9307` id 4886–5000; aradaki 9–17: `972bc2d`, `bf9e3ba`, `a035282`, `ee17fea`, `6d6d9f7`, `27d489a`, `bbab9a9`, `53dcfbe`, `b8ec101`) · `e195f8e` (hsk6 **2965** pinyin `uānwǔjié` → `duānwǔjié`) · `8ff35d1` (hsk5 **1774** pinyin `uándàn` → `yuándàn`) · `3ce3529` (`exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §13, §16).
 - **Faz 9 (hsk5 eksik örnekler + kaymış/pinyin düzeltmeleri) commit'i:** `b29682f` (638 yeni + 25 düzeltilmiş hsk5 örneği + `exampleService` testleri + `AGENTS.md` + `NOTES.md`) — **cihazda doğrulandı ✅** (2026-10-16; bkz. §12, §16).
@@ -533,13 +533,13 @@ Her maddeyi **ayrı commit** olarak yap.
 
 ---
 
-## 15. Faz 12 — Home kaydırmasız + quiz ekranı kırmızı tema
+## 15. Faz 12 — Home kaydırmasız, quiz + sözlük kırmızı temalı, gerçek GitHub ikonu
 
-**Başlangıç isteği (kullanıcı):** (1) "home ekranındaki her şey ekrana sığıyor zaten, orada ekranı kaydırabilmenin bir anlamı yok" · (2) "quiz ekranındaki renk teması da uygulamanın diğer bölümlerindeki kırmızı ve tonları olarak değişse daha iyi olabilir".
+**Başlangıç isteği (kullanıcı):** (1) "home ekranındaki her şey ekrana sığıyor zaten, orada ekranı kaydırabilmenin bir anlamı yok" · (2) "quiz ekranındaki renk teması da uygulamanın diğer bölümlerindeki kırmızı ve tonları olarak değişse daha iyi olabilir" · (3) "bu değişikliği vocabulary kısmı içinde yapmanı istiyorum" · (4) "settings kısmındaki github butonundaki emoji yerine asıl github icon'unu eklemeni istiyorum".
 
 **1. Home artık kaydırmıyor** (`ccc7d11`) — `screens/HomeScreen.js`'te dış `ScrollView` yerine düz `View style={styles.container}` kullanılır (`showsVerticalScrollIndicator` ve `bounces` yok). İçerik zaten tek ekrana sığıyordu; sürüklenip yerinden oynayan ekran yanlış hissettiriyordu. **Dikkat:** içerik artık kırpılır, kaydırılmaz — Home'a yeni kart eklenirse yükseklik gözetilmeli (seviye menüsündeki `ScrollView` yerinde duruyor, o liste hâlâ kaydırılabilir).
 
-**2. Quiz ekranı amber teması → uygulamanın kırmızı paleti** (`c8e7424`):
+**2. Quiz ekranı amber teması → uygulamanın kırmızı paleti** (`c8e7424`; aynı işlem sözlük için `be8bf1a`):
 
 | Dosya | Önce | Sonra |
 |---|---|---|
@@ -547,8 +547,11 @@ Her maddeyi **ayrı commit** olarak yap.
 | `screens/QuizScreen.js` | `#B45309` (ipucu satırı), `#78350F` (boş-durum alt metni) | `#B91C1C`, `#7F1D1D` |
 | `components/ExampleBox.js` (örnek cümle kutusu) | `#FFFBEB` · `#FCD34D` · `#B45309` · `#D97706` + slate metinler | `#FEF2F2` · `#FCA5A5` · `#991B1B` · `#DC2626` + `#2C3E50`/`#7F8C8D` |
 | `components/QuestionCard.js` (şık geri bildirimi) | Material: `#E8F5E9`/`#2E7D32`/`#1B5E20` (doğru), `#FFEBEE`/`#D32F2F`/`#C62828` (yanlış), `#9E9E9E`, `#888` | `ScoreBoard` ile **birebir aynı**: doğru `#ECFDF5`/`#059669`/`#047857`, yanlış `#FEF2F2`/`#DC2626`/`#B91C1C`, `#BDC3C7`, `#7F8C8D` |
+| `screens/VocabularyScreen.js` (arama kutusu, "Draw" butonu, seviye çipleri, kart etiketi, pinyin, 🔊 butonu) | amber: `#FCD34D` · `#B45309` · `#FEF3C7` · `#D97706` · `#FFFBEB` + Tailwind grileri (`#1F2937`, `#374151`, `#4B5563`, `#6B7280`, `#78716C`) | kırmızı: `#FCA5A5` · `#B91C1C` · `#991B1B` · `#FEF2F2` · `#DC2626` + uygulama grileri (`#2C3E50`, `#7F8C8D`; `#9CA3AF`/`#E2E8F0` zaten paletdeydi) |
 
-**Kural:** "doğru = yeşim (emerald), yanlış = mühür kırmızısı" renk çifti artık tek yerde tanımlı bir palettir; `QuestionCard` ile `ScoreBoard` **aynı** değerleri kullanmalıdır. Amber/altın tonları yalnızca Home'daki **Custom Word Decks** kartında kalır — quiz yüzeyinde (Header, QuestionCard, ExampleBox, QuizScreen) amber yoktur.
+**Kural:** "doğru = yeşim (emerald), yanlış = mühür kırmızısı" renk çifti artık tek yerde tanımlı bir palettir; `QuestionCard` ile `ScoreBoard` **aynı** değerleri kullanmalıdır. Amber/altın tonları yalnızca Home'daki **Custom Word Decks** kartında kalır — quiz yüzeyinde (Header, QuestionCard, ExampleBox, QuizScreen) ve sözlükte amber yoktur.
+
+**3. Ayarlar'daki GitHub butonu: emoji yerine gerçek logo** (`be870a9`) — `components/SettingsModal.js`'te 🐙 yerine GitHub'ın resmi "mark-github" (octicon) vektör yolu, `react-native-svg` ile çizilir (yeni bağımlılık YOK; `react-native-svg` zaten `HandwritingModal` için kurulu ve Expo Go'da hazır gelir). `GitHubMark` bileşeni tek renk `fill` alır (`#2C3E50`, buton metniyle aynı ton) ve dekoratiftir — erişilebilirlik etiketi butonun kendisindedir. Kullanılmayan `linkButtonIcon` stili silindi.
 
 **Doğrulama:** `npm test` **246 yeşil** · lint **0 hata / 15 uyarı** · `tsc` **0 hata** · değişen `.js` dosyaları Babel parse ✓.
 
@@ -558,13 +561,16 @@ Her maddeyi **ayrı commit** olarak yap.
 3. Doğru şık yeşil, yanlış şık kırmızı görünmeli; renkler üstteki Correct/Wrong rozetleriyle **aynı** olmalı.
 4. Cevap sonrası çıkan "EXAMPLE SENTENCE" kutusu kırmızı tonlu olmalı (eskiden krem/altın sarısıydı).
 5. Boş havuz / "All Clear!" durum ekranı okunaklı olmalı.
+6. Sözlüğe gir → arama kutusu kenarı, ✏️ Draw butonu, seçili seviye çipi, kart üstündeki seviye etiketi, pinyin ve 🔊 butonu **kırmızı** olmalı (amber kalmamalı); arama ve harfler okunaklı olmalı.
+7. Ayarlar → ABOUT bölümündeki GitHub butonunda **gerçek GitHub logosu** görünmeli (🐙 değil), metinle aynı koyu tonda ve ortalanmış durmalı.
 
 ---
 
 ## 16. Bilinen açık riskler / notlar
 
 - **Home artık KAYDIRMIYOR (Faz 12):** `screens/HomeScreen.js`'teki dış `ScrollView` düz bir `View`'dır; içerik ekrana sığmazsa **kırpılır**. Home'a yeni kart/bölüm eklerken yükseklik gözetilmeli. (Seviye seçim menüsündeki `ScrollView` duruyor — o liste hâlâ kaydırılabilir.)
-- **Quiz yüzeyinin paleti kırmızıdır (Faz 12):** `Header.js`, `QuestionCard.js`, `ExampleBox.js`, `QuizScreen.js` yalnızca kırmızı rampasını (`#991B1B`, `#DC2626`, `#B91C1C`, `#FCA5A5`, `#FEF2F2`), nötr grileri ve "doğru" için yeşimi (`#047857`/`#059669`/`#ECFDF5`) kullanır. Doğru/yanlış renkleri `QuestionCard` ve `ScoreBoard`'da **aynı** olmalıdır. Amber/altın tonları yalnızca Home'daki Custom Word Decks kartına aittir.
+- **Quiz ve sözlük yüzeyinin paleti kırmızıdır (Faz 12):** `Header.js`, `QuestionCard.js`, `ExampleBox.js`, `QuizScreen.js`, `VocabularyScreen.js` yalnızca kırmızı rampasını (`#991B1B`, `#DC2626`, `#B91C1C`, `#FCA5A5`, `#FEF2F2`), nötr grileri (`#2C3E50`, `#7F8C8D`, `#9CA3AF`, `#E2E8F0`/`#E9ECEF`, `#BDC3C7`) ve "doğru" için yeşimi (`#047857`/`#059669`/`#ECFDF5`) kullanır. Doğru/yanlış renkleri `QuestionCard` ve `ScoreBoard`'da **aynı** olmalıdır. Amber/altın tonları yalnızca Home'daki Custom Word Decks kartına aittir.
+- **GitHub logosu elle çizilir (Faz 12):** `components/SettingsModal.js`'teki `GitHubMark` bileşeni resmi "mark-github" (octicon) yolunu `react-native-svg` ile çizer — ikon fontu/emoji yok, yeni bağımlılık yok. `react-native-svg` zaten `HandwritingModal` için kuruluydu (Expo Go'da hazır gelir); ikon dekoratif olduğu için erişilebilirlik etiketi butonun kendisindedir.
 - **`npx expo-doctor` artık 21/21 DEĞİL — 19/21 (Faz 11 sırasında ölçüldü).** İki başarısız kontrol de uygulama kodundan bağımsızdır: **(a)** `package.json`'daki `tsc` script'i `node_modules/.bin` ile isim çakışıyor (uzun süredir var, dokümandaki "21/21" notu bu yüzden yanıltıcıydı), **(b)** `expo` patch sürümü **57.0.29** ↔ beklenen **`~57.0.30`** (Expo yeni patch yayınladı). Yükseltmek için `npx expo install --fix` — ancak bu bir bağımlılık değişikliğidir: ayrı commit + cihaz doğrulaması ister.
 - **Uzak yedek (remote) KURULDU** — `origin` = GitHub private repo (bkz. §2). Geçmiş artık tek diskte değil; ama **düzenli `git push` unutulmamalı** (yerel commit'ler otomatik gitmez).
 - **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
