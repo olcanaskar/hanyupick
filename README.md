@@ -6,18 +6,31 @@
 
 **Learn the 5,000 words of the official HSK 1–6 lists — one quiz at a time.**
 
-An offline-first Expo/React Native flashcard app for Chinese vocabulary, with a mistake pool that
-keeps asking only what you got wrong.
+An offline-first flashcard app for Chinese vocabulary, with a mistake pool that keeps asking only
+what you got wrong.
 
+[![Download APK](https://img.shields.io/badge/Download-APK%20(release)-3DDC84.svg?logo=android&logoColor=white)](https://github.com/olcanaskar/hanyupick/releases/latest)
 [![CI](https://github.com/olcanaskar/hanyupick/actions/workflows/ci.yml/badge.svg)](https://github.com/olcanaskar/hanyupick/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Expo SDK 57](https://img.shields.io/badge/Expo-SDK%2057-000020.svg?logo=expo&logoColor=white)](https://expo.dev)
-[![React Native](https://img.shields.io/badge/React%20Native-0.86-61DAFB.svg?logo=react&logoColor=white)](https://reactnative.dev)
-[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-lightgrey.svg)](#getting-started)
 
 </div>
 
 ---
+
+## Download & install
+
+The app is published as an APK on the **[Releases page](https://github.com/olcanaskar/hanyupick/releases/latest)**.
+
+1. Open the latest release on your **Android phone** (Android 7.0 or newer) and download the
+   `hanyupick-*.apk` file.
+2. Tap the downloaded file. Android will ask you to allow "install unknown apps" for your browser or
+   file manager the first time — allow it, then install.
+3. That's it. No account, no sign-up, no download inside the app: the full 5,000-word library is
+   already inside the APK and everything works offline.
+
+There is no iOS build yet; on iPhone the app has to be built from source — see
+[Building from source](#building-from-source).
 
 ## Why another HSK app?
 
@@ -46,9 +59,13 @@ whole word library inside the app:
 | **Speak it** | One tap reads the word out loud with the device's text-to-speech engine. |
 | **Settings** | Haptics on/off, speech volume, reset progress. |
 
-## Getting started
+## Building from source
 
-Requirements: [Node.js LTS](https://nodejs.org) and npm, plus the **Expo Go** app on your phone.
+Only needed for development, contributing, or an iOS build — the APK above is enough to use the app.
+
+Requirements: [Node.js LTS](https://nodejs.org) and npm. For the quickest development loop, install
+**Expo Go** on your phone; the project has no custom native modules, so the app runs in Expo Go
+without a native build.
 
 ```bash
 git clone https://github.com/olcanaskar/hanyupick.git
@@ -57,8 +74,7 @@ npm install
 npx expo start --go
 ```
 
-Scan the QR code with Expo Go (Android) or the Camera app (iOS). No native build is required to run
-the app — it has no custom native modules.
+Scan the QR code with Expo Go (Android) or the Camera app (iOS).
 
 ### Checks
 
@@ -68,11 +84,14 @@ npm run lint    # ESLint (flat config) — expected: 0 errors
 npm run tsc     # TypeScript checks the plain JS itself (`checkJs`) — expected: 0 errors
 ```
 
-### Building with EAS
+The same three commands run in CI on every push and pull request.
 
-`eas.json` defines two profiles: `preview` (internal distribution, a shareable **APK**) and
-`production` (store build, AAB, with automatic version increments). There is deliberately no
-`development` profile — the project has no `expo-dev-client` and the test loop runs in Expo Go.
+### Releasing
+
+`eas.json` defines two profiles: `preview` (internal distribution — this is the build published as
+the **APK on the Releases page**) and `production` (store build, AAB, with automatic version
+increments). There is deliberately no `development` profile — the project has no `expo-dev-client`
+and the test loop runs in Expo Go.
 
 ```bash
 npx eas-cli@latest build --profile preview    --platform android
