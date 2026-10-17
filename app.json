@@ -21,6 +21,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ea29583b-1b9a-43c1-8d61-6915c3745c27"
+      }
+    },
+    "owner": "olcanaskar"
   }
 }
