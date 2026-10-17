@@ -11,12 +11,13 @@
 # Gereksinim: Python 3 + Pillow  ->  python -m pip install pillow
 # Çalıştırma:  python tools/generate-icons.py     (her yerden)
 #
-# Çıktılar (hepsi 1024x1024, favicon 96x96):
+# Çıktılar (hepsi 1024x1024, favicon 96x96, splash 512x512):
 #   assets/icon.png                      iOS + genel ikon (saydamlık YOK -> RGB şart)
 #   assets/android-icon-background.png   adaptive icon zemini (kırmızı geçiş)
 #   assets/android-icon-foreground.png   adaptive icon ön katmanı (krem 汉, saydam)
 #   assets/android-icon-monochrome.png   themed icon katmanı (beyaz 汉, saydam)
 #   assets/favicon.png                   web favicon (yuvarlatılmış köşe, saydam)
+#   assets/splash-icon.png               splash ekranı (Faz 18; aynı ikon, yuvarlatılmış köşe)
 
 import os
 from PIL import Image, ImageDraw, ImageFont
@@ -27,8 +28,11 @@ CREAM = (251, 245, 235)      # #FBF5EB
 WHITE = (255, 255, 255)
 
 GLYPH = "\u6c49"             # 汉
-GLYPH_SCALE = 0.60           # mürekkep kutusu / tuval oranı (Android güvenli bölgesi: 0.667)
+GLYPH_SCALE = 0.42           # mürekkep kutusu / tuval oranı (Android güvenli bölgesi: 0.667).
+                             # Faz 18: 0.60 -> 0.42 (kullanıcı: karakter ikonda %30 fazla büyüktü).
 FAVICON_SIZE = 96
+SPLASH_SIZE = 512            # splash ekranı görseli (expo-splash-screen image)
+SPLASH_RADIUS = 0.22         # splash görselinin köşe yuvarlaklığı (icon ile aynı dil)
 ICON_SIZE = 1024
 SS = 4                       # supersampling çarpanı
 
@@ -132,7 +136,8 @@ def main():
     # icon.png: zemin + 汉, saydamlık yok (App Store ikonlarında alfa kabul edilmez)
     icon = background.copy()
     icon.alpha_composite(glyph_cream)
-    save(downscale(icon, ICON_SIZE).convert("RGB"), "icon.png")
+    icon_rgb = downscale(icon, ICON_SIZE).convert("RGB")
+    save(icon_rgb, "icon.png")
 
     # Android adaptive icon: zemin ve ön katman ayrı dosyalar, 汉 güvenli bölgede
     save(downscale(background, ICON_SIZE).convert("RGB"), "android-icon-background.png")
@@ -140,8 +145,12 @@ def main():
     save(downscale(glyph_white, ICON_SIZE), "android-icon-monochrome.png")
 
     # favicon: yuvarlatılmış köşeli, küçük boyutta temiz görünsün
-    fav = rounded(icon, 0.20)
+    fav = rounded(icon_rgb, 0.20)
     save(downscale(fav, FAVICON_SIZE), "favicon.png")
+
+    # splash ekranı görseli: aynı ikon, yuvarlatılmış köşeli (expo-splash-screen).
+    # Zemin rengi app.json'daki plugin ayarında Home ile aynı verilir (#FBF5EB).
+    save(downscale(rounded(icon_rgb, SPLASH_RADIUS), SPLASH_SIZE), "splash-icon.png")
 
     # app.json'daki adaptiveIcon.backgroundColor için geçişin orta tonu
     mid = tuple(round((a + b) / 2) for a, b in zip(RED_LIGHT, RED_DARK))
