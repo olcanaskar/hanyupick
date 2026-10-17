@@ -131,7 +131,7 @@ The **README gallery is generated the same way**, from the raw device captures u
 python tools/generate-store-screenshots.py
 ```
 
-It strips the phone's system bars, adds the frame and captions, and draws the sample progress used in the two Statistics images — see the note under [Screenshots](#screenshots).
+It strips the phone's system bars, adds the frame and captions, and draws the sample progress used in the two Statistics images — see the note under [Screenshots](#screenshots). The gallery is **README-only**: nothing under `docs/` is bundled into the app (the app's own assets live in `assets/`), so these files exist purely to promote the app here.
 
 ## Project structure
 
