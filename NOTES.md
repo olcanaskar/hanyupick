@@ -3,7 +3,7 @@
 Bu dosya, projede nerede kaldığımızı ve sıradaki adımları kaydeder.
 Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra `git log`'u oku.
 
-Son güncelleme: **Faz 16 — HanyuPick adı, mağaza kimlikleri ve EAS Build yapılandırması** (`d92efe6`: `app.json` — görünen ad `ChineseQuizApp` → **`HanyuPick`**, slug → `hanyupick`, `android.package` + `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`** · `bf3e7a2`: **`eas.json`** — `preview` (internal dağıtım → paylaşılabilir **APK**) ve `production` (`autoIncrement` + uzaktan sürüm kaynağı) profilleri, ilk Play yüklemesi internal track'e, `development` profili bilinçli olarak yok). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo-doctor` 20/21, `expo config` kimlikleri çözüyor. **⏳ cihazda doğrulanmadı** — ad/paket/ikon gibi native alanlar yalnızca bir EAS build'inde görünür; kayıt §20.
+Son güncelleme: **Faz 16 — HanyuPick adı, mağaza kimlikleri ve EAS Build yapılandırması** (`d92efe6`: `app.json` — görünen ad `ChineseQuizApp` → **`HanyuPick`**, slug → `hanyupick`, `android.package` + `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`** · `bf3e7a2`: **`eas.json`** — `preview` (internal dağıtım → paylaşılabilir **APK**) ve `production` (`autoIncrement` + uzaktan sürüm kaynağı) profilleri, ilk Play yüklemesi internal track'e, `development` profili bilinçli olarak yok · `972280c`: **EAS projesi bağlandı** — `@olcanaskar/hanyupick`, `app.json`'da `owner` + `extra.eas.projectId`). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata, `expo-doctor` 20/21, `expo config` kimlikleri çözüyor. **⏳ cihazda doğrulanmadı** — ad/paket/ikon gibi native alanlar yalnızca bir EAS build'inde görünür; kayıt §20.
 
 Önceki faz: **Faz 15 — uygulama ikonu: varsayılan Expo ikonları yerine kırmızı 汉 tasarımı** (`6ba9312`: `assets/` içindeki 5 PNG yeniden üretildi — 1024×1024 kırmızı köşegen geçiş (#DC2626 → #991B1B) üzerine krem (#FBF5EB) **汉**, adaptive icon katmanları + yuvarlatılmış favicon; `tools/generate-icons.py` ikonların tek üreticisi (Python + Pillow, Microsoft YaHei Bold, 4× supersampling) · `app.json`: `adaptiveIcon.backgroundColor` `#E6F4FE` → `#B91C1C`). **247 test yeşil**, lint 0 hata / 14 uyarı, `tsc` 0 hata. **⏳ cihazda doğrulanmadı** — Expo Go uygulama ikonunu göstermez, doğrulama bir development/EAS build gerektirir; kayıt §19.
 
@@ -122,7 +122,7 @@ a1af3af  chore: baseline commit (pre-fix snapshot)
 
 - **`known-good` etiketi** = test edilip "çalışıyor" denilen hâl. Nerede olduğunu görmek için: `git show -s known-good`.
 - Güncel HEAD için: `git log --oneline -1`.
-- **Faz 16 (HanyuPick adı + mağaza kimlikleri + `eas.json`) commit'leri:** `d92efe6` (`app.json`: ad/slug + `android.package`/`ios.bundleIdentifier`) · `bf3e7a2` (`eas.json`) — **⏳ cihaz doğrulaması bekliyor** (native alanlar yalnızca EAS build'inde görünür; bkz. §20, §16).
+- **Faz 16 (HanyuPick adı + mağaza kimlikleri + `eas.json`) commit'leri:** `d92efe6` (`app.json`: ad/slug + `android.package`/`ios.bundleIdentifier`) · `bf3e7a2` (`eas.json`) · `972280c` (**EAS projesi bağlandı**: `app.json`'a `owner` + `extra.eas.projectId`, `@olcanaskar/hanyupick`) — **⏳ cihaz doğrulaması bekliyor** (native alanlar yalnızca EAS build'inde görünür; bkz. §20, §16).
 - **Faz 15 (uygulama ikonu) commit'i:** `6ba9312` (`assets/*.png` + `tools/generate-icons.py` + `app.json`) — **⏳ cihaz doğrulaması bekliyor** (Expo Go uygulama ikonunu göstermez; bkz. §19, §16).
 - **Faz 14 (İstatistik pop-up'ı: temiz açılış + sığan takvim balonu) commit'leri:** `f5176c7` + `19b097c` (`components/StatsModal.js`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §18, §16).
 - **Faz 13 (hsk1–4'te 6 kaymış örnek düzeltmesi + `expo` 57.0.30) commit'leri:** `5146c40` (`data/examples/hsk1_examples.js`, `hsk3_examples.js`, `hsk4_examples.js` + `__tests__/exampleService.test.js`) · `1692806` (`package.json` + `package-lock.json`: `expo` `~57.0.30`) — **cihazda doğrulandı ✅** (2026-10-17; bkz. §17, §16).
@@ -592,7 +592,7 @@ Her maddeyi **ayrı commit** olarak yap.
 - **GitHub logosu elle çizilir (Faz 12):** `components/SettingsModal.js`'teki `GitHubMark` bileşeni resmi "mark-github" (octicon) yolunu `react-native-svg` ile çizer — ikon fontu/emoji yok, yeni bağımlılık yok. `react-native-svg` zaten `HandwritingModal` için kuruluydu (Expo Go'da hazır gelir); ikon dekoratif olduğu için erişilebilirlik etiketi butonun kendisindedir.
 - **`npx expo-doctor` artık 21/21 DEĞİL — Faz 13'ten sonra 20/21.** Tek başarısız kontrol uygulama kodundan bağımsızdır: `package.json`'daki `tsc` script'i `node_modules/.bin` ile isim çakışıyor (uzun süredir var, dokümandaki "21/21" notu bu yüzden yanıltıcıydı; `npm run tsc` sorunsuz çalışır). ~~**(b)** `expo` patch sürümü **57.0.29** ↔ beklenen **`~57.0.30`**~~ → **ÇÖZÜLDÜ (Faz 13, `1692806`)**: `npx expo install --fix` ile `expo` **`~57.0.30`**'a yükseltildi (tek değişen paket). Bu bağımlılık değişikliği **✅ cihazda doğrulandı** (Faz 13, 2026-10-17; §17).
 - **Uygulama adı ve paket kimlikleri sabitlendi (Faz 16, §20):** görünen ad **`HanyuPick`**, slug `hanyupick`, `android.package` = `ios.bundleIdentifier` = **`io.github.olcanasqar.hanyupick`**. ⚠️ **Paket adı mağazaya ilk yayından sonra değiştirilemez** (değiştirmek yeni bir uygulama demektir); o yüzden build yokken sabitlendi. Git deposu/klasör adı `ChineseQuizApp` olarak kaldı — `components/SettingsModal.js`'teki `REPOSITORY_URL` **depoyu** gösterir, uygulama adını değil.
-- **`eas.json` VAR (Faz 16, §20):** `preview` (internal dağıtım → paylaşılabilir **APK**; Expo Go'nun göstermediği ikonu/adı telefonda görmenin en kısa yolu) ve `production` (mağaza + `autoIncrement`) profilleri. **`development` profili bilinçli olarak YOK**: `developmentClient: true` `expo-dev-client` bağımlılığını şart koşar ve o kurulmadı. **EAS Update (`expo-updates`) de yok** — OTA düzeltme göndermek istenirse kurulur, ama ilk kurulum yine yeni bir build gerektirir. EAS projesi henüz bağlı değil (`extra.eas.projectId` yok): ilk kez `npx eas-cli@latest login` + **`npx eas-cli@latest init`** (projeyi oluşturur/bağlar) gerekir — `eas build:configure` artık gereksizdir, çünkü `eas.json` ve paket adları zaten hazır.
+- **`eas.json` VAR (Faz 16, §20):** `preview` (internal dağıtım → paylaşılabilir **APK**; Expo Go'nun göstermediği ikonu/adı telefonda görmenin en kısa yolu) ve `production` (mağaza + `autoIncrement`) profilleri. **`development` profili bilinçli olarak YOK**: `developmentClient: true` `expo-dev-client` bağımlılığını şart koşar ve o kurulmadı. **EAS Update (`expo-updates`) de yok** — OTA düzeltme göndermek istenirse kurulur, ama ilk kurulum yine yeni bir build gerektirir. **EAS projesi bağlandı** (Faz 16, `972280c`): `@olcanaskar/hanyupick`, ID `ea29583b-1b9a-43c1-8d61-6915c3745c27`; `app.json`'daki `owner` + `extra.eas.projectId` **CLI'nin yazdığı alanlardır** (elle düzenlenmez; yeniden bağlamak için `npx eas-cli@latest init`). Dikkat: **Expo hesabı `olcanaskar`, GitHub hesabı `olcanasqar`** — bir harf farklı; paket adı GitHub'ı izler.
 - **Uzak yedek (remote) KURULDU** — `origin` = GitHub private repo (bkz. §2). Geçmiş artık tek diskte değil; ama **düzenli `git push` unutulmamalı** (yerel commit'ler otomatik gitmez).
 - **Cihaz testi ✅ YAPILDI** (kullanıcı, Expo Go, SDK 57): uygulama açıldı, **sorun görülmedi**. Yerel native build (Gradle/Java) denenmedi.
   - Madde madde tekrar doğrulamak istenirse:
@@ -812,15 +812,20 @@ Kullanıcı EAS Build'in başka ne işe yaradığını sordu; anlatım sonrası 
 
 **⚠️ Cihaz doğrulaması (Expo Go) mümkün değil:** Expo Go kendi adını/ikonunu gösterir. Ad/paket/ikon yalnızca bir **EAS build**'inde görünür → `known-good` bu commit'ler için ilerletilmedi (§16).
 
-### Kullanıcıda bekleyen ilk EAS adımları
+### EAS projesi bağlandı (`972280c`, 2026-10-17)
+
+- `npx eas-cli@latest login` → hesap **`olcanaskar`** (Expo; GitHub hesabı `olcanasqar` ile **bir harf farklı**).
+- `npx eas-cli@latest init` → **`@olcanaskar/hanyupick`** oluşturuldu/bağlandı, ID **`ea29583b-1b9a-43c1-8d61-6915c3745c27`** (`https://expo.dev/accounts/olcanaskar/projects/hanyupick`). CLI `app.json`'a **`owner`** + **`extra.eas.projectId`** yazdı ve **proje ikonunu uygulama config'inden ayarladı** (yani `assets/icon.png` EAS tarafında da geçerli/okunur). İlk build için EAS projesinin ikon/asset'lerini hazırlamak gerekmez: adımlar tamam.
+
+### Kullanıcıda bekleyen sonraki adımlar
 
 ```bash
-npx eas-cli@latest login
-npx eas-cli@latest init                                          # EAS projesini oluşturur/bağlar (extra.eas.projectId)
 npx eas-cli@latest build --profile preview --platform android    # ikon + ad telefonda; APK linki paylaşılabilir
 npx eas-cli@latest build --profile production --platform android # mağaza için AAB
 npx eas-cli@latest submit --platform android                     # ilk yükleme: internal track
 ```
+
+APK build'i sırasında "Generate a new Android Keystore?" sorusuna **evet** denir (imza anahtarı EAS'te saklanır).
 
 ---
 
