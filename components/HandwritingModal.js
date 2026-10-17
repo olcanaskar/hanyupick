@@ -149,7 +149,7 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
 
           {/* Aday Karakterler veya İnternet Yok Uyarısı Çubuğu */}
           <View style={[styles.candidatesBar, errorMessage ? styles.candidatesBarError : null]}>
-            {loading && <ActivityIndicator size="small" color="#D97706" style={{ marginRight: 8 }} />}
+            {loading && <ActivityIndicator size="small" color="#DC2626" style={{ marginRight: 8 }} />}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.candidatesContent}>
               {errorMessage ? (
                 <Text style={styles.errorText} accessible={true}>{errorMessage}</Text>
@@ -177,8 +177,8 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
               {/* Grid Çizgileri */}
               <Line x1="0" y1="0" x2={CANVAS_SIZE} y2={CANVAS_SIZE} stroke="#E2E8F0" strokeWidth="1" strokeDasharray="4,4" />
               <Line x1={CANVAS_SIZE} y1="0" x2="0" y2={CANVAS_SIZE} stroke="#E2E8F0" strokeWidth="1" strokeDasharray="4,4" />
-              <Line x1={CANVAS_SIZE / 2} y1="0" x2={CANVAS_SIZE / 2} y2={CANVAS_SIZE} stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4,4" />
-              <Line x1="0" y1={CANVAS_SIZE / 2} x2={CANVAS_SIZE} y2={CANVAS_SIZE / 2} stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="4,4" />
+              <Line x1={CANVAS_SIZE / 2} y1="0" x2={CANVAS_SIZE / 2} y2={CANVAS_SIZE} stroke="#BDC3C7" strokeWidth="1.5" strokeDasharray="4,4" />
+              <Line x1="0" y1={CANVAS_SIZE / 2} x2={CANVAS_SIZE} y2={CANVAS_SIZE / 2} stroke="#BDC3C7" strokeWidth="1.5" strokeDasharray="4,4" />
 
               {/* Tamamlanmış Çizimler */}
               {paths.map((p, index) => (
@@ -264,18 +264,20 @@ const styles = StyleSheet.create({
   candidatesBar: {
     width: '100%',
     height: 48,
-    backgroundColor: '#FFFBEB',
+    backgroundColor: '#FEF2F2',
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#FCD34D',
+    borderColor: '#FCA5A5',
     marginBottom: 14,
     paddingHorizontal: 8,
     flexDirection: 'row',
     alignItems: 'center',
   },
+  // Hata durumu normal çubukla (açık kırmızı) KARIŞMASIN diye bir kademe daha koyu:
+  // kırmızı-100 zemin + koyu kırmızı kenarlık.
   candidatesBarError: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FCA5A5',
+    backgroundColor: '#FEE2E2',
+    borderColor: '#991B1B',
   },
   candidatesContent: {
     alignItems: 'center',
@@ -289,7 +291,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#DC2626',
+    color: '#991B1B',
   },
   candidateChip: {
     backgroundColor: '#FFFFFF',
@@ -297,12 +299,12 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#FCD34D',
+    borderColor: '#FCA5A5',
   },
   candidateText: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#D97706',
+    color: '#DC2626',
   },
   canvasContainer: {
     width: CANVAS_SIZE,
@@ -310,11 +312,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#FCD34D',
+    borderColor: '#FCA5A5',
     overflow: 'hidden',
   },
   canvasSvg: {
-    backgroundColor: '#FAFAF9',
+    backgroundColor: '#F8F9FA',
   },
   actionsRow: {
     flexDirection: 'row',
@@ -324,7 +326,7 @@ const styles = StyleSheet.create({
   },
   actionBtn: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#E9ECEF',
     paddingVertical: 10,
     borderRadius: 12,
     alignItems: 'center',
@@ -332,7 +334,7 @@ const styles = StyleSheet.create({
   actionBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#4B5563',
+    color: '#2C3E50',
   },
   clearBtn: {
     backgroundColor: '#FEF2F2',
