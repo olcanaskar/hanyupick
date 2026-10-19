@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { getStats, getMastery, isProblematic } from '../services/statsManager';
 import { getCustomDecks } from '../services/importService';
+import { WEB_FRAME_WIDTH } from './layout';
 import { getDateKey, addDays } from '../services/dateUtils';
 import { ALL_WORDS, LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 
@@ -773,6 +774,9 @@ const styles = StyleSheet.create({
   },
   contentCard: {
     width: '100%',
+    // Faz 24 (web): Modal `document.body`'ye portal açtığı için kart aksi hâlde
+    // tüm sekmeyi kaplıyor; çerçeve genişliğiyle sınırlanır (bkz. components/layout.js).
+    maxWidth: WEB_FRAME_WIDTH,
     maxHeight: '85%',
     backgroundColor: '#FFFFFF',
     borderRadius: 24,

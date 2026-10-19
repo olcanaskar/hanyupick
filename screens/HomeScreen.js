@@ -16,6 +16,7 @@ import StatsModal from '../components/StatsModal';
 import SettingsModal from '../components/SettingsModal';
 import CustomDeckModal from '../components/CustomDeckModal';
 import FloatingBackground from '../components/FloatingBackground';
+import { WEB_FRAME_WIDTH } from '../components/layout';
 import { getCustomDecks } from '../services/importService';
 import { LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 
@@ -704,6 +705,9 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     width: '100%',
+    // Faz 24 (web): Modal `document.body`'ye portal açtığı için kart aksi hâlde
+    // tüm sekmeyi kaplıyor; çerçeve genişliğiyle sınırlanır (bkz. components/layout.js).
+    maxWidth: WEB_FRAME_WIDTH,
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 20,

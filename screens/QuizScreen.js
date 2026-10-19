@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { StyleSheet, View, Text, StatusBar, ScrollView, DeviceEventEmitter } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  StatusBar,
+  ScrollView,
+  TouchableOpacity,
+  Platform,
+  DeviceEventEmitter,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { recordAnswer } from '../services/statsManager';
@@ -277,6 +286,24 @@ export default function QuizScreen({
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <StatusBar barStyle="dark-content" backgroundColor="#FBF5EB" translucent={false} />
         <View style={styles.container}>
+          {/* Faz 24 (web): telefonda ekrandan geri dönüş kaydırma jestiyle
+              (ve Android'de donanım tuşuyla) yapılıyor; masaüstü tarayıcıda
+              ikisi de yok, bu yüzden web'de görünür bir geri butonu var.
+              Yerel düzende ek satır yok — ağaç aynen kalıyor. */}
+          {Platform.OS === 'web' && (
+            <View style={styles.webBackRow}>
+              <TouchableOpacity
+                style={styles.webBackBtn}
+                onPress={() => navigation.goBack()}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                accessibilityRole="button"
+                accessibilityLabel="Go back"
+              >
+                <Text style={styles.webBackBtnText}>←</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           <Header
             level={level}
             setLevel={handleLevelChange}
@@ -359,6 +386,25 @@ const styles = StyleSheet.create({
   },
   scrollStyle: {
     flex: 1,
+  },
+  // Faz 24 (web): yalnızca web'de çizilir; kırmızı palet Vocabulary ekranının
+  // geri butonuyla aynı (bkz. screens/VocabularyScreen.js → backBtn).
+  webBackRow: {
+    paddingTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  webBackBtn: {
+    padding: 6,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+  },
+  webBackBtnText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2C3E50',
   },
   scrollContentContainer: {
     flexGrow: 1,

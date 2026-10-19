@@ -3,6 +3,7 @@ import { DeviceEventEmitter, Platform, StyleSheet, View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { WEB_FRAME_WIDTH } from './components/layout';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
   webFrame: {
     flex: 1,
     width: '100%',
-    maxWidth: 430,
+    maxWidth: WEB_FRAME_WIDTH,
     backgroundColor: '#FBF5EB',
     borderLeftWidth: 1,
     borderRightWidth: 1,

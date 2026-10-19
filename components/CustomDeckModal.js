@@ -20,6 +20,7 @@ import {
   deleteCustomDeck,
 } from '../services/importService';
 import { showAlert } from '../services/dialogService';
+import { WEB_FRAME_WIDTH } from './layout';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -440,6 +441,9 @@ const styles = StyleSheet.create({
   },
   contentCard: {
     width: '100%',
+    // Faz 24 (web): Modal `document.body`'ye portal açtığı için kart aksi hâlde
+    // tüm sekmeyi kaplıyor; çerçeve genişliğiyle sınırlanır (bkz. components/layout.js).
+    maxWidth: WEB_FRAME_WIDTH,
     maxHeight: '85%',
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
