@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { DeviceEventEmitter } from 'react-native';
+import { DeviceEventEmitter, Platform, StyleSheet, View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
@@ -156,36 +156,72 @@ export default function App() {
   // Not: @react-navigation v7 tip tanımları Stack.Navigator'da `id` alanını zorunlu
   // tutuyor (çalışma zamanında opsiyoneldir). Değer yalnızca `navigation.getParent(id)`
   // için anlam taşır; uygulamada kullanılmıyor.
+  const navigationTree = (
+    <NavigationContainer theme={AppTheme}>
+      <Stack.Navigator
+        id="root"
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          cardStyle: { backgroundColor: '#FBF5EB' },
+        }}
+      >
+        <Stack.Screen name="Home">
+          {(props) => <HomeScreen {...props} reviewPool={reviewPool || []} />}
+        </Stack.Screen>
+
+        <Stack.Screen name="Quiz">
+          {(props) => (
+            <QuizScreen
+              {...props}
+              reviewPool={reviewPool || []}
+              setReviewPool={updateReviewPool}
+            />
+          )}
+        </Stack.Screen>
+
+        {/* Vocabulary Ekranı eklendi */}
+        <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+
+  // Faz 24 (web istemcisi): uygulama telefon için tasarlandı (Home kaydırmasız,
+  // sabit yükseklikler). Masaüstü tarayıcıda tüm pencereye yayılırsa düzen
+  // bozulur; bu yüzden web'de içerik ortalanmış, telefon genişliğinde
+  // (maxWidth 430) bir "çerçeve" içinde gösterilir. Yerelde ağaç aynen döner —
+  // ek bir View yok, dolayısıyla native düzen değişmez.
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={AppTheme}>
-        <Stack.Navigator
-          id="root"
-          initialRouteName="Home"
-          screenOptions={{
-            headerShown: false,
-            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-            cardStyle: { backgroundColor: '#FBF5EB' },
-          }}
-        >
-          <Stack.Screen name="Home">
-            {(props) => <HomeScreen {...props} reviewPool={reviewPool || []} />}
-          </Stack.Screen>
-
-          <Stack.Screen name="Quiz">
-            {(props) => (
-              <QuizScreen
-                {...props}
-                reviewPool={reviewPool || []}
-                setReviewPool={updateReviewPool}
-              />
-            )}
-          </Stack.Screen>
-
-          {/* Vocabulary Ekranı eklendi */}
-          <Stack.Screen name="Vocabulary" component={VocabularyScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      {Platform.OS === 'web' ? (
+        <View style={styles.webStage}>
+          <View style={styles.webFrame}>{navigationTree}</View>
+        </View>
+      ) : (
+        navigationTree
+      )}
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  // Krem tonun bir kademe koyusu: krem çerçeve zeminden ayrışsın.
+  webStage: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#EFE7DA',
+  },
+  webFrame: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 430,
+    backgroundColor: '#FBF5EB',
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#E2E8F0',
+    // react-native-web `boxShadow`'ı CSS olarak yazar; yerelde yok sayılır
+    // (bu stil yalnızca web'de kullanılıyor).
+    boxShadow: '0 0 32px rgba(44, 62, 80, 0.18)',
+  },
+});

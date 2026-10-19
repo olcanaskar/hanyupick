@@ -1,11 +1,17 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Platform,
+  useWindowDimensions,
+} from 'react-native';
 import ExampleBox from './ExampleBox';
 import { getExampleByWordId } from '../services/exampleService';
 import { FIELD_LABELS, getAnswerType, getHintField, getPromptType } from '../services/modes';
 import { speakHanzi } from '../services/speechService';
-
-const { width } = Dimensions.get('window');
 
 export default function QuestionCard({
   currentWord,
@@ -18,6 +24,11 @@ export default function QuestionCard({
   onNextQuestion,
 }) {
   const word = currentWord;
+
+  // Kart çıkış animasyonunun mesafesi canlı pencere genişliğinden gelir (Faz 24):
+  // modül yüklenirken okunan `Dimensions.get('window')` web'de pencere
+  // yeniden boyutlandırılınca bayat kalıyordu.
+  const { width } = useWindowDimensions();
 
   // O anki kelimenin ve seviyenin örnek cümlesini çekiyoruz
   const example = getExampleByWordId(level, word?.id);
@@ -181,7 +192,15 @@ export default function QuestionCard({
       <TouchableOpacity
         activeOpacity={isAnswered ? 0.9 : 1}
         onPress={handleCardPress}
-        disabled={!isAnswered}
+        // Faz 24 (web): `react-native-web` bu bileşeni `accessibilityRole="button"`
+        // yüzünden gerçek bir `<button>` olarak çiziyor ve `disabled` özelliğini
+        // de ona yazıyor. Chromium, DEVRE DIŞI bir `<button>`ın İÇİNDEKİ
+        // butonlara fare olaylarını hiç iletmiyor (pointer olayları geliyor,
+        // mousedown/click gelmiyor) — sonuç: web'de quiz şıkları tıklanamıyordu
+        // (headless Edge ile ölçüldü: `disabled` kaldırılınca şık anında çalıştı).
+        // Yerelde `disabled` korunuyor; web'de gerekmiyor çünkü `handleCardPress`
+        // zaten cevaplanmadan ilk satırda dönüyor.
+        disabled={Platform.OS === 'web' ? false : !isAnswered}
         style={styles.card}
         // Erişilebilirlik (Faz 4.5): `TouchableOpacity` varsayılan olarak bir erişilebilirlik
         // ÖĞESİDİR ve öğe olduğunda içindeki her şey (şıklar + hoparlör) ekran okuyucudan

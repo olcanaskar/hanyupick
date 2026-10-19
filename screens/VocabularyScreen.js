@@ -8,6 +8,7 @@ import {
   FlatList,
   StatusBar,
   DeviceEventEmitter,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FloatingBackground from '../components/FloatingBackground';
@@ -164,17 +165,22 @@ export default function VocabularyScreen({ navigation }) {
             </TouchableOpacity>
           )}
 
-          {/* Açıklayıcı Çizim Butonu */}
-          <TouchableOpacity
-            style={styles.drawBtn}
-            onPress={() => setIsHandwritingVisible(true)}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel="Search by handwriting"
-          >
-            <Text style={styles.drawBtnIcon}>✍️</Text>
-            <Text style={styles.drawBtnText}>Draw</Text>
-          </TouchableOpacity>
+          {/* Açıklayıcı Çizim Butonu — yalnızca yerelde: el yazısı tanıma harici
+              bir servise (inputtools.google.com) `fetch` atar ve tarayıcıda CORS
+              nedeniyle sessizce başarısız olur; fare ile çizim de pedin amacına
+              uygun değil. Web'de arama kutusu + liste tam çalışır (Faz 24). */}
+          {Platform.OS !== 'web' && (
+            <TouchableOpacity
+              style={styles.drawBtn}
+              onPress={() => setIsHandwritingVisible(true)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Search by handwriting"
+            >
+              <Text style={styles.drawBtnIcon}>✍️</Text>
+              <Text style={styles.drawBtnText}>Draw</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Kategori Filtre Çubukları (Horizontally Scrollable) */}

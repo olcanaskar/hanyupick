@@ -20,7 +20,13 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "HanyuPick — HSK 1-6 Vocabulary Quiz",
+      "shortName": "HanyuPick",
+      "lang": "en",
+      "themeColor": "#FBF5EB",
+      "backgroundColor": "#EFE7DA",
+      "display": "standalone"
     },
     "extra": {
       "eas": {

@@ -14,7 +14,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Alert,
   Animated,
   DeviceEventEmitter,
   Linking,
@@ -42,6 +41,7 @@ import {
 } from '../services/settingsService';
 import { clearAllStats } from '../services/statsManager';
 import { speakHanzi } from '../services/speechService';
+import { showAlert } from '../services/dialogService';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -204,13 +204,13 @@ export default function SettingsModal({ visible, onClose }) {
       console.error('Bağlantı açılamadı:', error);
       try {
         await Clipboard.setStringAsync(REPOSITORY_URL);
-        Alert.alert(
+        showAlert(
           'Could not open link',
           `No app could open the repository page, so the address was copied to your clipboard:\n\n${REPOSITORY_URL}`
         );
       } catch (copyError) {
         console.error('Adres kopyalanamadı:', copyError);
-        Alert.alert('Could not open link', `Open this address in a browser:\n\n${REPOSITORY_URL}`);
+        showAlert('Could not open link', `Open this address in a browser:\n\n${REPOSITORY_URL}`);
       }
     }
   };

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
   TextInput,
   DeviceEventEmitter,
   Pressable,
@@ -20,6 +19,7 @@ import {
   saveCustomDeck,
   deleteCustomDeck,
 } from '../services/importService';
+import { showAlert } from '../services/dialogService';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -135,7 +135,7 @@ export default function CustomDeckModal({ visible, onClose }) {
       // Dosya adından türetilen öneriyi (örn. "kelimeler") isim alanına önceden doldur.
       setCustomDeckName(result.defaultName || '');
     } else if (result.reason !== 'canceled') {
-      Alert.alert('Import Error', result.error || 'Failed to parse JSON file.');
+      showAlert('Import Error', result.error || 'Failed to parse JSON file.');
     }
   };
 
@@ -144,7 +144,7 @@ export default function CustomDeckModal({ visible, onClose }) {
   const performSave = async (overwrite) => {
     const trimmedName = customDeckName.trim();
     if (!trimmedName) {
-      Alert.alert('Invalid Name', 'Please enter a valid name for your deck.');
+      showAlert('Invalid Name', 'Please enter a valid name for your deck.');
       return;
     }
 
@@ -169,7 +169,7 @@ export default function CustomDeckModal({ visible, onClose }) {
       return;
     }
 
-    Alert.alert('Save Error', saveResult.error || 'Failed to save deck.');
+    showAlert('Save Error', saveResult.error || 'Failed to save deck.');
   };
 
   // Butonun doğrudan çağırdığı sarmalayıcı: `onPress` olayı `overwrite` sanılmasın.
