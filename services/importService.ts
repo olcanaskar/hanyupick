@@ -2,8 +2,31 @@ import * as DocumentPicker from 'expo-document-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { removeWordStatsByIds } from './statsManager';
+import type { WordId } from './statsManager';
 
 const CUSTOM_DECKS_KEY = '@custom_word_decks';
+
+// --- Tipler (Faz 22: TS dönüşümü) ---------------------------------------------
+//
+// Diskteki özel deste kaydı: deste adı → kelime dizisi. Kelimeler HSK kayıtlarıyla
+// AYNI alanları taşır (`level` alanı 'custom' sabitidir, sözlük listesi onu ayırt eder).
+export type CustomDeckWord = {
+  id: WordId;
+  hanzi: string;
+  pinyin: string;
+  meaning: string;
+  level?: string;
+};
+export type CustomDecks = Record<string, CustomDeckWord[]>;
+// JSON dosyasından gelen ham kelime: alanlar eksik/yanlış tipte OLABİLİR, doğrulama
+// burada yapılır (bkz. pickAndParseJSON).
+export type RawDeckWord = {
+  id?: unknown;
+  hanzi?: unknown;
+  pinyin?: unknown;
+  meaning?: unknown;
+  level?: unknown;
+};
 
 // Deste adından kelime id öneki üretir (alfanümerik olmayan her karakter '_').
 //
@@ -13,20 +36,21 @@ const CUSTOM_DECKS_KEY = '@custom_word_decks';
 // biriktirdiği yanlışlar sessizce düşer. Bu yüzden iki farklı adın aynı öneki
 // ürettiği durum (örn. "Ders 1" ve "Ders_1", ya da Latin dışı adlar) sessizce
 // kabul edilmez; aşağıdaki çakışma kontrolüyle reddedilir.
-export const getDeckIdPrefix = (deckName) => String(deckName).replace(/[^a-zA-Z0-9]/g, '_');
+export const getDeckIdPrefix = (deckName: unknown): string =>
+  String(deckName).replace(/[^a-zA-Z0-9]/g, '_');
 
 // Özel deste kimliklerinin öneki. Kelime id'leri `custom_<önek>_<itemId>` biçimindedir;
 // bir destenin SEVİYE kimliği ise `custom_<önek>` (aynı ad alanının kısası).
 export const CUSTOM_ID_PREFIX = 'custom_';
 
 // Seviye kimliği özel bir desteye mi ait? (Aksi halde 'hsk1'..'hsk6', 'mixed' ya da 'review'.)
-export const isCustomDeckLevel = (level) =>
+export const isCustomDeckLevel = (level: unknown): level is string =>
   typeof level === 'string' && level.startsWith(CUSTOM_ID_PREFIX);
 
 // Yeni kelimelerin id'lerini üretir. `item.id` yalnızca kullanılabilir bir sayı ya da
 // boş olmayan bir metin ise kullanılır, aksi halde dosyadaki sıraya düşer — yoksa
 // id'si boş olan birden çok kelime `custom_X_` id'sini PAYLAŞIRDI.
-const formatDeckWords = (deckName, validWords) => {
+const formatDeckWords = (deckName: unknown, validWords: RawDeckWord[]): CustomDeckWord[] => {
   const prefix = getDeckIdPrefix(deckName);
 
   return validWords.map((item, index) => {
@@ -42,14 +66,20 @@ const formatDeckWords = (deckName, validWords) => {
       pinyin: item.pinyin,
       meaning: item.meaning,
       level: item.level || 'custom',
-    };
+      // `validWords` çağrıdan ÖNCE doğrulanır (bkz. pickAndParseJSON: hanzi/pinyin/meaning
+      // zorunlu), bu yüzden alanlar burada artık metindir.
+    } as CustomDeckWord;
   });
 };
 
 // Yeni id'ler mevcut BAŞKA bir desteyle çakışıyor mu? (aynı ad hariç)
 // Çakışma olursa iki deste aynı kelime id'lerini paylaşır; istatistik ve review
 // kayıtları hangi desteye ait olduğu bilinmeden karışır.
-const findIdConflict = (customDecks, words, ignoreName) => {
+const findIdConflict = (
+  customDecks: CustomDecks,
+  words: CustomDeckWord[],
+  ignoreName: string
+): string | null => {
   const newIds = new Set(words.map((word) => word.id));
 
   return (
@@ -115,13 +145,17 @@ export const pickAndParseJSON = async () => {
 // döner; çağıran (CustomDeckModal) kullanıcıdan onay alıp `{ overwrite: true }` ile
 // tekrar çağırır. `overwrite: true` iken bile BAŞKA bir desteyle id çakışması olursa
 // kayıt `{ reason: 'id-conflict' }` ile reddedilir.
-export const saveCustomDeck = async (deckName, validWords, { overwrite = false } = {}) => {
+export const saveCustomDeck = async (
+  deckName: unknown,
+  validWords: RawDeckWord[],
+  { overwrite = false }: { overwrite?: boolean } = {}
+) => {
   try {
     const name = String(deckName ?? '').trim();
     if (!name) return { success: false, reason: 'invalid-name' };
 
     const existingData = await AsyncStorage.getItem(CUSTOM_DECKS_KEY);
-    const customDecks = existingData ? JSON.parse(existingData) : {};
+    const customDecks: CustomDecks = existingData ? JSON.parse(existingData) : {};
     const alreadyExists = Object.prototype.hasOwnProperty.call(customDecks, name);
 
     if (alreadyExists && !overwrite) {
@@ -146,10 +180,10 @@ export const saveCustomDeck = async (deckName, validWords, { overwrite = false }
   }
 };
 
-export const getCustomDecks = async () => {
+export const getCustomDecks = async (): Promise<CustomDecks> => {
   try {
     const data = await AsyncStorage.getItem(CUSTOM_DECKS_KEY);
-    return data ? JSON.parse(data) : {};
+    return data ? (JSON.parse(data) as CustomDecks) : {};
   } catch (error) {
     console.error('Error fetching custom decks:', error);
     return {};
@@ -164,10 +198,10 @@ export const getCustomDecks = async () => {
 //   - @hsk_user_stats : burada silinir (statsManager'ın yazma kuyruğu üzerinden).
 //   - @hsk_review_pool: sahibi App.js'tir; silinen kelime id'leri `removedIds` ile
 //     çağırana döner, çağıran `onCustomDeckDeleted` olayını yayar (App.js temizler).
-export const deleteCustomDeck = async (deckName) => {
+export const deleteCustomDeck = async (deckName: string) => {
   try {
     const data = await AsyncStorage.getItem(CUSTOM_DECKS_KEY);
-    const customDecks = data ? JSON.parse(data) : {};
+    const customDecks: CustomDecks = data ? JSON.parse(data) : {};
 
     // Kelime id'leri SİLMEDEN ÖNCE alınır; deste kaydı gidince erişilemezler.
     const removedWords = Array.isArray(customDecks[deckName]) ? customDecks[deckName] : [];

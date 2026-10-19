@@ -9,9 +9,15 @@
 //
 // Faz 4.2: şık toplama havuzu KOPYALAMAZ (rastgele başlangıçlı dairesel tarama) —
 // bkz. `collectFromPool`.
+//
+// Faz 22 (TS): tipler `services/wordRepository.ts`ten gelir — kelime kaydının şekli
+// tek yerde tanımlıdır.
+
+import type { FieldType } from './modes';
+import type { WordId, WordLike } from './wordRepository';
 
 // Bir kelimenin şık olarak gösterilebilecek içerik alanları.
-const WORD_FIELDS = ['hanzi', 'pinyin', 'meaning'];
+const WORD_FIELDS: FieldType[] = ['hanzi', 'pinyin', 'meaning'];
 
 // Havuzdan rastgele bir kelime seçer; havuzda birden fazla kelime varsa bir öncekiyle
 // AYNI olanı atlar. Küçük bir destede (5 kelime) `Math.random` ardışık iki soruda aynı
@@ -26,7 +32,13 @@ const WORD_FIELDS = ['hanzi', 'pinyin', 'meaning'];
 // yedek olarak çalışır.
 const MAX_PICK_ATTEMPTS = 12;
 
-export const pickWord = (pool, previousId = null) => {
+// Havuzdan rastgele bir kelime seçer. Havuz öğesinin türü korunur (`T`), çünkü
+// çağıran seçilen kelimenin tüm alanlarını kullanır; testler yalnızca `id` taşıyan
+// sahte havuzlar geçebilsin diye tek gereksinim `{ id }` olmasıdır.
+export const pickWord = <T extends { id: WordId }>(
+  pool: readonly T[] | null | undefined,
+  previousId: WordId | null = null
+): T | null => {
   if (!pool || pool.length === 0) return null;
   if (pool.length === 1) return pool[0];
 
@@ -42,7 +54,7 @@ export const pickWord = (pool, previousId = null) => {
 
 // Fisher-Yates karıştırma. (Array.prototype.sort(() => 0.5 - Math.random()) yanlı
 // sonuç üretir.) Girdiyi değiştirmez, yeni dizi döndürür.
-export const shuffle = (items) => {
+export const shuffle = <T>(items: readonly T[]): T[] => {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -53,7 +65,7 @@ export const shuffle = (items) => {
 
 // Aday kelime, daha önce seçilmiş bir şıkla (veya doğru cevapla) hanzi, pinyin ya da
 // anlam alanlarından herhangi birini paylaşıyorsa çeldirici olamaz.
-const hasConflict = (word, blockedValues) =>
+const hasConflict = (word: WordLike, blockedValues: Set<string>): boolean =>
   WORD_FIELDS.some((field) => word[field] && blockedValues.has(word[field]));
 
 // Tek bir havuzdan benzersiz çeldirici toplar.
@@ -73,7 +85,13 @@ const hasConflict = (word, blockedValues) =>
 // Garantiler eskisiyle aynı: tarama tüm havuzu gördüğü için çakışmalı/küçük
 // havuzlarda mümkün olan en fazla aday bulunur; rastgele başlangıç noktası da
 // (karıştırmanın yerine) hangi adayların seçileceğini çeşitlendirir.
-const collectFromPool = (pool, blockedValues, collected, limit, correctId) => {
+const collectFromPool = (
+  pool: WordLike[],
+  blockedValues: Set<string>,
+  collected: WordLike[],
+  limit: number,
+  correctId: WordId
+): void => {
   const poolSize = pool.length;
   const startIndex = Math.floor(Math.random() * poolSize);
 
@@ -98,11 +116,15 @@ const collectFromPool = (pool, blockedValues, collected, limit, correctId) => {
 //
 // Garanti: dönen şıkların hiçbiri bir diğeriyle hanzi, pinyin veya anlam alanını
 // paylaşmaz (doğru cevap dahil).
-export const buildOptions = (correctWord, pools, distractorCount = 3) => {
-  const blockedValues = new Set(
+export const buildOptions = (
+  correctWord: WordLike,
+  pools: (WordLike[] | null | undefined)[],
+  distractorCount = 3
+): WordLike[] => {
+  const blockedValues = new Set<string>(
     WORD_FIELDS.map((field) => correctWord[field]).filter(Boolean)
   );
-  const distractors = [];
+  const distractors: WordLike[] = [];
 
   for (const pool of pools) {
     if (distractors.length >= distractorCount) break;

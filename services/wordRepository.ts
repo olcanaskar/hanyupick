@@ -15,11 +15,30 @@ import hsk4Data from '../data/hsk4.json';
 import hsk5Data from '../data/hsk5.json';
 import hsk6Data from '../data/hsk6.json';
 
+// --- Tipler (Faz 22: TS dönüşümü) ---------------------------------------------
+//
+// Kelime kimliği: HSK kelimeleri sayı (1..5000), özel deste kelimeleri
+// 'custom_...' metni (bkz. services/importService.js). Aynı kimlik anlayışı
+// istatistik ve review havuzunda da geçerlidir.
+export type WordId = number | string;
+export type HskLevel = 'hsk1' | 'hsk2' | 'hsk3' | 'hsk4' | 'hsk5' | 'hsk6';
+// `data/hsk*.json` içindeki tek kelime kaydı (tek biçim: id/hanzi/pinyin/meaning).
+export type Word = { id: number; hanzi: string; pinyin: string; meaning: string };
+// Sorularda/şıklarda kullanılan EN GENEL kelime şekli: HSK kaydı da (`Word`), özel
+// deste kelimesi de (`custom_...` id) bu şekle uyar. Metin alanları isteğe bağlı:
+// havuz seçimi yalnızca `id`e bakar (bkz. quizBuilder.pickWord).
+export type WordLike = {
+  id: WordId;
+  hanzi?: string;
+  pinyin?: string;
+  meaning?: string;
+};
+
 // Seviye kimlikleri (sıra korunur; arayüz listeleri bu sıraya göre kurulur).
-export const LEVELS = ['hsk1', 'hsk2', 'hsk3', 'hsk4', 'hsk5', 'hsk6'];
+export const LEVELS: HskLevel[] = ['hsk1', 'hsk2', 'hsk3', 'hsk4', 'hsk5', 'hsk6'];
 
 // Seviyelerin görünen adları.
-export const LEVEL_LABELS = {
+export const LEVEL_LABELS: Record<HskLevel, string> = {
   hsk1: 'HSK 1',
   hsk2: 'HSK 2',
   hsk3: 'HSK 3',
@@ -29,7 +48,7 @@ export const LEVEL_LABELS = {
 };
 
 // Seviye → kelime havuzu.
-export const LEVEL_POOLS = {
+export const LEVEL_POOLS: Record<HskLevel, Word[]> = {
   hsk1: hsk1Data,
   hsk2: hsk2Data,
   hsk3: hsk3Data,
@@ -39,7 +58,7 @@ export const LEVEL_POOLS = {
 };
 
 // Tüm seviyelerin birleşik havuzu ("mixed" modu ve çeldirici tamamlama için).
-export const ALL_WORDS = LEVELS.reduce(
+export const ALL_WORDS: Word[] = LEVELS.reduce<Word[]>(
   (acc, level) => acc.concat(LEVEL_POOLS[level] || []),
   []
 );
@@ -49,7 +68,7 @@ export const ALL_WORDS = LEVELS.reduce(
 // ZORUNLU olarak bu aralıklardan yapılır.
 // TEK KAYNAK: değiştirilirse `__tests__/wordRepository.test.js` içindeki
 // doğrulamalar da bilinçli olarak güncellenmeli.
-const ID_RANGES = [
+const ID_RANGES: { max: number; level: HskLevel }[] = [
   { max: 150, level: 'hsk1' },
   { max: 300, level: 'hsk2' },
   { max: 600, level: 'hsk3' },
@@ -59,7 +78,7 @@ const ID_RANGES = [
 ];
 
 // Bir kelimenin id'sinden seviyesini çıkarır. Sayı olmayan / NaN id için null.
-export const getLevelFromWordId = (id) => {
+export const getLevelFromWordId = (id: unknown): HskLevel | null => {
   if (typeof id !== 'number' || Number.isNaN(id)) return null;
   const range = ID_RANGES.find((r) => id <= r.max);
   return range ? range.level : null;
@@ -67,11 +86,13 @@ export const getLevelFromWordId = (id) => {
 
 // Seviyeye ait kelime havuzu. Bilinmeyen seviye veya "mixed" için tüm havuz döner
 // (mezun olmuş davranış: `LEVEL_POOLS[level] || ALL_WORDS`).
-export const getWordPool = (level) => LEVEL_POOLS[level] || ALL_WORDS;
+export const getWordPool = (level: string | null | undefined): Word[] =>
+  (LEVEL_POOLS as Record<string, Word[]>)[String(level)] || ALL_WORDS;
 
 // `id` → kelime (O(1)). Review havuzu artık kelimeyi kopyalamak yerine yalnızca
 // id saklıyor (Faz 3.2 → services/reviewPool.js); çözümleme buradan yapılır.
 // Bilinmeyen id için null.
-const WORD_BY_ID = new Map(ALL_WORDS.map((word) => [word.id, word]));
+const WORD_BY_ID = new Map<number, Word>(ALL_WORDS.map((word) => [word.id, word]));
 
-export const getWordById = (id) => WORD_BY_ID.get(id) || null;
+export const getWordById = (id: WordId | null | undefined): Word | null =>
+  (WORD_BY_ID.get(id as number) as Word | undefined) || null;

@@ -12,7 +12,8 @@ import {
 jest.mock('expo-document-picker', () => ({ getDocumentAsync: jest.fn() }));
 
 // jest.mock ile değiştirilen fonksiyon; testte mock API'sine erişmek için jest.Mock'a çeviriyoruz.
-const getDocumentAsyncMock = /** @type {jest.Mock} */ (DocumentPicker.getDocumentAsync);
+// (Faz 22: TS dosyasında JSDoc assert'i çalışmadığı için gerçek bir `as` çevrimi.)
+const getDocumentAsyncMock = DocumentPicker.getDocumentAsync as unknown as jest.Mock;
 
 const DECKS_KEY = '@custom_word_decks';
 

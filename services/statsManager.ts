@@ -1,14 +1,43 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDateKey, addDays } from './dateUtils';
 import { CATEGORIES, getCategory } from './modes';
+// Kelime id'si türü TEK kaynaktan gelir: `services/wordRepository.ts` (HSK id'leri
+// sayı, özel deste id'leri 'custom_...' metni). Buradaki kayıtlar ikisini de taşır.
+import type { WordId } from './wordRepository';
+
+export type { WordId };
 
 const STATS_STORAGE_KEY = '@hsk_user_stats';
+
+// --- Tipler (Faz 22: TS dönüşümü) ---------------------------------------------
+// Bir kategorideki (bkz. modes.ts) doğru/yanlış serisi. Alanlar eksik olabilir:
+// diskteki kayıt her zaman bu şekille yazılmaz (elle düzenlenmiş/eski veri) ve
+// okuma tarafı her alanı `|| 0` ile korur.
+export type CategoryStat = { streak?: number; wrongStreak?: number };
+// Depodaki tam kayıt (yazma tarafı hep bu şekli üretir).
+export type WordStat = { categories: Record<string, CategoryStat> };
+// Okuma tarafı: kaydı olmayan ya da eksik kayıtlar da bu tiple sorgulanır.
+export type WordStatLike = { categories?: Record<string, CategoryStat> };
+export type DailyStat = { correct: number; wrong: number };
+export type StatsStreak = { current: number; lastDate: string | null };
+// `@hsk_user_stats` kaydının tek şekli.
+export type StatsData = {
+  wordStats: Record<string, WordStat>;
+  dailyStats: Record<string, DailyStat>;
+  streak: StatsStreak;
+};
+
+const createEmptyStats = (): StatsData => ({
+  wordStats: {},
+  dailyStats: {},
+  streak: { current: 0, lastDate: null },
+});
 
 // Yeni kelime kaydı için boş kategori tablosu. Kategoriler artık modes.js'ten gelir
 // (Faz 3.3): eskiden üç anahtar burada elle yazılıyordu ve mod→kategori eşlemesi
 // 4 tanesi var olmayan 10 mod adı içeriyordu.
-const createEmptyCategories = () =>
-  CATEGORIES.reduce((acc, category) => {
+const createEmptyCategories = (): Record<string, CategoryStat> =>
+  CATEGORIES.reduce<Record<string, CategoryStat>>((acc, category) => {
     acc[category] = { streak: 0, wrongStreak: 0 };
     return acc;
   }, {});
@@ -22,17 +51,20 @@ const createEmptyCategories = () =>
 export const MASTERY_STREAK = 3;
 
 // Kelime, TÜM kategorilerde 3'lük doğru seriye ulaştıysa ustalaşılmıştır.
-export const isMastered = (wordStat) =>
+export const isMastered = (wordStat?: WordStatLike | null): boolean =>
   CATEGORIES.every((category) => (wordStat?.categories?.[category]?.streak || 0) >= MASTERY_STREAK);
 
 // HERHANGİ bir kategoride 3'lük yanlış seri varsa kelime sorunludur.
-export const isProblematic = (wordStat) =>
+export const isProblematic = (wordStat?: WordStatLike | null): boolean =>
   CATEGORIES.some(
     (category) => (wordStat?.categories?.[category]?.wrongStreak || 0) >= MASTERY_STREAK
   );
 
 // Bir havuzun (HSK seviyesi ya da özel deste) ustalık oranı.
-export const getMastery = (pool, wordStats = {}) => {
+export const getMastery = (
+  pool: { id: WordId }[] | null | undefined,
+  wordStats: Record<string, WordStatLike> = {}
+): { count: number; percent: number } => {
   if (!pool || pool.length === 0) return { count: 0, percent: 0 };
 
   const count = pool.filter((word) => isMastered(wordStats[word.id])).length;
@@ -42,18 +74,26 @@ export const getMastery = (pool, wordStats = {}) => {
 // Not: gün anahtarları artık yerel saatle ve tek yerden (services/dateUtils.js) üretilir.
 
 // 1. Tüm İstatistik Verisini Getir
-export const getStats = async () => {
+export const getStats = async (): Promise<StatsData> => {
   try {
     const raw = await AsyncStorage.getItem(STATS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : { wordStats: {}, dailyStats: {}, streak: { current: 0, lastDate: null } };
+    return raw ? (JSON.parse(raw) as StatsData) : createEmptyStats();
   } catch {
-    return { wordStats: {}, dailyStats: {}, streak: { current: 0, lastDate: null } };
+    return createEmptyStats();
   }
 };
 
 // 2. Tek bir cevabı istatistiğe işler.
 //    Doğrudan çağrılmaz; aşağıdaki kuyruk üzerinden sıralı çalışır.
-const performRecordAnswer = async ({ wordId, mode, isCorrect }) => {
+const performRecordAnswer = async ({
+  wordId,
+  mode,
+  isCorrect,
+}: {
+  wordId: WordId;
+  mode: string;
+  isCorrect: boolean;
+}): Promise<void> => {
   const data = await getStats();
   const category = getCategory(mode); // tanınmayan modda __DEV__ uyarısı + null
   const today = getDateKey();
@@ -113,10 +153,10 @@ const performRecordAnswer = async ({ wordId, mode, isCorrect }) => {
 //    Aynı anda gelen iki cevabın aynı anlık görüntüyü okuyup birbirinin yazımını
 //    ezmesini (lost update / yarış koşulu) engeller: her yazma, bir önceki bitince başlar.
 //    Kuyruk aynı zamanda istatistik SİLME işlerini de taşır (aşağıdaki removeWordStatsByIds).
-/** @type {Promise<unknown>} */
-let statsWriteQueue = Promise.resolve();
+/** Kuyruk: `unknown` — biriken işlerin dönüş tipleri farklı (void/boolean). */
+let statsWriteQueue: Promise<unknown> = Promise.resolve();
 
-export const recordAnswer = (payload) => {
+export const recordAnswer = (payload: { wordId: WordId; mode: string; isCorrect: boolean }) => {
   statsWriteQueue = statsWriteQueue
     .then(() => performRecordAnswer(payload))
     .catch((error) => {
@@ -135,7 +175,7 @@ export const recordAnswer = (payload) => {
 //
 // Günlük aktivite ve streak KORUNUR: onlar kelimeye değil güne bağlıdır.
 // Dönen değer: temizlik gerçekten bir şey sildiyse true.
-export const removeWordStatsByIds = (wordIds) => {
+export const removeWordStatsByIds = (wordIds: WordId[] | WordId) => {
   const ids = Array.isArray(wordIds) ? wordIds : [];
   if (ids.length === 0) return statsWriteQueue;
 
@@ -176,10 +216,14 @@ export const removeWordStatsByIds = (wordIds) => {
 // Bilinen sınır: araya karışık doğru/yanlış girmişse toplam, gerçek "kesintisiz seri"
 // uzunluğundan uzun olabilir. Yalnızca id'si değişen kelimeler için geçerli olduğundan
 // kabul edilen bir ödündür (alternatifi veri kaybıdır).
-export const mergeWordStatsRecords = (target, source) => {
-  const categories = { ...((target && target.categories) || {}) };
+export const mergeWordStatsRecords = (
+  target?: WordStatLike | null,
+  source?: WordStatLike | null
+): WordStat => {
+  const categories: Record<string, CategoryStat> = { ...((target && target.categories) || {}) };
+  const sourceCategories: Record<string, CategoryStat> = (source && source.categories) || {};
 
-  for (const [category, stat] of Object.entries((source && source.categories) || {})) {
+  for (const [category, stat] of Object.entries(sourceCategories)) {
     const current = categories[category] || { streak: 0, wrongStreak: 0 };
     categories[category] = {
       streak: (current.streak || 0) + (stat && stat.streak ? stat.streak : 0),
@@ -193,8 +237,12 @@ export const mergeWordStatsRecords = (target, source) => {
 
 // `idMap`: silinen id (anahtar) → tutulan id (değer). Yazma kuyruğu üzerinden çalışır;
 // taşınacak kayıt yoksa diske hiç yazılmaz (idempotent).
-export const mergeWordStatsIds = (idMap) => {
-  const pairs = idMap && typeof idMap === 'object' ? Object.entries(idMap) : [];
+export const mergeWordStatsIds = (
+  idMap: Record<string, WordId> | Record<number, WordId> | null | undefined
+) => {
+  // JSON'dan gelen anahtarlar metindir; id'ler tabloda sayı ya da 'custom_...' olabilir.
+  const pairs: [string, string][] =
+    idMap && typeof idMap === 'object' ? (Object.entries(idMap) as [string, string][]) : [];
   if (pairs.length === 0) return statsWriteQueue;
 
   const performMerge = async () => {

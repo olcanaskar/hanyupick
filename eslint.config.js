@@ -12,8 +12,9 @@ module.exports = defineConfig([
 
   // Testler jest ortamında çalışır: jest global'lerini tanıt
   // (yoksa testlerde 330 adet sahte "no-undef" hatası çıkar).
+  // Faz 22: testler .ts'e taşındı — desen iki uzantıyı da kapsar.
   {
-    files: ['__tests__/**/*.js', 'jest.setup.js'],
+    files: ['__tests__/**/*.{js,ts}', 'jest.setup.js'],
     languageOptions: {
       globals: {
         describe: 'readonly',

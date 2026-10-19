@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 <img src="assets/icon.png" alt="HanyuPick app icon" width="140" />
 
@@ -104,7 +104,7 @@ Scan the QR code with Expo Go (Android) or the Camera app (iOS).
 ```bash
 npm test        # 247 Jest tests (services only), jest-expo preset
 npm run lint    # ESLint (flat config) — expected: 0 errors
-npm run tsc     # TypeScript checks the plain JS itself (`checkJs`) — expected: 0 errors
+npm run tsc     # TypeScript — logic `.ts`, screens `.js` via `checkJs` — expected: 0 errors
 ```
 
 The same three commands run in CI on every push and pull request.
@@ -144,21 +144,25 @@ It strips the phone's system bars, adds the frame and captions, and draws the sa
 | `index.js` → `App.js` | Entry point: navigation, the review-pool state, splash screen, id migrations. |
 | `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen`. |
 | `components/` | `Header`, `QuestionCard`, `ScoreBoard`, `ExampleBox`, `StatsModal`, `SettingsModal`, `CustomDeckModal`, `HandwritingModal`, `FloatingBackground`. |
-| `services/` | All logic: word repository, review pool, quiz builder, stats, import, examples, handwriting, speech, haptics, settings, word-id migrations, date helpers. |
-| `data/` | `hsk1..6.json` (5,000 words) and `examples/hsk*_examples.js` (example sentences keyed by word id). |
-| `__tests__/` | Jest tests (services only, by design — screens are verified on a device). |
+| `services/` | All logic, in **TypeScript** (`.ts`): word repository, review pool, quiz builder, stats, import, examples, handwriting, speech, haptics, settings, word-id migrations, date helpers. |
+| `data/` | `hsk1..6.json` (5,000 words) and `examples/hsk*_examples.ts` (example sentences keyed by word id). |
+| `__tests__/` | Jest tests, in TypeScript (services only, by design — screens are verified on a device). |
 | `tools/generate-icons.py` | The single source of the icons and the splash image. |
 | `tools/generate-store-screenshots.py` | The single source of the store-style README gallery (from `docs/screenshots/raw/`). |
 
-Everything that has one source of truth really has one: `services/wordRepository.js` for levels and
-word pools, `services/modes.js` for the six quiz directions, `services/statsManager.js` for the
-mastery rules, `services/wordIdMigrations.js` for every word-id move, `services/dateUtils.js` for day
+Everything that has one source of truth really has one: `services/wordRepository.ts` for levels and
+word pools, `services/modes.ts` for the six quiz directions, `services/statsManager.ts` for the
+mastery rules, `services/wordIdMigrations.ts` for every word-id move, `services/dateUtils.ts` for day
 keys. Components never re-implement those rules.
+
+Screens and components are still JavaScript, type-checked through `checkJs`; the logic modules
+(`services/`), the tests and the example-sentence data are TypeScript, so their types are real and
+checked at build time.
 
 ## Data notes
 
 **Word ids are permanent identity.** Progress and the mistake pool are stored *by word id*, so
-changing the library means writing a migration: `services/wordIdMigrations.js` records every id move
+changing the library means writing a migration: `services/wordIdMigrations.ts` records every id move
 from every phase, and `App.js` applies the pending ones at startup — in ascending order, because 30
 ids are both a source and a target across two phases.
 
@@ -173,7 +177,7 @@ stable; a word without one still gets a stable id from its index.
 ```
 
 **Examples.** Every HSK word has an example sentence whose hanzi contains the word itself — asserted
-by `__tests__/exampleService.test.js` for all six levels. The only exemptions are multi-part pattern
+by `__tests__/exampleService.test.ts` for all six levels. The only exemptions are multi-part pattern
 words such as 虽然……但是……, where an ellipsis notation can never appear verbatim in a sentence.
 
 ## Privacy

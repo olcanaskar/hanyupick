@@ -123,7 +123,7 @@ describe('recognizeHandwriting', () => {
     beforeEach(() => jest.useFakeTimers());
 
     test('ASLA çözülmeyen istek zaman aşımıyla sonlanır (sonsuz spinner yok)', async () => {
-      const fetchImpl = jest.fn(() => new Promise(() => {}));
+      const fetchImpl = jest.fn(() => new Promise<never>(() => {}));
 
       const promise = recognizeHandwriting(PATHS, { fetchImpl });
       jest.advanceTimersByTime(HANDWRITING_TIMEOUT_MS);
@@ -132,13 +132,15 @@ describe('recognizeHandwriting', () => {
     });
 
     test('zaman aşımında istek iptal edilir (signal.aborted)', async () => {
-      // `jest.Mock` tipi: `mock.calls` üzerinden gönderilen `signal`e erişebilmek için.
-      /** @type {jest.Mock} */
-      const fetchImpl = jest.fn(() => new Promise(() => {}));
+      // İkinci parametre tiplenir: `mock.calls` üzerinden gönderilen `signal`e
+      // erişebilmek için (Faz 22: JSDoc assert'i TS dosyasında çalışmıyor).
+      const fetchImpl = jest.fn(
+        (_url: string, _init?: { signal?: AbortSignal }) => new Promise<never>(() => {})
+      );
 
       const promise = recognizeHandwriting(PATHS, { fetchImpl });
 
-      const signal = fetchImpl.mock.calls[0][1].signal;
+      const signal = fetchImpl.mock.calls[0][1]?.signal;
 
       expect(signal.aborted).toBe(false);
       jest.advanceTimersByTime(HANDWRITING_TIMEOUT_MS);
@@ -160,7 +162,7 @@ describe('recognizeHandwriting', () => {
     });
 
     test('zaman aşımı süresi ayarlanabilir', async () => {
-      const fetchImpl = jest.fn(() => new Promise(() => {}));
+      const fetchImpl = jest.fn(() => new Promise<never>(() => {}));
 
       const promise = recognizeHandwriting(PATHS, { fetchImpl, timeoutMs: 500 });
       jest.advanceTimersByTime(500);

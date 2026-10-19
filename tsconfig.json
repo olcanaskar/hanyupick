@@ -10,9 +10,10 @@
     "App.js",
     "index.js",
     "jest.setup.js",
-    "services/**/*.js",
+    "services/**/*.ts",
+    "data/examples/**/*.ts",
     "screens/**/*.js",
     "components/**/*.js",
-    "__tests__/**/*.js"
+    "__tests__/**/*.ts"
   ]
 }

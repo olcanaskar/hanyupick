@@ -15,6 +15,23 @@
 
 import { LEVEL_POOLS } from './wordRepository';
 
+// --- Tipler (Faz 22: TS dönüşümü) ---------------------------------------------
+//
+// Görünüm ölçüsü (bileşen canlı pencere ölçüsünü verir) ve üretilen karakter.
+export type Viewport = { width: number; height: number };
+export type Point = { x: number; y: number };
+export type Particle = {
+  char: string;
+  size: number;
+  duration: number;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+};
+// Rastgelelik dışarıdan verilebilir (testler deterministik diziler geçer).
+export type RandomFn = () => number;
+
 // Arka planda kaç karakter yüzer.
 export const PARTICLE_COUNT = 18;
 
@@ -41,7 +58,7 @@ export const MIN_SPEED = 20;
 export const MAX_SPEED = 28;
 
 // Yalnızca tek karakterlik Hanzi'ler (HSK1 havuzu — tek kaynak `wordRepository`).
-export const SINGLE_HANZI_WORDS = (() => {
+export const SINGLE_HANZI_WORDS: { hanzi: string }[] = (() => {
   const hsk1 = LEVEL_POOLS.hsk1 || [];
   const single = hsk1.filter((item) => item.hanzi && item.hanzi.length === 1);
 
@@ -52,7 +69,7 @@ const FALLBACK_HANZI = SINGLE_HANZI_WORDS[0] ? SINGLE_HANZI_WORDS[0].hanzi : '�
 
 // Ekran kenarında, ekranın dışına taşan rastgele bir nokta.
 // `viewport`: `{ width, height }`.
-export const getRandomBoundaryPoint = (viewport, random = Math.random) => {
+export const getRandomBoundaryPoint = (viewport: Viewport, random: RandomFn = Math.random): Point => {
   const { width, height } = viewport;
   const roll = random();
 
@@ -67,8 +84,12 @@ export const getRandomBoundaryPoint = (viewport, random = Math.random) => {
 // uzaklık iki eksenden en az birinde sağlanmalı. Sınırlı sayıda aday denenir; hiçbiri
 // yeterince uzak değilse (örneğin çok küçük pencere) en iyisi döner — bu yüzden
 // fonksiyon ASLA sonsuz döngüye girmez.
-export const pickTargetPoint = (start, viewport, random = Math.random) => {
-  let best = null;
+export const pickTargetPoint = (
+  start: Point,
+  viewport: Viewport,
+  random: RandomFn = Math.random
+): Point => {
+  let best: Point | null = null;
   let bestScore = -1;
 
   for (let attempt = 0; attempt < MAX_TARGET_ATTEMPTS; attempt++) {
@@ -94,13 +115,17 @@ export const pickTargetPoint = (start, viewport, random = Math.random) => {
 // karakterlerin aynı anda kenardan süzülmesi yerine); sonraki doğuşlar kenardan başlar.
 //
 // `viewport`: `{ width, height }` — bileşen bunu canlı pencere ölçüsünden verir.
-export const createParticle = (isInitial, viewport, random = Math.random) => {
+export const createParticle = (
+  isInitial: boolean,
+  viewport: Viewport,
+  random: RandomFn = Math.random
+): Particle => {
   const { width, height } = viewport;
   const word = SINGLE_HANZI_WORDS[Math.floor(random() * SINGLE_HANZI_WORDS.length)];
   const size = Math.floor(random() * (MAX_SIZE - MIN_SIZE + 1)) + MIN_SIZE;
 
-  let startX;
-  let startY;
+  let startX: number;
+  let startY: number;
 
   if (isInitial) {
     startX = random() * (width - 60) + 30;

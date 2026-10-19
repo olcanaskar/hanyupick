@@ -7,12 +7,20 @@ import hsk4Examples from '../data/examples/hsk4_examples';
 import hsk5Examples from '../data/examples/hsk5_examples';
 import hsk6Examples from '../data/examples/hsk6_examples';
 import { getLevelFromWordId } from './wordRepository';
+import type { WordId } from './wordRepository';
+
+// --- Tipler (Faz 22: TS dönüşümü) ---------------------------------------------
+//
+// Bir kelimenin örnek cümlesi: `hanzi` cümleyi, `pinyin` okunuşunu, `meaning`
+// İngilizce çevirisini taşır. Örnek dosyaları word id ile anahtarlanır.
+export type ExampleRecord = { hanzi: string; pinyin: string; meaning: string };
+export type ExampleMap = Record<string, ExampleRecord>;
 
 // Faz 10 sonrası kapsam altı seviyede de TAMDIR (hsk1-4 1200, hsk5 1300,
 // hsk6 2500 -> 5000/5000). Yine de savunma amaçlı olarak: karşılığı olmayan
 // kelime için null döner ve ExampleBox hiçbir şey çizmez (ör. custom deck
 // kelimelerinin örneği yoktur).
-const EXAMPLES_MAP = {
+const EXAMPLES_MAP: Record<string, ExampleMap> = {
   hsk1: hsk1Examples,
   hsk2: hsk2Examples,
   hsk3: hsk3Examples,
@@ -21,14 +29,17 @@ const EXAMPLES_MAP = {
   hsk6: hsk6Examples,
 };
 
-export const getExampleByWordId = (level, wordId) => {
+export const getExampleByWordId = (
+  level: string | null | undefined,
+  wordId: WordId | null | undefined
+): ExampleRecord | null => {
   if (!wordId) return null;
 
   // "mixed"/"review" için seviye, id aralığından çözülür (tek kaynak: Faz 3.1).
   const targetLevel =
     level === 'mixed' || level === 'review' ? getLevelFromWordId(wordId) : level;
 
-  const currentLevelExamples = EXAMPLES_MAP[targetLevel?.toLowerCase()];
+  const currentLevelExamples = EXAMPLES_MAP[String(targetLevel).toLowerCase()];
   if (!currentLevelExamples) return null;
 
   return currentLevelExamples[String(wordId)] || null;

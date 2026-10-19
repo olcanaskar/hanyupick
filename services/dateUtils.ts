@@ -5,7 +5,7 @@
 // civarında cevabın bir önceki/sonraki güne yazılmasına ve takvimle uyuşmamasına yol açıyordu.
 
 // Verilen tarihi (varsayılan: şimdi) yerel saatle "YYYY-MM-DD" biçiminde döndürür.
-export const getDateKey = (date = new Date()) => {
+export const getDateKey = (date: Date = new Date()): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -15,7 +15,7 @@ export const getDateKey = (date = new Date()) => {
 // Verilen tarihe takvim günü ekler/çıkarır.
 // Sabit milisaniye (`Date.now() - n * 86400000`) yerine takvim günü kullandığı için
 // yaz saati (DST) geçişlerinde de gün doğru kayar. Girdiyi değiştirmez.
-export const addDays = (date, days) => {
+export const addDays = (date: Date | number | string, days: number): Date => {
   const next = new Date(date);
   next.setDate(next.getDate() + days);
   return next;

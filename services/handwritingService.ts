@@ -16,27 +16,53 @@ const ENDPOINT =
   'https://inputtools.google.com/request?itc=zh-t-i0-handwrit&app=mobilesearch';
 const DEFAULT_CANVAS_SIZE = 280;
 
+// --- Tipler (Faz 22: TS dönüşümü) ---------------------------------------------
+//
+// Çizim noktası: tuval içindeki piksel koordinatı.
+export type InkPoint = { x: number; y: number };
+// Bir vuruş (parmak kaldırılana kadar toplanan noktalar). `allPaths` = vuruş listesi.
+export type InkStroke = InkPoint[];
+export type HandwritingError = 'timeout' | 'network';
+// Çağıranın gördüğü sonuç: `error` null ise istek başarılıdır (adaylar boş olabilir).
+export type HandwritingResult = { candidates: string[]; error: HandwritingError | null };
+// İstek yapan fonksiyonun testler için daraltılmış imzası (gerçek `fetch` uyar).
+export type HandwritingFetch = (
+  url: string,
+  init?: { method?: string; headers?: Record<string, string>; body?: string; signal?: AbortSignal }
+) => Promise<{ ok: boolean; json: () => Promise<unknown> }>;
+export type HandwritingOptions = {
+  canvasSize?: number;
+  timeoutMs?: number;
+  fetchImpl?: HandwritingFetch;
+};
+// Google inputtools yanıtı: ["SUCCESS", [[girdi, adaylar, ...]]].
+type InputToolsResponse = [status: string, payload?: unknown[][]];
+
 // Zaman aşımını gerçek yanıttan ayıran iç işaret (dışarı sızmaz).
 const TIMEOUT = Symbol('handwriting-timeout');
 
 // API'nin beklediği [[[x1, x2], [y1, y2], []], ...] formatı.
-export const buildInk = (allPaths = []) =>
+export const buildInk = (allPaths: InkStroke[] = []): number[][][] =>
   allPaths.map((stroke) => [
     stroke.map((point) => Math.round(point.x)),
     stroke.map((point) => Math.round(point.y)),
     [],
   ]);
 
-const extractCandidates = (data) => {
+const extractCandidates = (data: unknown): string[] => {
+  const response = Array.isArray(data) ? (data as InputToolsResponse) : null;
   const candidates =
-    data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1];
+    response && response[0] === 'SUCCESS' ? response[1]?.[0]?.[1] : undefined;
 
-  return Array.isArray(candidates) ? candidates : [];
+  return Array.isArray(candidates) ? (candidates as string[]) : [];
 };
 
 // Tanıma isteği atar. Dönen değer: { candidates, error }
 // error: null (başarılı) | 'timeout' | 'network'
-export const recognizeHandwriting = async (allPaths, options = {}) => {
+export const recognizeHandwriting = async (
+  allPaths: InkStroke[],
+  options: HandwritingOptions = {}
+): Promise<HandwritingResult> => {
   const {
     canvasSize = DEFAULT_CANVAS_SIZE,
     timeoutMs = HANDWRITING_TIMEOUT_MS,
@@ -49,16 +75,16 @@ export const recognizeHandwriting = async (allPaths, options = {}) => {
   }
 
   const controller = new AbortController();
-  let timer;
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
-  const timeout = new Promise((resolve) => {
+  const timeout = new Promise<typeof TIMEOUT>((resolve) => {
     timer = setTimeout(() => {
       controller.abort(); // En iyi çaba: bağlantıyı boşuna açık tutma.
       resolve(TIMEOUT);
     }, timeoutMs);
   });
 
-  const request = async () => {
+  const request = async (): Promise<HandwritingResult> => {
     const response = await fetchImpl(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
