@@ -5,7 +5,7 @@ Yeni bir oturumda/oturumda çalışmaya başlarken **önce bu dosyayı**, sonra 
 
 > **İsimler:** uygulama **HanyuPick** · git deposu **`olcanaskar/hanyupick`** · EAS projesi **`@olcanaskar/hanyupick`** (GitHub ve Expo hesapları aynı adı taşır) · **yerel klasör hâlâ `C:\Projects\App\ChineseQuizApp`** (arşiv adları klasörden gelir).
 
-Son güncelleme: **Faz 24 — Web istemcisi (Expo'nun web çıktısı)** (ders projesi kriteri *"küçük bir API ya da Expo'nun web çıktısı"*: **API yerine web** seçildi — senkron API'si hesap+sunucu ister ve README'nin "hesap yok, arka uç yok, izleme yok" sözünü bozardı. `react-dom` + `react-native-web` + `@expo/metro-runtime` kuruldu; `app.json`'a `web` kimliği (başlık **HanyuPick — HSK 1-6 Vocabulary Quiz**, `themeColor #FBF5EB`, zemin `#EFE7DA`) eklendi. `App.js` web'de içeriği **ortalanmış, 430 px genişliğinde telefon çerçevesinde** gösteriyor (yerelde ağaç aynen dönüyor, ek View yok). Web'de sessizce kırılan üç yer düzeltildi: **(1)** `react-native-web`'in `Alert`'i bilinçli olarak **boş** → yeni **`services/dialogService.ts`** (`showAlert()`: web'de `window.alert`, yerelde `Alert.alert`) ve `SettingsModal`/`CustomDeckModal`'daki 5 çağrı oradan geçiyor; **(2)** **quiz şıkları web'de tıklanamıyordu** — kartın `TouchableOpacity`'si `disabled={!isAnswered}` yüzünden gerçek bir **`<button disabled>`** olarak çiziliyor, Chromium da devre dışı butonun İÇİNDEKİ butonlara fare olaylarını hiç iletmiyor (pointerdown/up geliyor, mousedown/click gelmiyor) → web'de `disabled={false}` (yerelde değişmedi; `handleCardPress` zaten cevaplanmadan dönüyor); **(3)** `QuestionCard`'daki modül kapsamlı `Dimensions.get('window')` → **`useWindowDimensions()`**. El yazısı "Draw" butonu web'de **gizli** (Google Input Tools'ta CORS + fareyle çizim). Doğrulama **gerçek tarayıcıda** (headless Edge + CDP, görünüm alanı `Emulation.setDeviceMetricsOverride` ile 420×860): Home → Settings/ABOUT ("Developed by Olcan Askar" + sürüm) → HSK 1 quiz → mod sekmesi → şık (Wrong 1 + örnek cümle) → kart (sonraki soru) → Vocabulary (Draw yok, 5000 kelime) — hepsi fareyle geçti. Babel parse ✓ · `tsc` 0 hata · lint 0 hata (14 uyarı) · 247/247 test · web **ve** android export ✓. **Kullanıcı incelemesi (Faz 24b):** pop-up'lar (`settings`, `statistics`, `custom decks`) web'de tüm sekmeyi kaplıyordu → kartlar `maxWidth: 430` (**`components/layout.js` → `WEB_FRAME_WIDTH`**, çerçeveyle tek kaynak) ile hizalandı; quiz'den geri dönülemiyordu → **yalnızca web'de** `←` butonu eklendi (`screens/QuizScreen.js`). **Yayın yeri: EAS Hosting** (kullanıcı seçti). Kayıt §28.)
+Son güncelleme: **Faz 24 — Web istemcisi (Expo'nun web çıktısı)** (ders projesi kriteri *"küçük bir API ya da Expo'nun web çıktısı"*: **API yerine web** seçildi — senkron API'si hesap+sunucu ister ve README'nin "hesap yok, arka uç yok, izleme yok" sözünü bozardı. `react-dom` + `react-native-web` + `@expo/metro-runtime` kuruldu; `app.json`'a `web` kimliği (başlık **HanyuPick — HSK 1-6 Vocabulary Quiz**, `themeColor #FBF5EB`, zemin `#EFE7DA`) eklendi. `App.js` web'de içeriği **ortalanmış, 430 px genişliğinde telefon çerçevesinde** gösteriyor (yerelde ağaç aynen dönüyor, ek View yok). Web'de sessizce kırılan üç yer düzeltildi: **(1)** `react-native-web`'in `Alert`'i bilinçli olarak **boş** → yeni **`services/dialogService.ts`** (`showAlert()`: web'de `window.alert`, yerelde `Alert.alert`) ve `SettingsModal`/`CustomDeckModal`'daki 5 çağrı oradan geçiyor; **(2)** **quiz şıkları web'de tıklanamıyordu** — kartın `TouchableOpacity`'si `disabled={!isAnswered}` yüzünden gerçek bir **`<button disabled>`** olarak çiziliyor, Chromium da devre dışı butonun İÇİNDEKİ butonlara fare olaylarını hiç iletmiyor (pointerdown/up geliyor, mousedown/click gelmiyor) → web'de `disabled={false}` (yerelde değişmedi; `handleCardPress` zaten cevaplanmadan dönüyor); **(3)** `QuestionCard`'daki modül kapsamlı `Dimensions.get('window')` → **`useWindowDimensions()`**. El yazısı "Draw" butonu web'de **gizli** (Google Input Tools'ta CORS + fareyle çizim). Doğrulama **gerçek tarayıcıda** (headless Edge + CDP, görünüm alanı `Emulation.setDeviceMetricsOverride` ile 420×860): Home → Settings/ABOUT ("Developed by Olcan Askar" + sürüm) → HSK 1 quiz → mod sekmesi → şık (Wrong 1 + örnek cümle) → kart (sonraki soru) → Vocabulary (Draw yok, 5000 kelime) — hepsi fareyle geçti. Babel parse ✓ · `tsc` 0 hata · lint 0 hata (14 uyarı) · 247/247 test · web **ve** android export ✓. **Kullanıcı incelemesi (Faz 24b):** pop-up'lar (`settings`, `statistics`, `custom decks`) web'de tüm sekmeyi kaplıyordu → kartlar `maxWidth: 430` (**`components/layout.js` → `WEB_FRAME_WIDTH`**, çerçeveyle tek kaynak) ile hizalandı; quiz'den geri dönülemiyordu → **yalnızca web'de** `←` butonu eklendi (`screens/QuizScreen.js`). **Yayın: EAS Hosting → https://hanyupick.expo.app** (`web.output: "single"`, `eas deploy --prod`; canlı sitede de uçtan uca doğrulandı). Kayıt §28.)
 
 Önceki fazlar (yeniden eskiye):
 
@@ -1141,7 +1141,7 @@ Ders projesi kriteri: *"küçük bir API (ör. ilerleme senkronu) ya da **Expo'n
 
 ### 1. Kurulum
 
-`npx expo install react-dom react-native-web @expo/metro-runtime` (SDK 57'nin uyumlu sürümleri: `react-dom 19.2.3`, `react-native-web ^0.21.2`, `@expo/metro-runtime ~57.0.17`). `app.json` → `web` bloğu: `name` (sekme başlığı: **HanyuPick — HSK 1-6 Vocabulary Quiz**), `shortName`, `lang`, `themeColor #FBF5EB`, `backgroundColor #EFE7DA`, `display: standalone`.
+`npx expo install react-dom react-native-web @expo/metro-runtime` (SDK 57'nin uyumlu sürümleri: `react-dom 19.2.3`, `react-native-web ^0.21.2`, `@expo/metro-runtime ~57.0.17`). `app.json` → `web` bloğu: `output: "single"` (tek sayfa; EAS Hosting bunu bekler), `name` (sekme başlığı: **HanyuPick — HSK 1-6 Vocabulary Quiz**), `shortName`, `lang`, `themeColor #FBF5EB`, `backgroundColor #EFE7DA`, `display: standalone`.
 
 ```bash
 npx expo export --platform web   # dist/ (gitignored) — statik çıktı
@@ -1185,11 +1185,24 @@ Yeni dosya **`components/layout.js`**: `WEB_FRAME_WIDTH = 430` — hem `App.js`'
 
 Ek olarak doğrulandı: Home'un **SELECT LEVEL** pop-up'ı ve Quiz başlığındaki **seviye menüsü** (Header'ın `measureInWindow` ile konumlanan dropdown'ı) 1280 px'lik sekmede de doğru yerde/doğru genişlikte — portal koordinatları pencere koordinatı olduğu için kayma yok.
 
-### 6. Doğrulama özeti ve sonraki adım
+### 6. Yayın: EAS Hosting (canlı)
 
-Babel parse ✓ · `npm run tsc` 0 hata · `npm run lint` **0 hata** (14 uyarı — değişmedi) · `npm test` 247/247 · `npx expo export --platform android` ✓ · `npx expo export --platform web` ✓. **⏳ Kullanıcı kontrolü bekliyor:** `npx expo start --web` → tarayıcıda Home/Settings/Quiz akışı.
+Kullanıcı **EAS Hosting**'i seçti (`eas deploy`; alt yol/CORS sorunu yok, HTTPS hazır). `app.json` → `web.output: "single"` (tek sayfalık SPA — hosting'in beklediği çıktı) açıkça yazıldı.
 
-**Yayın yeri henüz seçilmedi** (kullanıcıya sorulacak): **EAS Hosting** (`eas deploy`, `*.expo.app`) veya **GitHub Pages** (`dist/` statik çıktısı; `web.output` "single" olduğu için SPA olarak çalışır). Seçim yapılmadan hiçbir adres yayımlanmadı.
+```bash
+npx expo export -p web            # dist/ (gitignored)
+npx eas-cli@latest deploy --prod  # üretim: https://hanyupick.expo.app
+```
+
+- **Üretim adresi: https://hanyupick.expo.app** (deployment: `https://hanyupick--hxe124tc4y.expo.app`, panel: `https://expo.dev/projects/ea29583b-…/hosting/deployments`).
+- `--prod` olmadan çalıştırılırsa PR tarzı bir **önizleme** adresi üretir (kullanıcıya göstermek için yararlı).
+- Geri bildirim sonrası **canlı sitede tekrar uçtan uca** doğrulandı (headless Edge, 420×860): Home → Settings/ABOUT → quiz (geri butonu görünür) → mod sekmesi → şık (Wrong 1) → karta tıkla (yeni soru: 饭馆) → Vocabulary ✓.
+
+### 7. Doğrulama özeti ve sonraki adım
+
+Babel parse ✓ · `npm run tsc` 0 hata · `npm run lint` **0 hata** (14 uyarı — değişmedi) · `npm test` 247/247 · `npx expo export --platform android` ✓ · `npx expo export --platform web` ✓ · **canlı site** ✓.
+
+**⏳ Kullanıcı kontrolü bekliyor:** Expo Go'da Settings → ABOUT (Faz 22/23) ve tarayıcıda **https://hanyupick.expo.app** (Faz 24). Sıradaki adımlar: README'nin web bölümüyle güncellenmesi + 1-2 dakikalık demo videosu, ardından **v1.1.0** `preview` APK'sının GitHub release'ine eklenmesi.
 
 ---
 

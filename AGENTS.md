@@ -29,6 +29,7 @@ npx expo install --fix              # fix incompatible package versions
 npx expo export --platform android  # bundle pre-check; writes dist/ (gitignored) — delete afterwards
 npx expo export --platform web      # web build (the second platform, Faz 24); same dist/, delete afterwards
 npx expo start --web                # web dev server (react-dom + react-native-web + @expo/metro-runtime)
+npx eas-cli@latest deploy --prod    # publish the web build to https://hanyupick.expo.app (EAS Hosting)
 ```
 
 `npm test`, `npm run lint` and `npm run tsc` must all pass before a task is declared done.

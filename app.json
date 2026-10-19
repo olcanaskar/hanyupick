@@ -21,6 +21,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
+      "output": "single",
       "name": "HanyuPick — HSK 1-6 Vocabulary Quiz",
       "shortName": "HanyuPick",
       "lang": "en",
