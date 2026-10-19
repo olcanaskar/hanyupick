@@ -5,7 +5,8 @@
 //   1. Titreşim (dokunsal geri bildirim) aç/kapa      -> services/hapticsService.js okur
 //   2. Sesli okuma seviyesi (slider)                  -> services/speechService.js okur
 //   3. İlerlemeyi sıfırla (istatistik + hata havuzu)  -> services/statsManager.js
-//   4. GitHub sayfasını aç (tarayıcı)
+//   4. Hakkında: uygulama adı + sürüm + geliştirici + GitHub bağlantısı
+//      (Faz 23 — adın uygulamada görünmesi ders projesi kriteri).
 //
 // Tüm ayarlar tek kaynaktan gelir (services/settingsService.js): buradaki
 // değişiklikler `onSettingsChange` olayıyla yayılır ve ses/titreşim servisleri
@@ -27,6 +28,7 @@ import {
   View,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
+import Constants from 'expo-constants';
 import * as Clipboard from 'expo-clipboard';
 import Svg, { Path } from 'react-native-svg';
 
@@ -46,6 +48,13 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 // Repo şu an private olsa da adres sabittir; ileride public yapılınca da aynı
 // buton çalışır. (Butona basan kişinin erişimi yoksa tarayıcı 404 gösterir.)
 const REPOSITORY_URL = 'https://github.com/olcanaskar/hanyupick';
+
+// Geliştirici adı + lisans, Hakkında kartında gösterilir. Sürüm `app.json`'dan
+// gelir (EAS'te yalnızca `versionCode`/`buildNumber` uzaktan yönetilir, `version`
+// hâlâ app.json'dadır) — böylece sürüm rozetini elle güncel tutmak gerekmez.
+const DEVELOPER_NAME = 'Olcan Askar';
+const LICENSE_NAME = 'MIT';
+const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 /**
  * GitHub'ın asıl logosu (emoji yerine vektör çizim). Tek renk `fill` ile boyanır,
@@ -378,6 +387,17 @@ export default function SettingsModal({ visible, onClose }) {
               ABOUT
             </Text>
             <View style={styles.card}>
+              <View style={styles.aboutIdentity}>
+                <Text style={styles.aboutAppName} accessible={true}>
+                  HanyuPick
+                </Text>
+                <Text style={styles.aboutAuthor} accessible={true}>
+                  Developed by {DEVELOPER_NAME}
+                </Text>
+                <Text style={styles.aboutMeta} accessible={true}>
+                  Version {APP_VERSION} · {LICENSE_NAME} License
+                </Text>
+              </View>
               <Text style={styles.rowDesc} accessible={true}>
                 Source code, issue tracker and release notes live on GitHub.
               </Text>
@@ -590,6 +610,31 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
     letterSpacing: 0.5,
+  },
+  // Hakkında kartının kimlik bloğu: uygulama adı, geliştirici, sürüm + lisans.
+  aboutIdentity: {
+    alignItems: 'center',
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderColor: '#F3F4F6',
+    marginBottom: 2,
+  },
+  aboutAppName: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#2C3E50',
+    letterSpacing: 0.5,
+  },
+  aboutAuthor: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#B91C1C',
+    marginTop: 3,
+  },
+  aboutMeta: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    marginTop: 5,
   },
   linkButton: {
     flexDirection: 'row',

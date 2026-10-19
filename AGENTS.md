@@ -88,7 +88,7 @@ AsyncStorage keys: `@hsk_review_pool`, `@hsk_user_stats`, `@custom_word_decks`, 
 React Navigation **Stack** (`@react-navigation/stack` + `@react-navigation/native`), wired up in `App.js`:
 
 - `NavigationContainer` → `Stack.Navigator` with the routes `Home`, `Quiz`, `Vocabulary`; `headerShown: false` everywhere.
-- Settings is **not** a route: it is a pop-up (`components/SettingsModal.js`, same shell as `StatsModal`) owned by `HomeScreen` (`visible` / `onClose`) and opened by the ⚙️ button in Home's header row. Anything that needs the same treatment (a second overlay) belongs there too, not in a new route.
+- Settings is **not** a route: it is a pop-up (`components/SettingsModal.js`, same shell as `StatsModal`) owned by `HomeScreen` (`visible` / `onClose`) and opened by the ⚙️ button in Home's header row. Anything that needs the same treatment (a second overlay) belongs there too, not in a new route. Its **ABOUT** card (Faz 23) is the app's identity surface: name, developer ("Developed by Olcan Askar"), `MIT License` and the version read from `expo-constants` (`Constants.expoConfig.version`) — the version stays in `app.json` even though EAS owns `versionCode`/`buildNumber`, so never hardcode it. The developer name must stay visible there (it is a course-project requirement).
 - Home passes `{ initialLevel }` to Quiz; `QuizScreen` reads `route.params.initialLevel`.
 - Cross-component events go through `DeviceEventEmitter` (`onCustomDeckImported`, `onLevelChange`).
 

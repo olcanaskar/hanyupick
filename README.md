@@ -80,7 +80,7 @@ whole word library inside the app:
 | **Vocabulary & Search** | Search the whole library by hanzi, pinyin or meaning, and look a word up by *writing* it (handwriting pad). |
 | **Statistics & Progress** | Mastery per level (streak-based), streaks and an activity calendar, plus your custom decks. |
 | **Speak it** | One tap reads the word out loud with the device's text-to-speech engine. |
-| **Settings** | Haptics on/off, speech volume, reset progress. |
+| **Settings** | Haptics on/off, speech volume, reset progress, and an **About** card with the app version, the license and the GitHub link. |
 
 ## Building from source
 
