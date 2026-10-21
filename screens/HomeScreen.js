@@ -10,6 +10,7 @@ import {
   Pressable,
   DeviceEventEmitter,
   Animated,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StatsModal from '../components/StatsModal';
@@ -21,6 +22,33 @@ import { getCustomDecks } from '../services/importService';
 import { LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+/**
+ * Home'un içerik sarmalayıcısı.
+ *
+ * Yerelde kaydırma YOK (kullanıcı isteği, Faz 11): Home'un tamamı tek ekrana
+ * sığıyor, sürüklenen bir ekran yanlış hissettiriyordu; içerik sığmazsa kırpılır.
+ *
+ * Web'de (Faz 26) aynı gerekçe geçerli değil: tarayıcı penceresinin yüksekliği
+ * kullanıcının elinde (küçük pencere, telefon tarayıcısı, yakınlaştırma) ve
+ * kırpılan kart geri getirilemiyordu → sarmalayıcı **yalnızca web'de** kaydırılır.
+ * Yerel ağaç aynen kalır (tek fark: bu sarmalayıcı), yani Faz 11 davranışı korunur.
+ */
+function PageContent({ children }) {
+  if (Platform.OS === 'web') {
+    return (
+      <ScrollView
+        style={styles.pageScroll}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {children}
+      </ScrollView>
+    );
+  }
+
+  return <View style={styles.container}>{children}</View>;
+}
 
 // Seviyeye özgü sunum bilgileri (Çince ad + zorluk seviyesi).
 // Kelime sayısı havuzdan türetilir → veri değişince metin kendiliğinden güncel kalır.
@@ -172,10 +200,11 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
       {/* 2. Katman: Ön plandaki kartlar */}
       <SafeAreaView style={[styles.safeArea, { backgroundColor: 'transparent' }]}>
         <StatusBar barStyle="dark-content" backgroundColor="#FBF5EB" translucent={false} />
-        {/* Kaydırma YOK (kullanıcı isteği, Faz 11): Home'un tamamı tek ekrana sığıyor;
-            sürüklenip yerinden oynayan bir ekran yanlış hissettiriyordu. İçerik
-            sığmazsa kırpılır — bu yüzden buraya yeni kart eklerken yüksekliği gözet. */}
-        <View style={styles.container}>
+        {/* Kaydırma yerelde YOK (kullanıcı isteği, Faz 11): Home'un tamamı tek ekrana
+            sığıyor; sürüklenip yerinden oynayan bir ekran yanlış hissettiriyordu.
+            İçerik sığmazsa kırpılır — bu yüzden buraya yeni kart eklerken yüksekliği
+            gözet. Web'de sarmalayıcı kaydırılabilir (Faz 26, PageContent). */}
+        <PageContent>
           {/* Header Section */}
           <View style={styles.header}>
             <View style={styles.topRow}>
@@ -416,7 +445,7 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
             </View>
             <Text style={styles.statsCardArrow}>→</Text>
           </TouchableOpacity>
-        </View>
+        </PageContent>
       </SafeAreaView>
     </View>
   );
@@ -430,6 +459,10 @@ const styles = StyleSheet.create({
   container: {
     padding: 24,
     paddingBottom: 32,
+  },
+  // Faz 26: yalnızca web'de kullanılan kaydırma kabı (yerelde PageContent bir View).
+  pageScroll: {
+    flex: 1,
   },
   header: {
     marginTop: 20,

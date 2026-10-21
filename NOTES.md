@@ -1236,3 +1236,20 @@ Babel parse ✓ · `npm run tsc` 0 hata · `npm run lint` **0 hata** (14 uyarı 
 - EAS'ın `--json` çıktısı **stderr'e ilerleme satırı** yazıyor; PowerShell'de `ConvertFrom-Json` bu yüzden patlıyor → ilk `{` karakterinden sonrasını ayrıştır (`2>$null` tek başına yetmez).
 - Bu build'den sonra **cihaz doğrulaması** kullanıcıda: iPhone değil **Android**; Settings → ABOUT'da sürümün **1.1.0** görünmesi build'in doğrulamasıdır.
 - Demo verisi (video için): telefonun kendi deposu — `Settings → Reset progress` temiz başlangıç verir (deste ve ayarlar korunur); örnek deste dosyası `C:\Projects\App\hanyupick-ders1.json` (8 kelime, Import JSON Deck ile içe aktarılır).
+
+---
+
+## 31. Faz 26 — Home yalnızca web'de kaydırılabilir
+
+**Sorun:** Home bilerek kaydırmasızdı (Faz 11: içerik tek ekrana sığıyor). Web'de bu varsayım çöktü — tarayıcı penceresinin yüksekliği kullanıcının elinde (küçük pencere, telefon tarayıcısı, yakınlaştırma) ve taşan kart **hiçbir şekilde** görünmüyordu. Cihazda sorun yok, çünkü orada pencere hep aynı.
+
+**Çözüm:** `screens/HomeScreen.js`'e `PageContent` sarmalayıcısı eklendi: **yerelde** `View` (Faz 11 davranışı aynen), **web'de** `ScrollView` (`style={styles.pageScroll}` = `flex: 1`, `contentContainerStyle={styles.container}`). Tek JSX ağacı, iki sarmalayıcı — içerik kopyalanmadı. `FloatingBackground` sarmalayıcının **dışında** kaldı (kaydırınca arka plan kaymıyor).
+
+**Doğrulama (gerçek tarayıcı, `expo export --platform web` + statik sunucu, headless Edge):**
+- 430×560: içerik 744 px, kaydırma kabı `scrollHeight 744 / clientHeight 560`; tekerlek girdisiyle `scrollTop 0 → 184`, "Statistics & Progress" kartı `top 646 → 462` (**görünür** oldu) ✓
+- 430×900 ve 1280×800: kaydırılabilir kap **yok** (`scrollHeight == clientHeight`), yani gereksiz kaydırma çubuğu/oynama yok ✓
+- Diğer ekranlar zaten kaydırılabilir: Quiz kartı `ScrollView` (başlık/skor sabit), Sözlük `FlatList`, tüm pop-up'lar (`Stats`, `Settings`, `CustomDeck`) iç `ScrollView` → dokunulmadı.
+
+**Yerel ağaç değişmedi** → APK yeniden derlenmedi (v1.1.0 build'i geçerli kalır); yalnızca web çıktısı yeniden yayımlandı.
+
+**AGENTS.md** kuralı da güncellendi: Home "yerelde kaydırmasız" — web'de kaydırma serbest, yerelde asla "tutarlılık" için açılmaz.
