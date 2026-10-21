@@ -29,6 +29,16 @@ The app is published as an APK on the **[Releases page](https://github.com/olcan
 3. That's it. No account, no sign-up, no download inside the app: the full 5,000-word library is
    already inside the APK and everything except search by draw works offline.
 
+> **Play Protect note.** Android shows *"Play Protect hasn't seen this app before"* for every APK that
+> does not come from Google Play. It means Google has not scanned this file yet — **not** that something
+> harmful was found. Tap **Scan app** (it takes a few seconds and then says *No harmful apps found*) and
+> install; on some versions the button is behind **More details → Install anyway**. HanyuPick asks for no
+> sensitive permissions (no SMS, no accessibility, no notification access) and its whole source is in
+> this repository.
+
+Prefer not to install anything at all? The same app runs in a browser at **https://hanyupick.expo.app**
+— everything works there except search by drawing, which needs the phone.
+
 There is no iOS build yet; on iPhone the app has to be built from source — see
 [Building from source](#building-from-source).
 

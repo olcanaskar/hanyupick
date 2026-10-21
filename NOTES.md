@@ -1253,3 +1253,13 @@ Babel parse ✓ · `npm run tsc` 0 hata · `npm run lint` **0 hata** (14 uyarı 
 **Yerel ağaç değişmedi** → APK yeniden derlenmedi (v1.1.0 build'i geçerli kalır); yalnızca web çıktısı yeniden yayımlandı.
 
 **AGENTS.md** kuralı da güncellendi: Home "yerelde kaydırmasız" — web'de kaydırma serbest, yerelde asla "tutarlılık" için açılmaz.
+
+---
+
+## 32. Faz 27 — Play Protect kurulum notu (README + `v1.1.0` release)
+
+**Neden:** Play dışından kurulan her APK'da Android *"Play Protect hasn't seen this app before"* uyarısı veriyor ve kullanıcı bunu "uygulama zararlı" sanabiliyor. "Bu dosya güvenli" diye Google'a **herkes için** işaretletmenin yolu yok: Play Protect'te beyaz liste yok, uyarı dosya taranmadığı için çıkıyor (Google'ın kendi dokümanı: *App Scan Recommended* → "Play Protect hasn't seen this app before"). Uyarıyı gerçekten kaldırmanın tek yolu Play üzerinden dağıtmak (internal app sharing / internal testing) — Play Console hesabı gerektiği için **ertelendi**.
+
+**Yapılan:** aynı metin iki yere eklendi — README "Download & install" bölümü ve `v1.1.0` release notu: uyarının anlamı ("taranmadı" ≠ "zararlı"), yapılacak hareket (*Scan app* → *No harmful apps found* → kur; bazı sürümlerde **More details → Install anyway**), uygulamanın hassas izin istemediği (SMS / erişilebilirlik / bildirim dinleme yok) ve kurulum istemeyenler için **web linki** (yalnızca el yazısı eksik). README'deki bu kısa atıf, planlanan "web bölümü"nün yerine geçmez.
+
+**Gelecek (bilgi):** Android Developer Verification — 30 Eylül 2026'dan beri dört ülkede, **2027'de global**. Öğrenci/hobi için ücretsiz, kimliksiz *limited distribution* hesabı (20 cihaz); tam dağıtım 25 $ + kimlik ister. Türkiye'de henüz yürürlükte değil.
