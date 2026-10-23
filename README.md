@@ -42,6 +42,24 @@ Prefer not to install anything at all? The same app runs in a browser at **https
 There is no iOS build yet; on iPhone the app has to be built from source — see
 [Building from source](#building-from-source).
 
+## Web version
+
+The same app also runs in a browser: **https://hanyupick.expo.app**
+
+It is the same codebase, exported with `npx expo export --platform web` (React Native Web) and served
+from EAS Hosting. On a desktop browser the layout stays the phone layout, centred in a phone-width
+frame.
+
+- **Everything works** — all six quiz directions, the mistake pool, custom decks, vocabulary search,
+  statistics, speak-aloud through the browser's text-to-speech engine, and every setting.
+- **Except search by drawing.** The handwriting pad sends strokes to Google's public Input Tools
+  endpoint, which does not allow cross-origin calls from a page, so a browser cannot use it; drawing
+  stays a phone feature (the button is hidden on web on purpose — it is not broken).
+- **Progress stays in the browser.** The same records as on the phone, stored in that site's local
+  storage: still no account and no sync, so another browser or device starts empty.
+
+It is published by exporting the bundle and deploying it (see [Web deployment](#web-deployment)).
+
 ## Screenshots
 
 <table>
@@ -130,6 +148,16 @@ and the test loop runs in Expo Go.
 npx eas-cli@latest build --profile preview    --platform android
 npx eas-cli@latest build --profile production --platform android
 ```
+
+### Web deployment
+
+```bash
+npx expo export --platform web    # static bundle into dist/ (gitignored)
+npx eas-cli@latest deploy --prod  # publishes it to https://hanyupick.expo.app
+```
+
+The web build is the same tree as the native app: `App.js` only wraps the content in a centred
+phone-width frame when `Platform.OS === 'web'`, and the pop-up cards are capped to the same width.
 
 The app icon, the Android adaptive-icon layers and the splash image are **generated, never
 hand-edited**:
