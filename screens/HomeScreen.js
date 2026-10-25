@@ -373,7 +373,7 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
               </View>
               <Text style={styles.reviewDesc}>
                 {hasWrongs
-                  ? `${reviewPool.length} words waiting for practice`
+                  ? `${reviewPool.length} ${reviewPool.length === 1 ? 'word' : 'words'} waiting for practice`
                   : 'No mistakes to review yet!'}
               </Text>
             </View>
