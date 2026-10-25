@@ -27,10 +27,10 @@ import {
   View,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
-import Constants from 'expo-constants';
 import * as Clipboard from 'expo-clipboard';
 import Svg, { Path } from 'react-native-svg';
 
+import appConfig from '../app.json';
 import {
   SETTINGS_CHANGED_EVENT,
   SPEECH_VOLUME_MAX,
@@ -50,12 +50,14 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 // buton çalışır. (Butona basan kişinin erişimi yoksa tarayıcı 404 gösterir.)
 const REPOSITORY_URL = 'https://github.com/olcanaskar/hanyupick';
 
-// Geliştirici adı + lisans, Hakkında kartında gösterilir. Sürüm `app.json`'dan
-// gelir (EAS'te yalnızca `versionCode`/`buildNumber` uzaktan yönetilir, `version`
-// hâlâ app.json'dadır) — böylece sürüm rozetini elle güncel tutmak gerekmez.
+// Geliştirici adı + lisans, Hakkında kartında gösterilir. Sürüm doğrudan
+// `app.json`'dan okunur (EAS'te yalnızca `versionCode`/`buildNumber` uzaktan
+// yönetilir, `version` hâlâ app.json'dadır). `expo-constants` web derlemesinde
+// `expoConfig` boş kaldığı için orada sürüm "1.0.0" görünüyordu; JSON importu
+// her platformda aynı değeri verir.
 const DEVELOPER_NAME = 'Olcan Askar';
 const LICENSE_NAME = 'MIT';
-const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
+const APP_VERSION = appConfig?.expo?.version || '1.0.0';
 
 /**
  * GitHub'ın asıl logosu (emoji yerine vektör çizim). Tek renk `fill` ile boyanır,
