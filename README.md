@@ -44,10 +44,10 @@ There is no iOS build yet; on iPhone the app has to be built from source — see
 
 ## Demo video
 
-A 63-second silent tour of the finished app: the six quiz directions, the mistake pool, an imported
+A 62-second silent tour of the finished app: the six quiz directions, the mistake pool, an imported
 custom deck, the statistics screen, vocabulary search, handwriting and the settings card.
 
-https://github.com/user-attachments/assets/c1cd9fe2-9359-47a5-ad1f-d6d4e4622c58
+https://github.com/user-attachments/assets/5d0dd5d4-640b-4430-a718-cd307b739261
 
 Every screen in it is the app itself — the captures were taken from the running build and then framed
 on a stage; nothing in the video is a mockup of a feature that does not exist.
