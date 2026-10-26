@@ -1297,8 +1297,34 @@ Babel parse ✓ · `npm run tsc` 0 hata · `npm run lint` **0 hata** (14 uyarı 
 - **İstatistik listesi kaydırılabiliyor**, yani satır sabit kutuda değil. `search_y=(150, 790)` bandında `_search_y` arıyor: satır profiliyle aday kısa listesi, ardından IoU (≥0,65 / ≥0,62). Ustalık **çubukları** da koyu olduğu için tam genişliğe yakın satırlar (`max(win) > 40`) eleniyor. Kaydırma sırasında satır f01264'te dy −300, f01298'de dy −550 oluyor ve f01300'de görünümden çıkıyor.
 - **Modal animasyonunun yarı saydam kareleri** mutlak eşikle kayboluyor; `deck_fade()` opaklığı yerel arka plandan kestiriyor ve yama metni de o opaklıkta çiziliyor. Şekil testinin kaçırdığı tek tek kareler `extra_ranges` ile elle kapsanıyor (stats `(1054,1058)`, `(1062,1066)`; home `(1058,1058)`).
 
-**Doğrulama:** çıktı MP4'ün **1890 karesi 30 fps'te tek tek** çıkarılıp dört deste bölgesinde eski genişlikte mürekkep arandı → **0 şüpheli kare**. 6 fps taramada geri oku için **0 beyaz kutu**. Balon, Home kartı, menü, quiz rozeti ve **kaydırılmış** istatistik satırı (37,0 sn: `Lesson 1  0/8 (0%)`, HSK 6 ile LAST 7 DAYS arasında) gözle de onaylandı. Kalan: iki kare (f01516, f02023) başka içerikle çapraz geçiş içinde ~%30 opaklıkta tek karelik hayalet — videoda görünmüyor, kabul edildi.
+**Doğrulama:** çıktı MP4'ün **1890 karesi 30 fps'te tek tek** çıkarılıp dört deste bölgesinde eski genişlikte mürekkep arandı → **0 şüpheli kare**. 6 fps taramada geri oku için **0 beyaz kutu**. Aynı tarama **dağıtılan 62 sn'lik kesimde yinelendi** (1863 kare: aynı render eksi ilk 0,9 sn, tek nesil yeniden kodlama) → yine **0 şüpheli kare, 0 beyaz kutu**, yani yeniden kodlama yamalara zarar vermedi. Balon, Home kartı, menü, quiz rozeti ve **kaydırılmış** istatistik satırı (37,0 sn: `Lesson 1  0/8 (0%)`, HSK 6 ile LAST 7 DAYS arasında) gözle de onaylandı. Kalan: iki kare (f01516, f02023) başka içerikle çapraz geçiş içinde ~%30 opaklıkta tek karelik hayalet — videoda görünmüyor, kabul edildi.
 
 **README'de oynatma (YouTube gerekmiyor):** GitHub, **`https://github.com/user-attachments/assets/…`** adresini kendi satırındaysa **satır içi oynatıcı** olarak render ediyor; `<video>` etiketi README'de güvenlik nedeniyle siliniyor, YouTube ise iframe kabul etmediği için ancak tıklanır küçük resim olarak gömülebiliyor. Bu yüzden video **GitHub eki** olarak yüklendi (`gh issue create --attach`, boş plandan 10 MB video sınırı — dosya 3,6 MB, H.264 zaten GitHub'ın önerdiği codec) ve README'ye **`## Demo video`** bölümü eklendi (Download & install ile Web version arasına). Ekler, `olcanaskar/hanyupick#1` numaralı **kapalı** issue'da duruyor: yükleme bir markdown alanına bağlı, issue silinirse dosyanın kalıcılığı garanti değil. Yeni video gerekirse aynı yolla yükle, URL'yi README'de değiştir. (Issue'da iki ek var — 63 sn'lik ham kesim ve yukarıdaki poster kesimi; README **poster kesimini** kullanıyor.)
 
 **Depo temiz:** bu fazda uygulama kodu değişmedi (yalnızca README + NOTES), bu yüzden `npm test` / `npm run lint` / `npm run tsc` yeniden koşulmadı ve `known-good` **`263c1fe`**'de kaldı. Video ve kurgu betikleri repoda değil (`%TEMP%` + `C:\Projects\App`); repoya giren tek şey README'deki bağlantı.
+
+---
+
+## 35. Proje kapanışı — teslim kontrol listesi (2026-10-26)
+
+Proje **bitti**: dersin bütün maddeleri karşılandı ve son iş (tanıtım videosu) §34'te kapandı. Aşağıdaki liste "bitti" derken neye dayandığımızı gösteriyor; her satır doğrulanabilir bir kanıta bağlı.
+
+| Ders ölçütü | Durum | Kanıt |
+| --- | --- | --- |
+| Mantık modüllerinin **TypeScript**'e taşınması + testler | ✓ | `services/*.ts` (14 modül), `__tests__/*.ts` **247 test**; `npm run tsc` 0 hata, `npm test` 247/247. Ekranlar `.js` ama `checkJs` ile tip denetiminde (NOTES §26). |
+| Bir **web** bileşeni | ✓ | `npx expo export --platform web` → **https://hanyupick.expo.app** (EAS Hosting). `App.js` web'de içeriği `WEB_FRAME_WIDTH` telefon çerçevesine alıyor; Home yalnızca web'de kaydırılabilir (NOTES §28, §31). |
+| Uygulamanın **derlenip çalışması** | ✓ | `v1.1.0` APK GitHub release'inde (`hanyupick-1.1.0.apk`, 83 MB), kullanıcı telefonda doğruladı; CI (`npm ci` → lint → tsc → test, Node 22) her push'ta yeşil. |
+| Kullanıcının **adının uygulamada görünmesi** | ✓ | Ayarlar → **ABOUT** kartı: "Developed by Olcan Askar", MIT lisansı ve `expo-constants`'tan okunan sürüm (NOTES §27). |
+| **README** | ✓ | Kullanıcıya dönük: APK indirme + Play Protect notu, **web sürümü**, **tanıtım videosu**, galeri, özellikler, gizlilik, lisans; geliştirici için: kurulum, üç kontrol, EAS build/deploy. |
+| **Tanıtım videosu** | ✓ | 62 sn, 1080p, sessiz; README'de satır içi oynatıcı (GitHub eki). Üç kusur (web geri oku, "Ders 1", takvim balonu) yamalandı ve kare kare doğrulandı (NOTES §34). |
+| **Herkese açık depo** (bonus) | ✓ | https://github.com/olcanaskar/hanyupick — MIT, CI rozeti, release'ler, GitHub Topics. |
+
+**Bilinçli olarak yapılmayanlar** (eksik değil, kapsam dışı — gerekçeleriyle):
+- **iOS build'i yok:** imzalama Apple Developer hesabı + macOS/EAS iOS kimliği istiyor; kod iOS'ta çalışacak şekilde yazıldı (yalnızca web koşullu dalları var), `Building from source` ile herkes kendi build'ini alabilir.
+- **Play Store yayını yok:** Play Console hesabı (ücretli) gerekiyor. Bu yüzden APK'da *Play Protect hasn't seen this app before* uyarısı çıkıyor; README bunu açıklıyor (§32).
+- **`expo-doctor` 20/21:** tek kalan kontrol `tsc` script adı çakışması (yanlış pozitif); bu yüzden CI'a konmadı (§16).
+- **Promo videosunda 2 tek karelik hayalet** (çapraz geçişte ~%30 opak, f01516/f02023) ve sözlük arama alanındaki tarayıcı odak halkası: videoda görünmüyor/rahatsız etmiyor, yeniden çekim maliyeti faydadan büyük.
+
+**Kapanış durumu:** `main` = `3548a7a` (üzerine yalnızca doküman commit'leri), `known-good` = `263c1fe` (son kod commit'i; sonrasındaki değişiklikler yalnızca README/NOTES/AGENTS), çalışma ağacı temiz, tek yedek arşivi `C:\Projects\App\ChineseQuizApp-backup-2026-10-26_2043.tar.gz`. Test/lint/tsc en son kod commit'inde yeşil; doküman değişikliklerinden sonra yeniden koşulması gerekmedi ve CI yine de her push'ta koştu (yeşil).
+
+**Sonraki bir faz gerekirse** en mantıklı adımlar: Play internal testing (Play Protect uyarısını kaldırmanın tek yolu), iOS build (Apple hesabı), `expo-updates` + EAS Update (OTA), HSK 7-9 desteği. Hiçbiri bu teslimin parçası değil.
