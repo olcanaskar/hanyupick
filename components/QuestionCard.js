@@ -100,8 +100,9 @@ export default function QuestionCard({
   if (!word) return null;
 
   const playAudio = () => {
-    // Ses seviyesi kullanıcı ayarından gelir (services/speechService.js).
-    speakHanzi(word.hanzi);
+    // Ses seviyesi kullanıcı ayarından gelir (services/speechService.ts).
+    // `word.id` web'de önceden üretilmiş ses dosyasını seçer.
+    speakHanzi(word.hanzi, word.id);
   };
 
   // Karta tıklandığında: Doğruysa sağa, yanlışsa sola kay

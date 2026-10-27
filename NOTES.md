@@ -1378,3 +1378,65 @@ Ekranlar `.js` kaldı ama artık `checkJs` + `strict` ile denetleniyor. Kullanı
 
 `npx tsc --noEmit` → **0 hata** (`strict: true`) · `npm run lint` → **0 hata, 14 uyarı** (aynı `react-hooks` uyarıları) · `npm test` → **247/247, 14/14 suite**. Depoda `any`, `@ts-ignore`, `@ts-expect-error` **yok** (grep ile doğrulandı). Davranış değişmedi: yalnızca tipler, guard'lar ve iki ölü savunma dalı (`filter(Boolean)`, `!correctWord`) eklendi. **Cihaz doğrulaması kullanıcıda** (Expo Go) — mantık dosyalarına dokunuldu, ekran akışı aynı.
 
+## 37. Faz 37 — Web'de ses: 5.000 kelimenin sesi dosya olarak (ve neden başka çare yok)
+
+### 1. Belirti
+
+Kullanıcı: "ne hanyupick.expo.app'te ne de yerel web sunucusunda hoparlöre basınca ses gelmiyor; sekmede hoparlör simgesi çıkıyor ama ses yok". Telefonda (Expo Go / APK) ses **çalışıyordu**. Yani sorun web'e özgüydü ve ilk akla gelen "ses seviyesi 0" değildi: `@hsk_settings` localStorage'da yoktu, yani `speechVolume` varsayılan **1**.
+
+### 2. Ölçüm (tarayıcıda, `speechSynthesis` ile)
+
+| Metin | `lang` | start→end |
+| --- | --- | --- |
+| `你好` | `zh-CN` | **0 ms** |
+| `你好吗我很好` | `zh-CN` | **4 ms** |
+| `你好吗我很好` | `zh-TW` | **0 ms** |
+| `你好吗我很好` | (yok) | **1 ms** |
+| `ni hao` (latin) | `zh-CN` | **1560 ms** |
+| `merhaba dunya` (latin) | (yok) | **1757 ms** |
+
+Makinede kayıtlı tek ses: `Microsoft Tolga - Turkish (Turkey) | tr-TR` (`HKLM\SOFTWARE\Microsoft\Speech_OneCore\Voices\Tokens` içinde de yalnız `MSTTS_V110_trTR_Tolga`). Yani **Hanzi metni 0 ms'lik sessiz bir utterance** üretiyor; sekmedeki hoparlör simgesi de bundan — ses oturumu açılıyor, içi boş.
+
+### 3. Kök neden ve neden "otomatik indirme" yok
+
+Web'de `expo-speech` tarayıcının `speechSynthesis`'ini kullanır; o da **işletim sisteminin kurulu seslerine** bağlıdır. `getVoices()` salt okunurdur: bir site ne ses paketi kurabilir ne de indirebilir (API'si yok, izin akışı yok). Yani "siteye giren kullanıcıya Çince ses paketini indirtmek" teknik olarak imkânsız — çözüm, sesi **siteyle birlikte getirmek**.
+
+### 4. Çözüm
+
+`tools/generate-audio.py` 5.000 kelimenin sesini **bir kez** üretir → `public/audio/hsk/<id>.mp3` (depoya işlenir). Web'de `services/speechService.ts` bu dosyayı `<audio>` ile çalar; **native'e hiç dokunulmadı** (orada cihazın TTS'i zaten Çince biliyor). `public/` yalnızca `expo export --platform web` sırasında `dist/` köküne kopyalanır, APK'ya girmez.
+
+| Karar | Değer | Neden |
+| --- | --- | --- |
+| Ses | `zh-CN-XiaoxiaoNeural` (`edge-tts`) | doğal, kadın, öğrenme uygulamalarında yaygın; `edge-tts` anahtarsız ve ücretsiz |
+| Hız | `-15%` | native TTS `rate: 0.85` ile aynı tempo |
+| Kodlama | 32 kbps mono, 24 kHz | kelime başına ~2-3 KB |
+| Dosya adı | `<wordId>.mp3` | id kimliktir: göç tablosu gerekmez, `__tests__/audioAssets.test.ts` kapsamı doğrular |
+| Yol | **göreceli** (`audio/hsk/…`) | alt yol dağıtımında da çalışır |
+
+**Sessizlik kırpma zorunlu:** servis her kısa metni sabit ~1,87 s'lik bir tampona koyuyor (`爱` = 0,59 s konuşma + **1,28 s sessizlik**, ffmpeg `silencedetect` ile ölçüldü; 1-3 heceli her kelime aynı 11.232 bayt). Kırpma olmadan 5.000 dosya ~**55 MB** olurdu ve her kelimeden sonra ~1,3 s ölü hava kalırdı. `silenceremove` (-50 dB, 50 ms pencere) + 0,2 s kuyruk + 32 kbps → ~**15 MB**, kelime biter bitmez susuyor.
+
+### 5. Kod
+
+| Dosya | Değişiklik |
+| --- | --- |
+| `tools/generate-audio.py` | üretici: `--levels/--limit/--force/--verify`, eşzamanlılık 4, 3 deneme, yarım dosya bırakmayan `.part` akışı |
+| `services/audioFiles.ts` | `hasBundledAudio(wordId)` (id aralığı **veriden** gelir: `getWordById`), `getBundledAudioUrl(id)` |
+| `services/speechService.ts` | web'de dosya, native'de `expo-speech`; `speakHanzi(text, wordId?)`; dosya açılamazsa motora düşer; `warmUpSpeech` web'de hiç çalışmaz; `stopSpeaking` hem dosyayı hem motoru durdurur |
+| `components/QuestionCard.js`, `screens/VocabularyScreen.js` | 🔊 artık `wordId` de veriyor |
+| `components/SettingsModal.js` | ses testi sabit `'你好'` yerine **kütüphaneden** kelime okur (`getWordById(125)` → 谢谢): metin de id de veriden gelir, dosyası da vardır |
+| `__tests__/audioFiles.test.ts`, `__tests__/audioAssets.test.ts`, `__tests__/speechServiceWeb.test.ts` | yol/kapsam/web yolu testleri |
+
+### 6. Bu işin çıkardığı tuzaklar
+
+1. **ffmpeg `.part` uzantısını çözemedi** (`EINVAL`): çıktı yarım dosya adıyla yazıldığı için `-f mp3` açıkça verilmeli.
+2. **`react-native/Libraries/Utilities/Platform` modülünü mock'lamak patlıyor**: `expo-modules-core` import sırasında `Platform.select` çağırıyor (`Cannot read properties of undefined (reading 'select')`). Testte gerçek `Platform` nesnesinin `OS`'i `Object.defineProperty` ile `'web'` yapıldı.
+3. **`fs`/`path`/`__dirname` için `@types/node` gerekti**: `tsconfig.json` `types: ["jest", "node"]` oldu. Risk düşüktü çünkü kod zaten `ReturnType<typeof setTimeout>` kullanıyordu.
+4. **Windows konsolu cp1254**: Hanzi yazdırmak betiği `UnicodeEncodeError` ile düşürüyordu → `sys.stdout.reconfigure(encoding="utf-8", errors="replace")`.
+5. **iOS Safari'de `audio.volume` yalnız okunur**: iPhone'da ses seviyesi kaydırıcısı web sesini kısmaz (native etkilenmez). Bilinen platform sınırı; not düşüldü.
+6. **`edge-tts` resmî olmayan bir uç nokta** (Edge'in "Read Aloud" servisi). Lisans/ToS açısından gri; ticari dağıtımda Azure Speech (ayda 500k karakter ücretsiz) ya da Piper (MIT) ile değiştirilmeli. Değişim tek yerde: `VOICE`/`RATE` sabitleri + `--force` ile yeniden üretim.
+
+### 7. Doğrulama
+
+`npx tsc --noEmit` → **0 hata** · `npm run lint` → **0 hata, 14 uyarı** (hepsi eskiden beri var; yeni dosyalar uyarı eklemedi) · `npm test` → **263/263, 17/17 suite**. Tarayıcıda: `GET /audio/hsk/1.mp3` → `200 audio/mpeg` (2.348 bayt), `Audio` ile açılışta `duration 0.47 s`, `play()` reddi yok. `python tools/generate-audio.py --verify` → 5000/5000, fazla dosya yok. **Cihaz doğrulaması kullanıcıda** (native yol değişmedi).
+
+

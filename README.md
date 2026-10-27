@@ -61,7 +61,12 @@ from EAS Hosting. On a desktop browser the layout stays the phone layout, centre
 frame.
 
 - **Everything works** — all six quiz directions, the mistake pool, custom decks, vocabulary search,
-  statistics, speak-aloud through the browser's text-to-speech engine, and every setting.
+  statistics, speak-aloud, and every setting.
+- **The audio is shipped, not borrowed from your machine.** A browser can only speak with the voices
+  the operating system has installed, and on a machine without a Chinese voice package a Chinese
+  sentence comes out as silence (that is how this bug was found). So all 5,000 words are pre-recorded
+  once and served as small MP3 files with the site — they sound the same everywhere. Words from a
+  custom deck are not in that set; those fall back to the browser's own engine.
 - **Except search by drawing.** The handwriting pad sends strokes to Google's public Input Tools
   endpoint, which does not allow cross-origin calls from a page, so a browser cannot use it; drawing
   stays a phone feature (the button is hidden on web on purpose — it is not broken).
@@ -117,7 +122,7 @@ whole word library inside the app:
 | **Custom word decks** | Import your own vocabulary from a JSON file — useful for HSK 7–9, textbook chapters or your own word list. |
 | **Vocabulary & Search** | Search the whole library by hanzi, pinyin or meaning, and look a word up by *writing* it (handwriting pad). |
 | **Statistics & Progress** | Mastery per level (streak-based), streaks and an activity calendar, plus your custom decks. |
-| **Speak it** | One tap reads the word out loud with the device's text-to-speech engine. |
+| **Speak it** | One tap reads the word out loud — the device's text-to-speech engine on a phone, a bundled recording in the browser. |
 | **Settings** | Haptics on/off, speech volume, reset progress, and an **About** card with the app version, the license and the GitHub link. |
 
 ## Building from source
@@ -140,7 +145,7 @@ Scan the QR code with Expo Go (Android) or the Camera app (iOS).
 ### Checks
 
 ```bash
-npm test        # 247 Jest tests (services only), jest-expo preset
+npm test        # 263 Jest tests (services only), jest-expo preset
 npm run lint    # ESLint (flat config) — expected: 0 errors
 npm run tsc     # TypeScript — logic `.ts`, screens `.js` via `checkJs` — expected: 0 errors
 ```
@@ -185,6 +190,20 @@ python tools/generate-store-screenshots.py
 
 It strips the phone's system bars, adds the frame and captions, and draws the sample progress used in the two Statistics images — see the note under [Screenshots](#screenshots). The gallery is **README-only**: nothing under `docs/` is bundled into the app (the app's own assets live in `assets/`), so these files exist purely to promote the app here.
 
+The **web pronunciation audio is generated too** — one MP3 per library word, named after the word id:
+
+```bash
+python -m pip install edge-tts imageio-ffmpeg
+python tools/generate-audio.py            # only the missing files
+python tools/generate-audio.py --verify   # offline: every word id has a file?
+```
+
+The 5,000 files live in `public/audio/hsk/` and are committed, because `public/` is copied into
+`dist/` by the web export. They are **not** part of the native app: on a phone the device's own
+text-to-speech is used, and the APK does not grow. Re-run the script after any change to
+`data/hsk*.json` (and with `--force` after changing the voice), otherwise the web build keeps the old
+recordings — `__tests__/audioAssets.test.ts` fails until they match again.
+
 ## Project structure
 
 | Path | Contents |
@@ -192,11 +211,12 @@ It strips the phone's system bars, adds the frame and captions, and draws the sa
 | `index.js` → `App.js` | Entry point: navigation, the review-pool state, splash screen, id migrations. |
 | `screens/` | `HomeScreen`, `QuizScreen`, `VocabularyScreen`. |
 | `components/` | `Header`, `QuestionCard`, `ScoreBoard`, `ExampleBox`, `StatsModal`, `SettingsModal`, `CustomDeckModal`, `HandwritingModal`, `FloatingBackground`. |
-| `services/` | All logic, in **TypeScript** (`.ts`): word repository, review pool, quiz builder, stats, import, examples, handwriting, speech, haptics, settings, word-id migrations, date helpers. |
+| `services/` | All logic, in **TypeScript** (`.ts`): word repository, review pool, quiz builder, stats, import, examples, handwriting, speech, audio files, haptics, settings, word-id migrations, date helpers. |
 | `data/` | `hsk1..6.json` (5,000 words) and `examples/hsk*_examples.ts` (example sentences keyed by word id). |
 | `__tests__/` | Jest tests, in TypeScript (services only, by design — screens are verified on a device). |
 | `tools/generate-icons.py` | The single source of the icons and the splash image. |
 | `tools/generate-store-screenshots.py` | The single source of the store-style README gallery (from `docs/screenshots/raw/`). |
+| `tools/generate-audio.py` + `public/audio/hsk/` | The single source of the web pronunciation audio (one MP3 per word id, 5,000 files). Web only — never bundled into the app. |
 
 Everything that has one source of truth really has one: `services/wordRepository.ts` for levels and
 word pools, `services/modes.ts` for the six quiz directions, `services/statsManager.ts` for the
@@ -234,12 +254,13 @@ words such as 虽然……但是……, where an ellipsis notation can never app
 ## Privacy
 
 No accounts, no analytics, no server of our own: your progress is stored on the device with
-AsyncStorage. Two features leave the device, and both are obvious from the UI:
+AsyncStorage. Two features are worth spelling out:
 
 - **The handwriting pad** (the *Draw* button in Vocabulary) sends the strokes to Google's public
   [Input Tools](https://inputtools.google.com) endpoint to recognise the character. The app works
   fine without it — it is just another way to type into the search box.
-- **The 🔊 button** uses the device's built-in text-to-speech engine.
+- **The 🔊 button** speaks through the device's built-in text-to-speech engine on a phone; the web
+  build plays a recording that ships with the site. No audio ever leaves the device.
 
 ## Contributing
 

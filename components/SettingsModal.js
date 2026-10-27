@@ -41,6 +41,7 @@ import {
 } from '../services/settingsService';
 import { clearAllStats } from '../services/statsManager';
 import { speakHanzi } from '../services/speechService';
+import { getWordById } from '../services/wordRepository';
 import { showAlert } from '../services/dialogService';
 import { WEB_FRAME_WIDTH } from './layout';
 
@@ -83,7 +84,10 @@ function GitHubMark({ size = 16, color = '#2C3E50' }) {
 
 // Slider adımı: %5'lik dilimler (0.00–1.00 aralığı).
 const VOLUME_STEP = 0.05;
-const TEST_TEXT = '你好';
+// Ses testi kütüphaneden GERÇEK bir kelimeyi okur: metin de id de veriden gelir,
+// böylece web'de o id'nin önceden üretilmiş ses dosyası çalınır (sabit bir metin
+// yazılsaydı kelime kütüphanede olmadığı için sesi de olmazdı).
+const TEST_WORD_ID = 125; // 谢谢
 
 /**
  * @param {{ visible: boolean, onClose: () => void }} props
@@ -331,7 +335,10 @@ export default function SettingsModal({ visible, onClose }) {
 
               <TouchableOpacity
                 style={styles.testButton}
-                onPress={() => speakHanzi(TEST_TEXT)}
+                onPress={() => {
+                  const word = getWordById(TEST_WORD_ID);
+                  if (word) speakHanzi(word.hanzi, word.id);
+                }}
                 activeOpacity={0.75}
                 accessibilityRole="button"
                 accessibilityLabel="Play a sample word at the current volume"

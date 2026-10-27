@@ -139,7 +139,7 @@ export default function VocabularyScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.soundBtn}
-        onPress={() => speakHanzi(item.hanzi)}
+        onPress={() => speakHanzi(item.hanzi, item.id)}
         activeOpacity={0.7}
         accessibilityRole="button"
         accessibilityLabel={`Play pronunciation of ${item.hanzi}`}
