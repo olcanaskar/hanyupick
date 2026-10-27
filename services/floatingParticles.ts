@@ -106,7 +106,10 @@ export const pickTargetPoint = (
     }
   }
 
-  return best;
+  // `MAX_TARGET_ATTEMPTS > 0` olduğu için döngü en az bir kez döner ve `best` atanır;
+  // yedek dönüş yalnızca tip güvenliği için (strict) — asla sıfır uzunlukta hareket
+  // üretmemek adına yeni bir sınır noktası seçilir.
+  return best ?? getRandomBoundaryPoint(viewport, random);
 };
 
 // Yeni bir yüzen karakter: doğuş/hedef noktası, boyut ve süre.

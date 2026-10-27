@@ -83,7 +83,7 @@ JSON'dan özel deste içe aktarma, sözlük arama + el yazısı tanıma, istatis
   - **npm 11 tuzağı:** `expo install <pkg> --dev` artık `--include=dev` demek; Windows'ta `"--"` ayırıcısı `--dev`'i yutuyor → paketler yanlışlıkla `dependencies`'e düşer (başımıza geldi, elle düzeltildi).
 - **`tsconfig.json` VAR (Faz 3.4b)** — `expo customize tsconfig.json` ile üretildi (`expo/tsconfig.base`'i genişletir), komut **`npm run tsc`** (= `tsc --noEmit`). `expo/tsconfig.base` sağlar: `allowJs`, `noEmit` (**kaynak .js üzerine yazma riski yok**), `resolveJsonModule`, `moduleResolution: bundler`, `skipLibCheck`.
   - **Neden `checkJs: true`:** varsayılan (yalnızca `allowJs`) bir `tsc` kapısı **sadece sözdizimini** kontrol eder; ölçüldü — bozuk bir import yolu bile **yakalanmıyor**. `checkJs` açıkken RN/React API'lerine yapılan gerçek çağrı hataları yakalanıyor (3.4b'de tam olarak böyle 3 bulgu çıktı).
-  - **Neden `strict: false` + `noImplicitAny: false`:** TS 6 `noImplicitAny`'yi varsayılan olarak **açık** getiriyor; saf JS bir kod tabanında bu **161 `implicit any` hatası** üretiyor (her fonksiyona JSDoc parametresi yazmak gerekir = tam göç işi). Kapıyı "gerçek hataları yakala, anotasyon dilenme" noktasında tutmak için ikisi de kapalı. **Faz 22'de `.ts`'e geçildi ama bu iki bayrak bilerek kapalı bırakıldı** (§26.6) — strict geçiş ayrı bir faz işidir.
+  - **Neden önce `strict: false` + `noImplicitAny: false` yazılmıştı:** TS 6 `noImplicitAny`'yi varsayılan olarak **açık** getiriyor; saf JS bir kod tabanında bu **161 `implicit any` hatası** üretiyordu (her fonksiyona JSDoc parametresi yazmak = tam göç işi). Kapıyı "gerçek hataları yakala, anotasyon dilenme" noktasında tutmak için ikisi de kapalıydı; Faz 22'de `.ts`'e geçildi ama bayraklar yine bilerek kapalı bırakıldı (§26.6). **Faz 30'da tam geçiş yapıldı: `strict: true`, 0 hata, `any` yok — ayrıntı §36.**
   - **`types: ["jest"]`:** TS 6 `@types/*` paketlerini otomatik eklemiyor → bu olmadan test dosyalarında `describe`/`test`/`jest` "bulunamadı" hatası verir. Yeni bir global tip paketi eklenirse buraya da yazılmalı.
   - `include`: `App.js`, `index.js`, `jest.setup.js`, `services/**/*.ts`, `data/examples/**/*.ts`, `screens/**/*.js`, `components/**/*.js`, `__tests__/**/*.ts` (Faz 22'den beri; `data/hsk*.json` import zinciriyle kendiliğinden girer).
   - **Kapının kapsamadığı şeyler:** `data/hsk*.json` içeriğinin şekli, çalışma zamanı (cihaz) davranışı, UI.
@@ -1093,7 +1093,7 @@ Testlerde **tek bir iddia bile gevşetilmedi**; yalnızca iki mock ifadesi TS'e 
 ### 6. Bilinçli olarak yapılmayanlar
 
 - Ekranlar/bileşenler `.tsx`'e çevrilmedi (React Navigation + `Animated`; kriter "mantık + testler" idi).
-- `strict` / `noImplicitAny` **açılmadı** (açılırsa yüzlerce `implicit any` hatası gelir; dönüşümün amacı tip *kazancı*, tam strict geçişi değil). İstenirse ayrı bir faz işi.
+- `strict` / `noImplicitAny` bu fazda **açılmadı** (açılsaydı yüzlerce `implicit any` hatası gelirdi; dönüşümün amacı tip *kazancı*, tam strict geçişi değil). **Faz 30'da ayrı bir iş olarak açıldı** — bkz. §36.
 - `wordIdMigrations.ts`'in 1841 satırlık id tabloları olduğu gibi bırakıldı (şekil `Record<number, number>` zaten çıkarımdan doğru geliyor, satır satır annotasyon gürültü olurdu).
 
 ---
@@ -1328,3 +1328,53 @@ Proje **bitti**: dersin bütün maddeleri karşılandı ve son iş (tanıtım vi
 **Kapanış durumu:** `known-good` etiketi **teslim edilen ağacı** işaretliyor. Etiket `263c1fe`'deydi; bu commit'e taşındı, çünkü son **kod** commit'i `5e3f3b1`'den (`fix: read the About version from app.json…`) sonraki her değişiklik yalnızca doküman (README/NOTES/AGENTS/ci): `npm test` 247/247, `npm run lint` 0 hata, `npm run tsc` 0 hata en son kod commit'inde yeşildi, ara commit'ler uygulama davranışını değiştirmiyor ve CI her push'ta success verdi — yani geri dönüş noktası teslim edilen ağacın kendisi olmalı. Çalışma ağacı temiz; `C:\Projects\App` altında **tek** yedek arşivi var (`ChineseQuizApp-backup-*.tar.gz`, bu commit'in `.git` ile birlikte kopyası).
 
 **Sonraki bir faz gerekirse** en mantıklı adımlar: Play internal testing (Play Protect uyarısını kaldırmanın tek yolu), iOS build (Apple hesabı), `expo-updates` + EAS Update (OTA), HSK 7-9 desteği. Hiçbiri bu teslimin parçası değil.
+
+---
+
+## 36. Faz 30 — `strict: true`: tam strict TypeScript geçişi (ve `any` sayısı sıfır)
+
+Teslimden sonra gelen tek istek: `npm run tsc` **`strict: true`** ile **0 hata** versin ve iki bilinçli `any` de (`toCanonicalEntry(raw: any)`, `sanitizeSettings(raw: any)`) kalksın. Bayrağı açmak tek satırdı; iş, açıldığında ortaya çıkan **~250 hatayı** davranışı hiç değiştirmeden kapatmaktı. 247 test aynı iddialarla geçiyor.
+
+### 1. Yapılandırma
+
+`tsconfig.json`: `"strict": false, "noImplicitAny": false` → **`"strict": true`**. Tek satır, kaçış yok: `strictNullChecks`, `noImplicitAny`, `strictFunctionTypes`, `useUnknownInCatchVariables` birlikte geliyor. `strictNullChecks` olmadan "0 hata" zaten anlamsız olurdu (o zaman `null` her şeye atanır).
+
+### 2. `.ts` tarafı: `any` yerine `unknown` + daraltma
+
+| Dosya | Değişiklik |
+| --- | --- |
+| `services/reviewPool.ts` | `toCanonicalEntry(raw: unknown)` — gövde zaten `typeof`/`in` ile daraltıyordu, yalnızca imza yalan söylüyordu. `getWrongMode(entry?: { wrongMode?: unknown } \| null)`, `resolveReviewWord(entry?: ReviewEntryInput \| null)` |
+| `services/settingsService.ts` | `sanitizeSettings(raw: unknown)` — alan alan daraltma (`typeof === 'number'` / `'boolean'`) |
+| `services/modes.ts` | `getCategory` / `getCategoryIndex` / `getReverseMode` → `string \| null \| undefined` (çağıranlar `route.params` ve diskten gelen mod adlarını geçiyor; imza artık gerçeği söylüyor) |
+| `services/speechService.ts` | `speakHanzi(text: string \| null \| undefined)` |
+| `services/importService.ts` | Sonuç tipleri **ayrık birleşim** oldu: `ParsedDeckResult` (`success: true` → `validWords`) ve `SaveDeckResult` (`reason: 'invalid-name' \| 'exists' \| 'id-conflict'` ya da `error`). `catch` bloğu için `getErrorMessage(error: unknown): string` |
+| `services/wordIdMigrations.ts` | Göç tabloları `Record<number, number>`, düşen id'ler `number[]`, `WORD_ID_MIGRATIONS_BY_VERSION: Record<number, { map, dropped }>` — içerik değişmedi |
+| `services/statsManager.ts`, `quizBuilder.ts`, `floatingParticles.ts` | `catch` değişkenleri `unknown`, `pickWord`'ün `T \| null` dönüşü çağıranlarda guard'landı |
+
+**Ders:** `any`'yi `unknown`'a çevirmek, "tip yok" demeyi "tip bilinmiyor, kanıtla" demeye çeviriyor; bu iki fonksiyonda gövde zaten kanıtlıyordu, yani **tek satırlık imza düzeltmesi** yetti.
+
+### 3. Testler: `!` ve `as any` yerine daraltma yardımcıları
+
+Testlerde `expect(...)!.x` yazmak strict'i oyalamak olurdu. Her suite'e küçük, tek amaçlı yardımcılar eklendi: `expectExample`, `expectParsedDeck`, `expectParseFailure`, `canonicalOrThrow`, `resolveOrThrow`, `pickOrThrow`, `wordOrThrow` — hepsi "yoksa testi anlaşılır bir mesajla düşür" davranışında. Tek bir iddia gevşetilmedi; yalnızca `as unknown as jest.Mock` (`.ts`'te JSDoc assert'i çalışmadığı için, bkz. §26.4) korundu.
+
+### 4. `.js`/JSX tarafı: JSDoc ile gerçek tipler
+
+Ekranlar `.js` kaldı ama artık `checkJs` + `strict` ile denetleniyor. Kullanılan üç desen:
+
+1. **State/ref tipleri:** `useState(/** @type {ReviewEntry[]} */ ([]))`, `useState(/** @type {StatsData | null} */ (null))`, `useRef(/** @type {WordId | null} */ (null))`, `useRef(/** @type {View | null} */ (null))`.
+2. **Props/parametreler:** her bileşenin başına `@param {{ ... }} props`; paylaşılan tipler **import edilir**, yeniden yazılmaz (`Word`, `WordId`, `WordLike`, `ReviewEntry`, `StatsData`, `CustomDecks`, `InkPoint`). Yerel şekiller `@typedef` ile bir kez tanımlanır (`CalendarDay`/`CalendarCell`, `MasteryRow`, `VocabularyItem`, `LevelOption`, `PendingDeck`, `SaveNotice`).
+3. **Guard'lar:** `pickWord`/`getWordById`/`getLevelFromWordId`/`find` artık `null`/`undefined` dönebiliyor → `if (!correctWord) { … boş duruma düş; return; }` gibi **gerçek** dallar yazıldı (davranış aynı, çünkü o dal zaten erişilemezdi).
+
+### 5. Bu geçişin çıkardığı tuzaklar (hepsi gerçekten ısırdı)
+
+1. **`@param` bir `const`'un üstünde, `useCallback`'e sarılmış oku tipmez.** `/** @param {boolean} v */ const setAnswered = useCallback((v) => …, [])` → `v` hâlâ `any`. JSDoc **ok fonksiyonun kendisine** konur: `useCallback(/** @param {boolean} v */ (v) => …, [])`.
+2. **`filter(Boolean)` daraltmaz.** `(ResolvedWord \| null)[]` olarak kalır → `filter((word) => word !== null)` yazıldı (TS 5.5+ bunu tip yüklemi olarak çıkarır). `.map(resolveReviewWord).filter(Boolean)` deseni bu yüzden burada **yanlıştı**.
+3. **`Record<HskLevel, Word[]>`'i metinle indekslemek.** `LEVEL_POOLS[targetLevel]` (`'mixed'`, `'custom_…'` de olabilir) derlenmiyordu → modül başında `/** @type {Record<string, Word[] \| undefined>} */ const levelPools = LEVEL_POOLS;` görünümü alındı; `undefined` dalı zaten `||` ile yedekliydi.
+4. **`ViewStyle['transform']` salt-okunur ve `string` içerir.** `Animated` transform dizisine `push` yapmak için `({ scale: Animated.Value } \| { translateX: Animated.Value })[]` yazıldı — `NonNullable<ViewStyle['transform']>` **çalışmıyor** (`readonly` + `string` üyesi).
+5. **Birleşim daraltması `'reason' in result` ile yapılır.** `SaveDeckResult`'ın `{ success: false; error: string }` üyesi `reason` taşımadığı için `result.reason === 'exists'` derlenmiyordu.
+6. **`Extract<…, { success: true }>`** JSDoc `@typedef` içinde sorunsuz çalışıyor (`PendingDeck`) — "başarılı sonuç" tipini elle kopyalamak gerekmedi.
+
+### 6. Doğrulama
+
+`npx tsc --noEmit` → **0 hata** (`strict: true`) · `npm run lint` → **0 hata, 14 uyarı** (aynı `react-hooks` uyarıları) · `npm test` → **247/247, 14/14 suite**. Depoda `any`, `@ts-ignore`, `@ts-expect-error` **yok** (grep ile doğrulandı). Davranış değişmedi: yalnızca tipler, guard'lar ve iki ölü savunma dalı (`filter(Boolean)`, `!correctWord`) eklendi. **Cihaz doğrulaması kullanıcıda** (Expo Go) — mantık dosyalarına dokunuldu, ekran akışı aynı.
+

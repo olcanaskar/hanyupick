@@ -205,7 +205,10 @@ keys. Components never re-implement those rules.
 
 Screens and components are still JavaScript, type-checked through `checkJs`; the logic modules
 (`services/`), the tests and the example-sentence data are TypeScript, so their types are real and
-checked at build time.
+checked at build time. The whole project — screens included — compiles with **`strict: true`** and
+contains no `any`, no `@ts-ignore` and no non-null assertions: a defensive parameter is typed
+`unknown` and narrowed, and a possibly-`null` result (`pickWord`, `getWordById`, `find`) is guarded
+before it is used.
 
 ## Data notes
 

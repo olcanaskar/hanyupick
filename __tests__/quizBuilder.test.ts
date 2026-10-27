@@ -1,13 +1,25 @@
 import { buildOptions, pickWord, shuffle } from '../services/quizBuilder';
 import { ALL_WORDS, LEVEL_POOLS } from '../services/wordRepository';
+import type { Word, WordId, WordLike } from '../services/wordRepository';
 
 // Havuzlar artık tek kaynaktan (Faz 3.1) — test kopya tutmaz.
 const hsk1Data = LEVEL_POOLS.hsk1;
-const FIELDS = ['hanzi', 'pinyin', 'meaning'];
+const FIELDS: (keyof WordLike)[] = ['hanzi', 'pinyin', 'meaning'];
+
+// `pickWord` boş havuzda null döner; bu testlerde havuz hep dolu olduğu için
+// sonucu daraltan küçük bir yardımcı kullanılır.
+const pickOrThrow = <T extends { id: WordId }>(
+  pool: readonly T[],
+  previousId: WordId | null = null
+): T => {
+  const word = pickWord(pool, previousId);
+  if (!word) throw new Error('pickWord beklenmedik şekilde null döndü');
+  return word;
+};
 
 // Şıklar arasında hanzi/pinyin/anlam çakışması var mı? Varsa açıklamasını döndürür.
-const findConflicts = (options) => {
-  const conflicts = [];
+const findConflicts = (options: WordLike[]) => {
+  const conflicts: string[] = [];
   for (let i = 0; i < options.length; i++) {
     for (let j = i + 1; j < options.length; j++) {
       for (const field of FIELDS) {
@@ -195,9 +207,9 @@ describe('pickWord — ardışık tekrar engeli', () => {
 
   test('önceki kelime verilmezse normal rastgele seçim yapar', () => {
     const pool = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    const seen = new Set();
+    const seen = new Set<WordId>();
 
-    for (let i = 0; i < 300; i++) seen.add(pickWord(pool).id);
+    for (let i = 0; i < 300; i++) seen.add(pickOrThrow(pool).id);
 
     expect([...seen].sort()).toEqual([1, 2, 3]);
   });
@@ -206,17 +218,17 @@ describe('pickWord — ardışık tekrar engeli', () => {
     const pool = [{ id: 1 }, { id: 2 }];
 
     for (let i = 0; i < 100; i++) {
-      expect(pickWord(pool, 1).id).toBe(2);
-      expect(pickWord(pool, 2).id).toBe(1);
+      expect(pickOrThrow(pool, 1).id).toBe(2);
+      expect(pickOrThrow(pool, 2).id).toBe(1);
     }
   });
 
   test('daha büyük havuzda da önceki kelime elenir, diğerleri eşit şanslıdır', () => {
     const pool = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }];
-    const seen = new Set();
+    const seen = new Set<WordId>();
 
     for (let i = 0; i < 500; i++) {
-      const picked = pickWord(pool, 3);
+      const picked = pickOrThrow(pool, 3);
       expect(picked.id).not.toBe(3);
       seen.add(picked.id);
     }
@@ -227,20 +239,20 @@ describe('pickWord — ardışık tekrar engeli', () => {
   test('tek kelimelik havuzda mecburen o kelime döner (sonsuz döngüye girmez)', () => {
     const pool = [{ id: 7 }];
 
-    for (let i = 0; i < 20; i++) expect(pickWord(pool, 7).id).toBe(7);
+    for (let i = 0; i < 20; i++) expect(pickOrThrow(pool, 7).id).toBe(7);
   });
 
   test('havuzda olmayan önceki id sonucu kısıtlamaz', () => {
     const pool = [{ id: 1 }, { id: 2 }];
 
-    for (let i = 0; i < 50; i++) expect([1, 2]).toContain(pickWord(pool, 99).id);
+    for (let i = 0; i < 50; i++) expect([1, 2]).toContain(pickOrThrow(pool, 99).id);
   });
 
   test('özel destenin metin id leri ile de çalışır', () => {
     const pool = [{ id: 'custom_Liste_0' }, { id: 'custom_Liste_1' }];
 
-    expect(pickWord(pool, 'custom_Liste_0').id).toBe('custom_Liste_1');
-    expect(pickWord(pool, 'custom_Liste_1').id).toBe('custom_Liste_0');
+    expect(pickOrThrow(pool, 'custom_Liste_0').id).toBe('custom_Liste_1');
+    expect(pickOrThrow(pool, 'custom_Liste_1').id).toBe('custom_Liste_0');
   });
 
   // Faz 4.2: artık `filter` yerine reddetme ile örnekleme var; denemeler hep
@@ -250,8 +262,8 @@ describe('pickWord — ardışık tekrar engeli', () => {
     const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0); // hep 0. indeks (id 1)
 
     try {
-      expect(pickWord(pool, 1).id).not.toBe(1);
-      expect(pickWord(pool, 1).id).toBe(2); // ilk farklı kelimeye düşer
+      expect(pickOrThrow(pool, 1).id).not.toBe(1);
+      expect(pickOrThrow(pool, 1).id).toBe(2); // ilk farklı kelimeye düşer
     } finally {
       randomSpy.mockRestore();
     }
@@ -272,7 +284,7 @@ describe('pickWord — ardışık tekrar engeli', () => {
 describe('buildOptions — havuz kopyalanmaz (Faz 4.2)', () => {
   // Havuzdan kaç kez indeks okunduğunu sayar. Eski uygulama havuzu `[...items]` ile
   // kopyaladığı için TÜM indeksleri okurdu.
-  const countingPool = (words) => {
+  const countingPool = (words: Word[]) => {
     let reads = 0;
     const proxy = new Proxy(words, {
       get(target, prop, receiver) {
@@ -284,7 +296,7 @@ describe('buildOptions — havuz kopyalanmaz (Faz 4.2)', () => {
     return { proxy, reads: () => reads };
   };
 
-  const bigPool = (size) =>
+  const bigPool = (size: number) =>
     Array.from({ length: size }, (_, i) => ({
       id: i + 1,
       hanzi: `字${i}`,

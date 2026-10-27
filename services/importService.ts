@@ -28,6 +28,31 @@ export type RawDeckWord = {
   level?: unknown;
 };
 
+// JSON dosyasını okuma sonucu. Başarısızlıkta `reason` yalnızca iptal için,
+// `error` ise gerçek hatalar için dolar; ikisi de isteğe bağlıdır.
+export type ParsedDeckResult =
+  | { success: true; defaultName: string; validWords: RawDeckWord[] }
+  | { success: false; reason?: string; error?: string };
+
+// Deste kaydetme sonucu: `reason` çağıranın akışı seçmesini sağlar (bkz. CustomDeckModal).
+export type SaveDeckResult =
+  | { success: true; deckName: string; count: number }
+  | { success: false; reason: 'invalid-name' }
+  | { success: false; reason: 'exists'; deckName: string }
+  | { success: false; reason: 'id-conflict'; deckName: string; conflictWith: string }
+  | { success: false; error: string };
+
+// `catch` bloğundaki hata `unknown`tır: mesajı güvenle metne çevirir.
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
+
+// JSON'dan gelen tek öğe kullanılabilir bir kelime mi? (hanzi/pinyin/meaning dolu)
+const isValidDeckWord = (item: unknown): item is RawDeckWord => {
+  if (!item || typeof item !== 'object') return false;
+  const candidate = item as RawDeckWord;
+  return Boolean(candidate.hanzi && candidate.pinyin && candidate.meaning);
+};
+
 // Deste adından kelime id öneki üretir (alfanümerik olmayan her karakter '_').
 //
 // UYARI: Bu kural BİLEREK değiştirilmiyor. Üretilen id diskteki kayıtların
@@ -93,7 +118,7 @@ const findIdConflict = (
 };
 
 // 1. JSON dosyasını seçme ve okuma
-export const pickAndParseJSON = async () => {
+export const pickAndParseJSON = async (): Promise<ParsedDeckResult> => {
   try {
     const result = await DocumentPicker.getDocumentAsync({
       type: ['application/json', '*/*'],
@@ -108,21 +133,19 @@ export const pickAndParseJSON = async () => {
     const response = await fetch(file.uri);
     const fileContent = await response.text();
 
-    let parsedWords = [];
+    let parsed: unknown;
     try {
-      parsedWords = JSON.parse(fileContent);
+      parsed = JSON.parse(fileContent);
     } catch {
       throw new Error('Invalid JSON format. Please select a valid JSON file.');
     }
 
-    if (!Array.isArray(parsedWords)) {
+    if (!Array.isArray(parsed)) {
       throw new Error('JSON file must contain an array of word objects.');
     }
 
     // hanzi, pinyin ve meaning kontrolü
-    const validWords = parsedWords.filter(
-      (item) => item && typeof item === 'object' && item.hanzi && item.pinyin && item.meaning
-    );
+    const validWords = parsed.filter(isValidDeckWord);
 
     if (validWords.length === 0) {
       throw new Error('No valid word entries found. Ensure items contain "hanzi", "pinyin", and "meaning".');
@@ -135,7 +158,7 @@ export const pickAndParseJSON = async () => {
     return { success: true, defaultName, validWords };
   } catch (error) {
     console.error('Pick JSON error:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: getErrorMessage(error) };
   }
 };
 
@@ -149,7 +172,7 @@ export const saveCustomDeck = async (
   deckName: unknown,
   validWords: RawDeckWord[],
   { overwrite = false }: { overwrite?: boolean } = {}
-) => {
+): Promise<SaveDeckResult> => {
   try {
     const name = String(deckName ?? '').trim();
     if (!name) return { success: false, reason: 'invalid-name' };
@@ -176,7 +199,7 @@ export const saveCustomDeck = async (
     return { success: true, deckName: name, count: formattedWords.length };
   } catch (error) {
     console.error('Save deck error:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: getErrorMessage(error) };
   }
 };
 

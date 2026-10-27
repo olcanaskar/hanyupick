@@ -23,7 +23,7 @@ const VALID_WORDS = [
   { id: 3, hanzi: '八', pinyin: 'bā', meaning: 'eight' },
 ];
 
-const mockPickedFile = (name, content) => {
+const mockPickedFile = (name: string, content: string) => {
   getDocumentAsyncMock.mockResolvedValue({
     canceled: false,
     assets: [{ uri: `file:///tmp/${name}`, name }],
@@ -32,6 +32,20 @@ const mockPickedFile = (name, content) => {
     ok: true,
     text: async () => content,
   });
+};
+
+// `pickAndParseJSON` bir birleşim döner: testler başarı/başarısızlık alanlarına
+// ancak daralttıktan sonra erişebilir (strict).
+const expectParsedDeck = async () => {
+  const result = await pickAndParseJSON();
+  if (!result.success) throw new Error(`beklenen: başarılı sonuç (${result.error ?? ''})`);
+  return result;
+};
+
+const expectParseFailure = async () => {
+  const result = await pickAndParseJSON();
+  if (result.success) throw new Error('beklenen: başarısız sonuç');
+  return result;
 };
 
 beforeEach(async () => {
@@ -54,9 +68,8 @@ describe('pickAndParseJSON', () => {
   test('geçersiz kayıtları eler, geçerlileri döndürür', async () => {
     mockPickedFile('kelimeler.json', JSON.stringify(VALID_WORDS));
 
-    const result = await pickAndParseJSON();
+    const result = await expectParsedDeck();
 
-    expect(result.success).toBe(true);
     expect(result.validWords).toHaveLength(2);
     expect(result.validWords[0].hanzi).toBe('爱');
   });
@@ -64,34 +77,31 @@ describe('pickAndParseJSON', () => {
   test('bozuk JSON hata döndürür', async () => {
     mockPickedFile('bozuk.json', '{ bu gecerli json degil');
 
-    const result = await pickAndParseJSON();
+    const result = await expectParseFailure();
 
-    expect(result.success).toBe(false);
     expect(result.error).toMatch(/Invalid JSON/i);
   });
 
   test('dizi olmayan JSON reddedilir', async () => {
     mockPickedFile('nesne.json', JSON.stringify({ hanzi: '爱' }));
 
-    const result = await pickAndParseJSON();
+    const result = await expectParseFailure();
 
-    expect(result.success).toBe(false);
     expect(result.error).toMatch(/array/i);
   });
 
   test('hiç geçerli kayıt yoksa hata döner', async () => {
     mockPickedFile('bos.json', JSON.stringify([{ hanzi: '' }, { pinyin: 'x' }]));
 
-    const result = await pickAndParseJSON();
+    const result = await expectParseFailure();
 
-    expect(result.success).toBe(false);
     expect(result.error).toMatch(/No valid word/i);
   });
 
   test('defaultName dosya uzantısını kırpar', async () => {
     mockPickedFile('kelimeler.json', JSON.stringify(VALID_WORDS));
 
-    const result = await pickAndParseJSON();
+    const result = await expectParsedDeck();
 
     expect(result.defaultName).toBe('kelimeler');
   });
@@ -99,7 +109,7 @@ describe('pickAndParseJSON', () => {
   test('defaultName uzantısız adda olduğu gibi kalır', async () => {
     mockPickedFile('kelimeler', JSON.stringify(VALID_WORDS));
 
-    const result = await pickAndParseJSON();
+    const result = await expectParsedDeck();
 
     expect(result.defaultName).toBe('kelimeler');
   });
@@ -107,7 +117,7 @@ describe('pickAndParseJSON', () => {
   test('defaultName çok noktalı adda yalnızca son uzantıyı kırpar', async () => {
     mockPickedFile('hsk.1.words.json', JSON.stringify(VALID_WORDS));
 
-    const result = await pickAndParseJSON();
+    const result = await expectParsedDeck();
 
     expect(result.defaultName).toBe('hsk.1.words');
   });
@@ -166,7 +176,7 @@ describe('özel desteler (custom decks)', () => {
 
     await deleteCustomDeck('A');
 
-    const stats = JSON.parse(await AsyncStorage.getItem('@hsk_user_stats'));
+    const stats = JSON.parse((await AsyncStorage.getItem('@hsk_user_stats')) || '{}');
     expect(Object.keys(stats.wordStats).sort()).toEqual(['5', 'custom_B_1']);
   });
 

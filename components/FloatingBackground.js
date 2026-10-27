@@ -4,6 +4,9 @@ import { PARTICLE_COUNT, createParticle } from '../services/floatingParticles';
 
 // Konum/hareket matematiği `services/floatingParticles.js`'te (test edilebilir, sınırlı
 // hedef denemesi ve canlı pencere ölçüsü orada). Burada yalnızca animasyon var.
+/**
+ * @param {{ width: number, height: number }} props
+ */
 function FloatingParticle({ width, height }) {
   const progress = useRef(new Animated.Value(0)).current;
   const [particle, setParticle] = useState(() => createParticle(true, { width, height }));

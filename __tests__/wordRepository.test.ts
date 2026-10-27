@@ -61,9 +61,9 @@ describe('wordRepository - seviye tanımları', () => {
   // kez verir (farklı anlamlarla): 对 (hsk2), 花 ve 只 (hsk3). Bu üçü bilinçlidir;
   // başka bir ikiz eklenirse test kırılır.
   test('aynı seviyedeki ikiz kayıtlar yalnızca resmi listedeki bilinen ikizlerdir', () => {
-    const duplicated = [];
+    const duplicated: string[] = [];
     LEVELS.forEach((level) => {
-      const counts = new Map();
+      const counts = new Map<string, number>();
       RAW_POOLS[level].forEach((w) => counts.set(w.hanzi, (counts.get(w.hanzi) || 0) + 1));
       [...counts.entries()]
         .filter(([, n]) => n > 1)
@@ -126,7 +126,7 @@ describe('getLevelFromWordId', () => {
 
     // Faz 6: hsk5 resmi 1300 kelimeyle dolduruldu → Faz 4'te boşalan 17 id de
     // gerçek kelime tutuyor, kütüphane artık TAM 5000 kayıt.
-    const missing = [];
+    const missing: number[] = [];
     for (let id = 1; id <= 5000; id++) {
       if (!unique.has(id)) missing.push(id);
     }

@@ -38,11 +38,24 @@ import { failureFeedback, selectionFeedback } from '../services/hapticsService';
 import { warmUpSpeech } from '../services/speechService';
 
 /**
+ * @typedef {import('../services/reviewPool').ReviewEntry} ReviewEntry
+ * @typedef {import('../services/wordRepository').Word} Word
+ * @typedef {import('../services/wordRepository').WordId} WordId
+ * @typedef {import('../services/wordRepository').WordLike} WordLike
+ */
+
+// Seviye havuzları yalnızca HSK anahtarlarıyla tanımlıdır; burada 'mixed' ve
+// 'custom_...' gibi anahtarlarla da arandığı için metin indeksli bir görünüm alınır
+// (bulunmayan anahtar `undefined` verir, çağıran zaten `|| ...` ile yedekliyor).
+/** @type {Record<string, Word[] | undefined>} */
+const levelPools = LEVEL_POOLS;
+
+/**
  * @param {{
- *   route?: any,
- *   navigation?: any,
- *   reviewPool?: any[],
- *   setReviewPool?: (updater: any) => void,
+ *   route?: { params?: { initialLevel?: string, initialMode?: string } },
+ *   navigation?: { goBack: () => void },
+ *   reviewPool?: ReviewEntry[],
+ *   setReviewPool?: (updater: ReviewEntry[] | ((prev: ReviewEntry[]) => ReviewEntry[])) => void,
  * }} props
  */
 export default function QuizScreen({
@@ -58,10 +71,10 @@ export default function QuizScreen({
   const [mode, setMode] = useState(initialMode);
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
 
-  const [currentWord, setCurrentWord] = useState(null);
-  const [options, setOptions] = useState([]);
+  const [currentWord, setCurrentWord] = useState(/** @type {WordLike | null} */ (null));
+  const [options, setOptions] = useState(/** @type {WordLike[]} */ ([]));
   const [isAnswered, setIsAnswered] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(/** @type {WordLike | null} */ (null));
 
   // Havuz çözülene kadar geçen süre. Özel desteler AsyncStorage'dan okunduğu için
   // `generateQuestion` asenkrondur; bayrak olmasaydı ilk karede (henüz kelime yokken)
@@ -87,7 +100,7 @@ export default function QuizScreen({
   // Son gösterilen kelimenin id'si. Yine ref: generateQuestion'ın bağımlılıklarına
   // girerse (state olsaydı) effect her soruda yeniden tetiklenip soruyu iki kez
   // üretirdi. Ardışık sorularda aynı kartın tekrar gelmemesi için kullanılır.
-  const lastWordIdRef = useRef(null);
+  const lastWordIdRef = useRef(/** @type {WordId | null} */ (null));
 
   // Review moduna yalnızca İLK girişte yanlışı olan bir modu seçmek için kullanılan bayrak
   const didInitReviewMode = useRef(false);
@@ -95,10 +108,16 @@ export default function QuizScreen({
   // Aynı cevabın çok hızlı iki kez işlenmesini (çift dokunma) engelleyen bayrak.
   // React state güncellemesi gecikmeli olduğundan kontrol için state değil ref kullanılır.
   const isAnsweredRef = useRef(false);
-  const setAnswered = useCallback((value) => {
-    isAnsweredRef.current = value;
-    setIsAnswered(value);
-  }, []);
+  const setAnswered = useCallback(
+    /**
+     * @param {boolean} value
+     */
+    (value) => {
+      isAnsweredRef.current = value;
+      setIsAnswered(value);
+    },
+    []
+  );
 
   // Ana menüden veya harici bir nav değişiminden gelen initialLevel güncellenirse state'i senkronize et
   useEffect(() => {
@@ -112,12 +131,12 @@ export default function QuizScreen({
     const requestId = poolRequestRef.current + 1;
     poolRequestRef.current = requestId;
 
-    let currentPool = [];
+    let currentPool = /** @type {WordLike[]} */ ([]);
 
     if (targetLevel === 'review') {
       currentPool = filterByMode(reviewPoolRef.current, targetMode)
         .map(resolveReviewWord)
-        .filter(Boolean);
+        .filter((word) => word !== null);
     } else if (isCustomDeckLevel(targetLevel)) {
       // Özel deste diskten okunur: bu bekleme sırasında "kelime yok" ekranı
       // görünmesin diye bayrak burada kaldırılır/indirilir.
@@ -143,13 +162,21 @@ export default function QuizScreen({
 
     // Ardışık iki soruda aynı kelime gösterilmez (havuzda alternatif varsa).
     const correctWord = pickWord(currentPool, lastWordIdRef.current);
+    if (!correctWord) {
+      // Havuz boş değildi ama seçim yapılamadı (beklenmez): boş duruma düş.
+      setCurrentWord(null);
+      setOptions([]);
+      setAnswered(false);
+      setSelectedOption(null);
+      setIsPoolLoading(false);
+      return;
+    }
     lastWordIdRef.current = correctWord.id;
 
     // Çeldiriciler önce doğru cevapla AYNI seviyeden seçilir; yeterli benzersiz aday
     // bulunamazsa tüm kelimelerden tamamlanır. Review'da kelimenin seviyesi id'den bulunur.
-    const sameLevelPool =
-      LEVEL_POOLS[targetLevel] ||
-      (targetLevel === 'review' ? LEVEL_POOLS[getLevelFromWordId(correctWord.id)] : null);
+    const reviewLevel = targetLevel === 'review' ? getLevelFromWordId(correctWord.id) : null;
+    const sameLevelPool = levelPools[targetLevel] || (reviewLevel ? levelPools[reviewLevel] : null);
     const distractorPools = sameLevelPool ? [sameLevelPool, ALL_WORDS] : [ALL_WORDS];
 
     const combinedOptions = buildOptions(correctWord, distractorPools);
@@ -194,6 +221,9 @@ export default function QuizScreen({
   }, [level, reviewPool, mode]);
 
   // Seçenek tıklama mantığı
+  /**
+   * @param {WordLike} option
+   */
   const handleSelectOption = (option) => {
     // ref bayrağı: state gecikmesinden bağımsız olarak çift dokunmayı engeller
     if (isAnsweredRef.current || !currentWord) return;
@@ -276,6 +306,9 @@ export default function QuizScreen({
     : 'Pick another level from the level menu above.';
 
   // Seviye değiştiğinde HomeScreen'i bilgilendiren dinleyici tetikleyicisi
+  /**
+   * @param {string} newLevel
+   */
   const handleLevelChange = (newLevel) => {
     setLevel(newLevel);
     DeviceEventEmitter.emit('onLevelChange', newLevel);
@@ -294,7 +327,7 @@ export default function QuizScreen({
             <View style={styles.webBackRow}>
               <TouchableOpacity
                 style={styles.webBackBtn}
-                onPress={() => navigation.goBack()}
+                onPress={() => navigation?.goBack()}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 accessibilityRole="button"
                 accessibilityLabel="Go back"

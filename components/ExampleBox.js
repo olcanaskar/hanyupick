@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+/**
+ * @param {{ example?: import('../services/exampleService').ExampleRecord | null }} props
+ */
 export default function ExampleBox({ example }) {
   if (!example) return null;
 

@@ -21,10 +21,22 @@ const ERROR_MESSAGES = {
   network: '⚠️ No connection (Internet required)',
 };
 
+/**
+ * @typedef {import('../services/handwritingService').InkPoint} InkPoint
+ * @typedef {import('../services/handwritingService').InkStroke} InkStroke
+ */
+
+/**
+ * @param {{
+ *   visible: boolean,
+ *   onClose: () => void,
+ *   onSelectHanzi: (char: string) => void,
+ * }} props
+ */
 export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
-  const [paths, setPaths] = useState([]); // [[{x, y}, ...], ...]
-  const [currentPath, setCurrentPath] = useState([]);
-  const [candidates, setCandidates] = useState([]);
+  const [paths, setPaths] = useState(/** @type {InkStroke[]} */ ([])); // [[{x, y}, ...], ...]
+  const [currentPath, setCurrentPath] = useState(/** @type {InkPoint[]} */ ([]));
+  const [candidates, setCandidates] = useState(/** @type {string[]} */ ([]));
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(''); // İnternet hatası durumu
 
@@ -38,6 +50,9 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
   // Çizimleri servise gönderip karakter tanıma isteği atar.
   // İsteğin kendisi `services/handwritingService.js`te: orada ZAMAN AŞIMI var, yani
   // yavaş/askıda kalan bir ağda spinner sonsuza kadar dönmez.
+  /**
+   * @param {InkStroke[]} allPaths
+   */
   const recognizeStrokes = async (allPaths) => {
     if (!allPaths || allPaths.length === 0) {
       setCandidates([]);
@@ -54,7 +69,7 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
       });
 
       setCandidates(found);
-      setErrorMessage(ERROR_MESSAGES[error] ?? '');
+      setErrorMessage(error ? ERROR_MESSAGES[error] : '');
     } catch (unexpectedError) {
       // Servis hata durumlarını kod olarak döner; buraya yalnızca beklenmeyen bir
       // hata düşer (ör. ortamda AbortController yoksa). Kullanıcı yine bilgilendirilir.
@@ -113,6 +128,9 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
     recognizeStrokes(updatedPaths);
   };
 
+  /**
+   * @param {string} char
+   */
   const handleSelect = (char) => {
     onSelectHanzi(char);
     handleClear();
@@ -120,6 +138,10 @@ export default function HandwritingModal({ visible, onClose, onSelectHanzi }) {
   };
 
   // SVG Path Verisini Oluşturma
+  /**
+   * @param {InkStroke} pathPoints
+   * @returns {string}
+   */
   const pathToSvgD = (pathPoints) => {
     if (!pathPoints || pathPoints.length === 0) return '';
     return pathPoints.reduce(

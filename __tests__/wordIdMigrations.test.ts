@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ALL_WORDS, LEVEL_POOLS, getWordById, getLevelFromWordId } from '../services/wordRepository';
+import type { HskLevel } from '../services/wordRepository';
 import { mergeWordStatsIds } from '../services/statsManager';
 import {
   HSK14_REALIGN_DROPPED_IDS,
@@ -18,6 +19,14 @@ import {
 } from '../services/wordIdMigrations';
 
 const ALL_IDS = new Set(ALL_WORDS.map((w) => w.id));
+
+// Hedef id'lerin gerçekten bir kelimeye çözülmesi beklenir; null durumunda
+// test "cannot read property of null" yerine anlaşılır bir hata verir.
+const wordOrThrow = (id: number) => {
+  const word = getWordById(id);
+  if (!word) throw new Error(`kelime bulunamadı: ${id}`);
+  return word;
+};
 
 // Faz 4/6/7 tabloları elle üretildi; hedef id'ler veride gerçekten var olmalıdır.
 describe('wordIdMigrations - tablo bütünlüğü', () => {
@@ -41,7 +50,7 @@ describe('wordIdMigrations - tablo bütünlüğü', () => {
   // tutar) ve Faz 6 tablosunda yer almaz; aksi halde bir id iki kez taşınırdı.
   test('Faz 4 ve Faz 6 anahtarları ayrıktır', () => {
     const overlap = Object.keys(MERGED_WORD_ID_MAP).filter(
-      (id) => HSK5_REBALANCE_ID_MAP[id] !== undefined
+      (id) => HSK5_REBALANCE_ID_MAP[Number(id)] !== undefined
     );
     expect(overlap).toEqual([]);
   });
@@ -69,11 +78,11 @@ describe('wordIdMigrations - tablo bütünlüğü', () => {
 
   // Tablo elle üretildiği için birkaç örnek pin: hedef id GERÇEKTEN o kelimeyi tutmalı.
   test('örnek pinler: taşınan kelime hedef idde aynı hanzi ile duruyor', () => {
-    expect(getWordById(HSK5_REBALANCE_ID_MAP[1802]).hanzi).toBe('执行'); // 执行 -> HSK6 (4855)
-    expect(getWordById(HSK5_REBALANCE_ID_MAP[1805]).hanzi).toBe('指导'); // 指导 -> hsk5 içinde (1802)
-    expect(getWordById(HSK5_REBALANCE_ID_MAP[1803]).hanzi).toBe('执照'); // 执照 -> hsk5 içinde (2454)
-    expect(getWordById(HSK5_REBALANCE_ID_MAP[1842]).hanzi).toBe('挨'); // 挨 -> HSK6 (2501)
-    expect(getWordById(2500).hanzi).toBe('作为'); // yeni kuyruk sonu (resmi liste sırası)
+    expect(wordOrThrow(HSK5_REBALANCE_ID_MAP[1802]).hanzi).toBe('执行'); // 执行 -> HSK6 (4855)
+    expect(wordOrThrow(HSK5_REBALANCE_ID_MAP[1805]).hanzi).toBe('指导'); // 指导 -> hsk5 içinde (1802)
+    expect(wordOrThrow(HSK5_REBALANCE_ID_MAP[1803]).hanzi).toBe('执照'); // 执照 -> hsk5 içinde (2454)
+    expect(wordOrThrow(HSK5_REBALANCE_ID_MAP[1842]).hanzi).toBe('挨'); // 挨 -> HSK6 (2501)
+    expect(wordOrThrow(2500).hanzi).toBe('作为'); // yeni kuyruk sonu (resmi liste sırası)
   });
 
   test('Faz 4/6 göç kaynaklarının hiçbiri hsk1-4 id aralığına düşmez', () => {
@@ -92,8 +101,13 @@ describe('wordIdMigrations - Faz 7 (hsk1-4 hizalaması)', () => {
   test('kaynak id\'ler hsk1-4 aralığındadır (1-1200)', () => {
     expect(Math.min(...keys)).toBeGreaterThanOrEqual(1);
     expect(Math.max(...keys)).toBeLessThanOrEqual(1200);
-    const hsk14 = ['hsk1', 'hsk2', 'hsk3', 'hsk4'];
-    expect(keys.every((id) => hsk14.includes(getLevelFromWordId(id)))).toBe(true);
+    const hsk14: HskLevel[] = ['hsk1', 'hsk2', 'hsk3', 'hsk4'];
+    expect(
+      keys.every((id) => {
+        const level = getLevelFromWordId(id);
+        return level !== null && hsk14.includes(level);
+      })
+    ).toBe(true);
   });
 
   // from === to çifti mergeWordStatsIds'te kaydı SİLER (bkz. statsManager), bu yüzden
@@ -116,22 +130,22 @@ describe('wordIdMigrations - Faz 7 (hsk1-4 hizalaması)', () => {
       ([, to]) => getLevelFromWordId(to) === 'hsk5' || getLevelFromWordId(to) === 'hsk6'
     );
     expect(up).toHaveLength(55);
-    expect(getWordById(HSK14_REALIGN_ID_MAP[604]).hanzi).toBe('暗');
-    expect(getWordById(HSK14_REALIGN_ID_MAP[604]).id).toBe(1843);
-    expect(getWordById(HSK14_REALIGN_ID_MAP[621]).hanzi).toBe('表达');
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[604]).hanzi).toBe('暗');
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[604]).id).toBe(1843);
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[621]).hanzi).toBe('表达');
     expect(getLevelFromWordId(HSK14_REALIGN_ID_MAP[712])).toBe('hsk6'); // 访问 -> HSK6
-    expect(getWordById(HSK14_REALIGN_ID_MAP[712]).hanzi).toBe('访问');
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[712]).hanzi).toBe('访问');
   });
 
   // Resmi listede kalıp olarak bulunan tek kelimeler kalıp kaydına emilir (因为 ->
   // 因为……所以……); ilerleme kalıba taşınır, kelime ayrı kayıt olarak kalmaz.
   test('kalıba emilenler doğru kalıp kaydına gider', () => {
-    expect(getWordById(HSK14_REALIGN_ID_MAP[278]).hanzi).toBe('因为……所以……'); // 因为
-    expect(getWordById(HSK14_REALIGN_ID_MAP[279]).hanzi).toBe('因为……所以……'); // 所以
-    expect(getWordById(HSK14_REALIGN_ID_MAP[245]).hanzi).toBe('虽然……但是……'); // 虽然
-    expect(getWordById(HSK14_REALIGN_ID_MAP[246]).hanzi).toBe('虽然……但是……'); // 但是
-    expect(getWordById(HSK14_REALIGN_ID_MAP[326]).hanzi).toBe('不但……而且……'); // 不但
-    expect(getWordById(HSK14_REALIGN_ID_MAP[328]).hanzi).toBe('只有……才……'); // 才
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[278]).hanzi).toBe('因为……所以……'); // 因为
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[279]).hanzi).toBe('因为……所以……'); // 所以
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[245]).hanzi).toBe('虽然……但是……'); // 虽然
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[246]).hanzi).toBe('虽然……但是……'); // 但是
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[326]).hanzi).toBe('不但……而且……'); // 不但
+    expect(wordOrThrow(HSK14_REALIGN_ID_MAP[328]).hanzi).toBe('只有……才……'); // 才
   });
 
   // Resmi HSK 2.0 listesinin hiçbir seviyesinde olmayan 16 kelime kütüphaneden
@@ -156,8 +170,8 @@ describe('wordIdMigrations - Faz 7 (hsk1-4 hizalaması)', () => {
     expect(LEVEL_POOLS.hsk1[149].hanzi).toBe('坐');
     expect(LEVEL_POOLS.hsk4[599].hanzi).toBe('作者');
     // Faz 7'de eklenen kalıp kayıtları tek satırdır (…… biçimiyle).
-    expect(LEVEL_POOLS.hsk2.find((w) => w.id === 283).hanzi).toBe('因为……所以……');
-    expect(LEVEL_POOLS.hsk3.find((w) => w.id === 585).hanzi).toBe('只有……才……');
+    expect(LEVEL_POOLS.hsk2.find((w) => w.id === 283)?.hanzi).toBe('因为……所以……');
+    expect(LEVEL_POOLS.hsk3.find((w) => w.id === 585)?.hanzi).toBe('只有……才……');
   });
 
   // Sıra önemli: bir Faz 7 HEDEFİ, Faz 6 KAYNAĞI olabilir (1843 eski hsk5 kelimesinin
@@ -185,7 +199,7 @@ describe('wordIdMigrations - Faz 7 (hsk1-4 hizalaması)', () => {
       streak: 0,
     };
     const readWordStats = async () =>
-      JSON.parse(await AsyncStorage.getItem(STATS_KEY)).wordStats;
+      JSON.parse((await AsyncStorage.getItem(STATS_KEY)) || '{}').wordStats;
 
     await AsyncStorage.clear();
     await AsyncStorage.setItem(STATS_KEY, JSON.stringify(seed));

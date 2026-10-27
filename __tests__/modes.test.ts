@@ -23,7 +23,7 @@ const PHANTOM_MODES = ['hanzi-to-en', 'en-to-hanzi', 'pinyin-to-en', 'en-to-piny
 
 // Tanınmayan mod çağrıları __DEV__'de uyarı basar; test çıktısını kirletmemek için
 // varsayılan olarak sessize alıp yalnızca ilgili testte iddia ediyoruz.
-let warnSpy;
+let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -85,19 +85,23 @@ describe('mod tablosu', () => {
 
   test('kategori alan çifti modun soru/cevap tipleriyle tutarlı', () => {
     MODES.forEach((mode) => {
+      const category = getCategory(mode);
       const prompt = getPromptType(mode);
       const answer = getAnswerType(mode);
+      if (!category) throw new Error(`kategori bulunamadı: ${mode}`);
 
       expect(prompt).not.toBe(answer);
-      expect([...CATEGORY_FIELDS[getCategory(mode)]].sort()).toEqual([prompt, answer].sort());
+      expect([...CATEGORY_FIELDS[category]].sort()).toEqual([prompt, answer].sort());
     });
   });
 
   test('sekme etiketi soru/cevap tiplerinden türetiliyor', () => {
     MODES.forEach((mode) => {
-      expect(MODE_LABELS[mode]).toBe(
-        `${TYPE_SHORT[getPromptType(mode)]} → ${TYPE_SHORT[getAnswerType(mode)]}`
-      );
+      const prompt = getPromptType(mode);
+      const answer = getAnswerType(mode);
+      if (!prompt || !answer) throw new Error(`soru/cevap tipi bulunamadı: ${mode}`);
+
+      expect(MODE_LABELS[mode]).toBe(`${TYPE_SHORT[prompt]} → ${TYPE_SHORT[answer]}`);
     });
   });
 });

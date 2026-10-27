@@ -85,6 +85,9 @@ function GitHubMark({ size = 16, color = '#2C3E50' }) {
 const VOLUME_STEP = 0.05;
 const TEST_TEXT = '你好';
 
+/**
+ * @param {{ visible: boolean, onClose: () => void }} props
+ */
 export default function SettingsModal({ visible, onClose }) {
   const [settings, setSettings] = useState(getCachedSettings());
   const [resetConfirm, setResetConfirm] = useState(false);
@@ -166,16 +169,25 @@ export default function SettingsModal({ visible, onClose }) {
 
   const volumePercent = Math.round(settings.speechVolume * 100);
 
+  /**
+   * @param {boolean} value
+   */
   const handleToggleHaptics = (value) => {
     updateSettings({ haptics: value });
   };
 
   // Slider sürüklenirken yalnızca ekran güncellenir; diske yazım parmak
   // kaldırılınca tek seferde yapılır (sürükleme başına onlarca yazma olmasın).
+  /**
+   * @param {number} value
+   */
   const handleVolumePreview = (value) => {
     setSettings((prev) => ({ ...prev, speechVolume: value }));
   };
 
+  /**
+   * @param {number} value
+   */
   const handleVolumeCommit = (value) => {
     updateSettings({ speechVolume: value });
   };

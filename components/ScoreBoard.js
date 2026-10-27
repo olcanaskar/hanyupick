@@ -1,6 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
+/**
+ * @param {{ correct: number, wrong: number }} props
+ */
 export default function ScoreBoard({ correct, wrong }) {
   // Erişilebilirlik (Faz 4.5b): rozetler tek öğe olur (Android'de düz <Text> okunmaz);
   // böylece ekran okuyucu "Correct: 3" / "Wrong: 1" diye okur.

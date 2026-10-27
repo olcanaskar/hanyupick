@@ -99,8 +99,8 @@ export const DEFAULT_MODE: QuizMode = MODES[0];
 // Mod → kategori ('hanzi_pinyin' | 'hanzi_meaning' | 'pinyin_meaning').
 // Tanınmayan mod: geliştirmede gürültülü uyarı + `null` (çağıran karar verir).
 // ESKİ DAVRANIŞ sessizce `hanzi_pinyin` saymaktı → istatistik yanlış kategoriye yazılıyordu.
-export const getCategory = (mode: string): QuizCategory | null => {
-  const category = MODE_CATEGORY[mode];
+export const getCategory = (mode: string | null | undefined): QuizCategory | null => {
+  const category = mode === null || mode === undefined ? undefined : MODE_CATEGORY[mode];
   if (!category && __DEV__) {
     console.warn(`[modes] Bilinmeyen mod, kategori bulunamadı: ${JSON.stringify(mode)}`);
   }
@@ -108,7 +108,7 @@ export const getCategory = (mode: string): QuizCategory | null => {
 };
 
 // Header'daki sekme indeksi (0..2). Tanınmayan modda 0 (ilk sekme).
-export const getCategoryIndex = (mode: string): number =>
+export const getCategoryIndex = (mode: string | null | undefined): number =>
   Math.max(0, CATEGORIES.indexOf(getCategory(mode) as QuizCategory));
 
 // Ekranda GÖSTERİLEN alan tipi ('hanzi' | 'pinyin' | 'meaning').
@@ -120,7 +120,7 @@ export const getAnswerType = (mode: string): FieldType | null =>
   (MODE_ANSWER[mode] as FieldType) || null;
 
 // Aynı kategorideki ters yön (Header'da sekmeye tekrar basınca yön değiştirir).
-export const getReverseMode = (mode: string): QuizMode | null => {
+export const getReverseMode = (mode: string | null | undefined): QuizMode | null => {
   const category = getCategory(mode);
   if (!category) return null;
   const [forward, reverse] = MODES_BY_CATEGORY[category];

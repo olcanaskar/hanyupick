@@ -28,16 +28,20 @@ const BASE_LEVELS = [
 ];
 
 /**
+ * @typedef {import('../services/modes').QuizCategory} QuizCategory
+ */
+
+/**
  * Seviye ve mod değişikliğini `setLevel` / `setMode` callback'leriyle bildirir.
  * (Faz 4 temizliği: alternatif `onSelectLevel` / `onToggleMode` adları hiçbir çağrıda
  * kullanılmıyordu — `Header` yalnızca `QuizScreen`'de render ediliyor ve o da `setX`
  * biçimini geçiyor — bu yüzden ikinci biçim kaldırıldı.)
  *
  * @param {{
- *   level: any,
- *   setLevel?: any,
+ *   level: string,
+ *   setLevel?: (level: string) => void,
  *   mode?: string,
- *   setMode?: any,
+ *   setMode?: (mode: string) => void,
  *   reviewCount?: number,
  * }} props
  */
@@ -53,7 +57,7 @@ export default function Header({
   const [levelsList, setLevelsList] = useState(BASE_LEVELS);
 
   // Butonun ekrandaki X, Y ve genişlik konumunu dinamik ölçmek için Ref ve State
-  const buttonRef = useRef(null);
+  const buttonRef = useRef(/** @type {import('react-native').View | null} */ (null));
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
   // AsyncStorage'daki özel desteleri çekip seviye listesine bağlar
@@ -89,6 +93,9 @@ export default function Header({
   const currentIndex = getCategoryIndex(mode);
 
   // Sekmede gösterilecek mod: kategori aktifse mevcut yön, değilse ileri yön.
+  /**
+   * @param {QuizCategory} category
+   */
   const getTabMode = (category) =>
     category === currentCategory ? mode : MODES_BY_CATEGORY[category][0];
 
@@ -114,6 +121,9 @@ export default function Header({
     outputRange: [0, buttonWidth, buttonWidth * 2],
   });
 
+  /**
+   * @param {() => void} [onMidpoint]
+   */
   const animateFlip = (onMidpoint) => {
     flipAnim.setValue(0);
     Animated.timing(flipAnim, {
@@ -131,6 +141,9 @@ export default function Header({
     });
   };
 
+  /**
+   * @param {number} targetIndex
+   */
   const handleTabPress = (targetIndex) => {
     if (isDropdownOpen) setIsDropdownOpen(false);
 
@@ -174,6 +187,9 @@ export default function Header({
         : level.toUpperCase(),
     };
 
+  /**
+   * @param {string} levelId
+   */
   const handleSelectLevel = (levelId) => {
     if (setLevel) setLevel(levelId);
     setIsDropdownOpen(false);

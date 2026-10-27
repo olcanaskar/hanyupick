@@ -19,7 +19,7 @@ export const stopSpeaking = () => Speech.stop();
 
 // Hanzi metnini mevcut ayarlanmış seviyede okur. Üst üste dokunuşlarda
 // kuyruğu temizlemek için önce durdurur.
-export const speakHanzi = (text) => {
+export const speakHanzi = (text: string | null | undefined) => {
   if (!text) return;
 
   Speech.stop();

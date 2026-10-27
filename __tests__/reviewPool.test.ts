@@ -13,6 +13,8 @@ import {
   toCanonicalEntry,
 } from '../services/reviewPool';
 import { ALL_WORDS, LEVEL_POOLS, getWordById } from '../services/wordRepository';
+import type { WordLike } from '../services/wordRepository';
+import type { ReviewEntryInput } from '../services/reviewPool';
 import {
   HSK5_REBALANCE_DROPPED_IDS,
   HSK5_REBALANCE_ID_MAP,
@@ -23,8 +25,22 @@ const SAMPLE = LEVEL_POOLS.hsk1[0]; // hsk1 kelimesi (level alanı var)
 const SAMPLE5 = LEVEL_POOLS.hsk5[0]; // hsk5 kelimesi (level alanı yok)
 
 // Faz 3.2 ÖNCESİ iki kayıt şekli:
-const legacyWithCopy = (word, wrongMode) => ({ ...word, word, wrongMode });
-const legacyFlat = (word, wrongMode) => ({ ...word, wrongMode });
+const legacyWithCopy = (word: WordLike, wrongMode: string) => ({ ...word, word, wrongMode });
+const legacyFlat = (word: WordLike, wrongMode: string) => ({ ...word, wrongMode });
+
+// `toCanonicalEntry`/`resolveReviewWord` bozuk girdide null döner; bu testlerde
+// dönüşümün başarılı olması beklendiği için daraltan yardımcılar kullanılır.
+const canonicalOrThrow = (raw: unknown) => {
+  const entry = toCanonicalEntry(raw);
+  if (!entry) throw new Error('kayıt kanonikleşmedi');
+  return entry;
+};
+
+const resolveOrThrow = (entry: ReviewEntryInput) => {
+  const word = resolveReviewWord(entry);
+  if (!word) throw new Error('havuz kaydı çözümlenemedi');
+  return word;
+};
 
 const CUSTOM_WORD = {
   id: 'custom_Ders_0',
@@ -67,10 +83,10 @@ describe('reviewPool - şekil dönüşümü (toCanonicalEntry)', () => {
 
   test('özel deste kaydında kelime kopyası varsa görüntü ondan alınır', () => {
     const raw = { ...CUSTOM_WORD, word: { ...CUSTOM_WORD, hanzi: '我' } };
-    const entry = toCanonicalEntry(raw);
+    const entry = canonicalOrThrow(raw);
 
     expect(entry.wordId).toBe('custom_Ders_0');
-    expect(entry.snapshot.hanzi).toBe('我'); // `word` alt-nesnesi önceliklidir
+    expect(entry.snapshot?.hanzi).toBe('我'); // `word` alt-nesnesi önceliklidir
   });
 
   test('sayısal id li kayıtta yabancı snapshot atılır (tek şekil kuralı)', () => {
@@ -111,7 +127,7 @@ describe('reviewPool - şekil dönüşümü (toCanonicalEntry)', () => {
 
 describe('reviewPool - çözümleme (resolveReviewWord)', () => {
   test('sayısal id kanonik kelimeyi verir (kopya değil, aynı nesne)', () => {
-    const resolved = resolveReviewWord({ wordId: SAMPLE.id, wrongMode: DEFAULT_MODE });
+    const resolved = resolveOrThrow({ wordId: SAMPLE.id, wrongMode: DEFAULT_MODE });
 
     expect(resolved).toBe(getWordById(SAMPLE.id));
     expect(resolved.hanzi).toBe(SAMPLE.hanzi);
@@ -178,7 +194,7 @@ describe('reviewPool - göç (normalizeReviewPool)', () => {
 
     migrated.forEach((entry, index) => {
       const before = legacyPool[index];
-      const after = resolveReviewWord(entry);
+      const after = resolveOrThrow(entry);
 
       expect(after.hanzi).toBe(before.hanzi);
       expect(after.pinyin).toBe(before.pinyin);
@@ -191,8 +207,8 @@ describe('reviewPool - göç (normalizeReviewPool)', () => {
     const migrated = normalizeReviewPool([stale]);
 
     expect(migrated).toHaveLength(1);
-    expect(resolveReviewWord(migrated[0]).meaning).toBe(SAMPLE.meaning);
-    expect(resolveReviewWord(migrated[0]).meaning).not.toBe('ESKİ ANLAM');
+    expect(resolveOrThrow(migrated[0]).meaning).toBe(SAMPLE.meaning);
+    expect(resolveOrThrow(migrated[0]).meaning).not.toBe('ESKİ ANLAM');
   });
 
   test('aynı (wordId, mod) çifti tekilleşir; ilk kayıt korunur', () => {

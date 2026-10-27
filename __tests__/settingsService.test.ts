@@ -9,8 +9,10 @@ import {
   getSettings,
   updateSettings,
 } from '../services/settingsService';
+import type { Settings } from '../services/settingsService';
 
-const readRaw = async () => JSON.parse(await AsyncStorage.getItem(SETTINGS_STORAGE_KEY));
+const readRaw = async () =>
+  JSON.parse((await AsyncStorage.getItem(SETTINGS_STORAGE_KEY)) || '{}');
 
 beforeEach(async () => {
   await AsyncStorage.clear();
@@ -94,8 +96,8 @@ describe('updateSettings', () => {
   });
 
   test('değişiklik olayı güncel ayarlarla yayılır', async () => {
-    const seen = [];
-    const sub = DeviceEventEmitter.addListener(SETTINGS_CHANGED_EVENT, (settings) =>
+    const seen: Settings[] = [];
+    const sub = DeviceEventEmitter.addListener(SETTINGS_CHANGED_EVENT, (settings: Settings) =>
       seen.push(settings)
     );
 

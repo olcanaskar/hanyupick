@@ -24,6 +24,11 @@ import { LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
+ * @typedef {import('../services/reviewPool').ReviewEntry} ReviewEntry
+ * @typedef {{ id: string, label: string, hanzi: string, desc: string }} LevelOption
+ */
+
+/**
  * Home'un içerik sarmalayıcısı.
  *
  * Yerelde kaydırma YOK (kullanıcı isteği, Faz 11): Home'un tamamı tek ekrana
@@ -33,6 +38,8 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
  * kullanıcının elinde (küçük pencere, telefon tarayıcısı, yakınlaştırma) ve
  * kırpılan kart geri getirilemiyordu → sarmalayıcı **yalnızca web'de** kaydırılır.
  * Yerel ağaç aynen kalır (tek fark: bu sarmalayıcı), yani Faz 11 davranışı korunur.
+ *
+ * @param {{ children: React.ReactNode }} props
  */
 function PageContent({ children }) {
   if (Platform.OS === 'web') {
@@ -71,11 +78,17 @@ const BASE_LEVELS = [
   { id: 'mixed', label: 'Mixed', hanzi: '综合', desc: 'All levels combined' },
 ];
 
+/**
+ * @param {{
+ *   navigation: { navigate: (screen: string, params?: object) => void },
+ *   reviewPool?: ReviewEntry[],
+ * }} props
+ */
 export default function HomeScreen({ navigation, reviewPool = [] }) {
   const [isStatsVisible, setIsStatsVisible] = useState(false);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [isCustomDeckVisible, setIsCustomDeckVisible] = useState(false);
-  const [levels, setLevels] = useState(BASE_LEVELS);
+  const [levels, setLevels] = useState(/** @type {LevelOption[]} */ (BASE_LEVELS));
   const [selectedLevelIndex, setSelectedLevelIndex] = useState(0);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -114,6 +127,9 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
   }, [isMenuVisible]);
 
   // Pop-up Kapanış Animasyonu
+  /**
+   * @param {(() => void) | undefined} [onFinished]
+   */
   const closeMenu = (onFinished) => {
     Animated.parallel([
       Animated.timing(menuScaleAnim, {
@@ -182,12 +198,18 @@ export default function HomeScreen({ navigation, reviewPool = [] }) {
   const currentLevel = levels[selectedLevelIndex] || levels[0] || BASE_LEVELS[0];
   const hasWrongs = reviewPool.length > 0;
 
+  /**
+   * @param {number} index
+   */
   const handleSelectLevel = (index) => {
     closeMenu(() => {
       setSelectedLevelIndex(index);
     });
   };
 
+  /**
+   * @param {string} [levelId]
+   */
   const startQuiz = (levelId = currentLevel.id) => {
     navigation.navigate('Quiz', { initialLevel: levelId });
   };

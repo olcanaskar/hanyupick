@@ -12,7 +12,7 @@ import {
 } from '../services/handwritingService';
 
 // API'nin gerçek yanıt şekli: ['SUCCESS', [['字', [...adaylar]]]]
-const successResponse = (candidates) => ({
+const successResponse = (candidates: string[]) => ({
   ok: true,
   status: 200,
   json: async () => ['SUCCESS', [['字', candidates]]],
@@ -141,6 +141,7 @@ describe('recognizeHandwriting', () => {
       const promise = recognizeHandwriting(PATHS, { fetchImpl });
 
       const signal = fetchImpl.mock.calls[0][1]?.signal;
+      if (!signal) throw new Error('istek sinyali (AbortSignal) gönderilmemiş');
 
       expect(signal.aborted).toBe(false);
       jest.advanceTimersByTime(HANDWRITING_TIMEOUT_MS);

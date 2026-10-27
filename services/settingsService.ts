@@ -42,10 +42,14 @@ export const clampSpeechVolume = (value: unknown): number => {
 
 // Diskteki ham kayıt bozuksa alan alan varsayılana düşülür; bilinmeyen
 // alanlar atılır (ileri sürümden kalan artıklar buraya sızmasın).
-const sanitizeSettings = (raw: any): Settings => ({
-  haptics: typeof raw?.haptics === 'boolean' ? raw.haptics : DEFAULT_SETTINGS.haptics,
-  speechVolume: clampSpeechVolume(raw?.speechVolume),
-});
+// `raw` bilinçli olarak `unknown`: girdi diskten gelen doğrulanmamış kayıttır.
+const sanitizeSettings = (raw: unknown): Settings => {
+  const source = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  return {
+    haptics: typeof source.haptics === 'boolean' ? source.haptics : DEFAULT_SETTINGS.haptics,
+    speechVolume: clampSpeechVolume(source.speechVolume),
+  };
+};
 
 let cachedSettings: Settings = { ...DEFAULT_SETTINGS };
 

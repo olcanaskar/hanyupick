@@ -39,7 +39,43 @@ const CUSTOM_DECK_COLOR = '#2C3E50';
 // Isı ölçeği (aktivite az → çok): nötr zeminden koyu kırmızıya.
 const HEAT_COLORS = ['#E9ECEF', '#FEE2E2', '#FCA5A5', '#DC2626', '#7F1D1D'];
 
-const getHeatColor = (total) => {
+/**
+ * @typedef {import('../services/statsManager').StatsData} StatsData
+ * @typedef {import('../services/statsManager').StatsStreak} StatsStreak
+ * @typedef {import('../services/importService').CustomDecks} CustomDecks
+ * @typedef {import('../services/importService').CustomDeckWord} CustomDeckWord
+ * @typedef {import('../services/wordRepository').WordId} WordId
+ */
+
+// Takvim grid'indeki iki hücre türü: boş dolgu ve gerçek gün.
+/**
+ * @typedef {{ type: 'empty', id: string }} CalendarEmpty
+ * @typedef {{
+ *   type: 'day',
+ *   id: string,
+ *   dayNum: number,
+ *   dateStr: string,
+ *   dayShort: string,
+ *   correct: number,
+ *   wrong: number,
+ *   total: number,
+ *   isToday: boolean,
+ * }} CalendarDay
+ * @typedef {CalendarEmpty | CalendarDay} CalendarCell
+ */
+
+// Ustalık satırı (HSK seviyesi ya da özel deste) — iki bölümde de aynı çizilir.
+/**
+ * @typedef {{
+ *   id: string,
+ *   name: string,
+ *   total: number,
+ *   color: string,
+ *   stat: { count: number, percent: number },
+ * }} MasteryRow
+ */
+
+const getHeatColor = (/** @type {number} */ total) => {
   if (total === 0) return '#E9ECEF';       // Aktivite yok
   if (total <= 10) return '#FEE2E2';       // Çok az (kırmızı-100)
   if (total <= 25) return '#FCA5A5';       // Az (kırmızı-300)
@@ -102,10 +138,13 @@ function getTooltipLayout(colIdx, cellWidth, gridWidth) {
   };
 }
 
+/**
+ * @param {{ visible: boolean, onClose: () => void }} props
+ */
 export default function StatsModal({ visible, onClose }) {
-  const [statsData, setStatsData] = useState(null);
-  const [customDecks, setCustomDecks] = useState({});
-  const [selectedDay, setSelectedDay] = useState(null);
+  const [statsData, setStatsData] = useState(/** @type {StatsData | null} */ (null));
+  const [customDecks, setCustomDecks] = useState(/** @type {CustomDecks} */ ({}));
+  const [selectedDay, setSelectedDay] = useState(/** @type {CalendarDay | null} */ (null));
   const [selectedMonthDate, setSelectedMonthDate] = useState(new Date());
   // Takvim grid'inin ölçülen genişliği: gün detay balonunun yerleşimi (hangi tarafa
   // açılacağı ve en fazla ne kadar geniş olabileceği) bundan hesaplanır — bkz.
@@ -151,6 +190,7 @@ export default function StatsModal({ visible, onClose }) {
 
     let cancelled = false;
     let entranceStarted = false;
+    /** @type {ReturnType<typeof setTimeout> | null} */
     let fallbackTimer = null;
 
     // Kartın hemen belirmesi Faz 4.1'de bilinçliydi ("İstatistik"e basmak işlemiyor
@@ -306,13 +346,16 @@ export default function StatsModal({ visible, onClose }) {
   const problematicWords = useMemo(() => {
     const customWords = customDeckNames.reduce(
       (acc, name) => acc.concat(customDecks[name] || []),
-      []
+      /** @type {CustomDeckWord[]} */ ([])
     );
 
     return [...ALL_WORDS, ...customWords].filter((w) => isProblematic(wordStats[w.id]));
   }, [customDeckNames, customDecks, wordStats]);
 
   // Ustalık satırı iki bölümde de (HSK + özel deste) aynı görünsün diye tek yerde üretilir.
+  /**
+   * @param {MasteryRow} row
+   */
   const renderMasteryRow = (row) => (
     <View
       key={row.id}
@@ -364,6 +407,7 @@ export default function StatsModal({ visible, onClose }) {
 
     const todayStr = getDateKey(new Date());
 
+    /** @type {CalendarCell[]} */
     const gridCells = [];
 
     // Ayın başından önceki boş günler
@@ -405,6 +449,7 @@ export default function StatsModal({ visible, onClose }) {
     }
 
     // Günleri haftalara (7'li satırlara) böl
+    /** @type {CalendarCell[][]} */
     const weeks = [];
     for (let i = 0; i < gridCells.length; i += 7) {
       weeks.push(gridCells.slice(i, i + 7));
@@ -425,6 +470,9 @@ export default function StatsModal({ visible, onClose }) {
     selectedMonthDate.getFullYear() === todayObj.getFullYear() &&
     selectedMonthDate.getMonth() === todayObj.getMonth();
 
+  /**
+   * @param {CalendarDay} day
+   */
   const handleDayPress = (day) => {
     if (selectedDay?.dateStr === day.dateStr) {
       setSelectedDay(null);

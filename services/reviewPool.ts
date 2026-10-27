@@ -52,9 +52,10 @@ export const isCustomWordId = (id: unknown): id is string =>
   typeof id === 'string' && id.startsWith(CUSTOM_ID_PREFIX);
 
 // Kaydın modu; alan yoksa/bozuksa varsayılana düşer.
-// Parametre yalnızca `wrongMode` okur: kayıt kısmen bozuk olabilir (`{}` dahil).
-export const getWrongMode = (entry?: { wrongMode?: string } | null): string =>
-  (entry && entry.wrongMode) || DEFAULT_MODE;
+// Parametre yalnızca `wrongMode` okur: kayıt kısmen bozuk olabilir (`{}` dahil),
+// bu yüzden değer `unknown` kabul edilir ve yalnızca metinse kullanılır.
+export const getWrongMode = (entry?: { wrongMode?: unknown } | null): string =>
+  (typeof entry?.wrongMode === 'string' && entry.wrongMode) || DEFAULT_MODE;
 
 // id gerçekten kullanılabilir bir sayı mı? (NaN/Infinity dışlanır.)
 const isUsableNumberId = (id: unknown): id is number =>
@@ -71,25 +72,31 @@ const normalizeSnapshot = (source: unknown): ReviewSnapshot | null => {
 // Tek bir kaydı kanonik şekle çevirir; çevrilemeyen (bozuk) kayıt için null.
 // Hem yeni şekli hem iki eski şekli kabul eder ve idempotenttir.
 //
-// `raw` bilinçli olarak `any`: girdi diskteki rastgele/eski bir kayıttır ve bu
+// `raw` bilinçli olarak `unknown`: girdi diskteki rastgele/eski bir kayıttır ve bu
 // fonksiyonun işi zaten onu doğrulamak (bu yüzden tipli bir parametre yalan olurdu).
-export const toCanonicalEntry = (raw: any): ReviewEntry | null => {
+// Alanlar tek tek okunur; hiçbir yerde `any` kullanılmaz.
+export const toCanonicalEntry = (raw: unknown): ReviewEntry | null => {
   if (!raw || typeof raw !== 'object') return null;
 
-  const wrongMode = getWrongMode(raw);
+  const source = raw as Record<string, unknown>;
+  const wrongMode = getWrongMode(source);
 
   // 1) Yeni şekil: zaten `wordId` taşır.
-  if (raw.wordId !== undefined) {
-    if (isCustomWordId(raw.wordId)) {
-      const snapshot = normalizeSnapshot(raw.snapshot);
-      return snapshot ? { wordId: raw.wordId, wrongMode, snapshot } : null;
+  if (source.wordId !== undefined) {
+    const wordId = source.wordId;
+    if (isCustomWordId(wordId)) {
+      const snapshot = normalizeSnapshot(source.snapshot);
+      return snapshot ? { wordId, wrongMode, snapshot } : null;
     }
-    return isUsableNumberId(raw.wordId) ? { wordId: raw.wordId, wrongMode } : null;
+    return isUsableNumberId(wordId) ? { wordId, wrongMode } : null;
   }
 
   // 2) Eski şekiller: `{ ...word, wrongMode }` veya `{ ...word, word, wrongMode }`.
-  const legacyWord = raw.word && typeof raw.word === 'object' ? raw.word : null;
-  const wordId = legacyWord && legacyWord.id !== undefined ? legacyWord.id : raw.id;
+  const legacyWord =
+    source.word && typeof source.word === 'object'
+      ? (source.word as Record<string, unknown>)
+      : null;
+  const wordId = legacyWord && legacyWord.id !== undefined ? legacyWord.id : source.id;
   if (wordId === undefined || wordId === null) return null;
 
   if (isCustomWordId(wordId)) {
@@ -102,7 +109,7 @@ export const toCanonicalEntry = (raw: any): ReviewEntry | null => {
 // Havuz kaydını gösterilebilir kelimeye çevirir; çözülemezse null.
 // - Sayısal id  → kanonik veri (her zaman güncel; kopya yok, bayatlama yok).
 // - Özel deste  → kaydın yanında taşıdığı anlık görüntü (deste silinse de çalışır).
-export const resolveReviewWord = (entry?: ReviewEntry | null): ResolvedWord | null => {
+export const resolveReviewWord = (entry?: ReviewEntryInput | null): ResolvedWord | null => {
   if (!entry) return null;
 
   if (isCustomWordId(entry.wordId)) {
@@ -192,7 +199,7 @@ export const addEntry = <T extends ReviewEntryInput>(
 ): T[] => {
   const list = Array.isArray(pool) ? pool : [];
   if (!entry) return list;
-  if (hasEntry(list, entry.wordId, entry.wrongMode)) return list;
+  if (hasEntry(list, entry.wordId, getWrongMode(entry))) return list;
   return [...list, entry];
 };
 

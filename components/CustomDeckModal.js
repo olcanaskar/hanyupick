@@ -39,19 +39,28 @@ const SAMPLE_JSON_TEXT = `[
   }
 ]`;
 
+/**
+ * @typedef {import('../services/importService').CustomDecks} CustomDecks
+ * @typedef {Extract<import('../services/importService').ParsedDeckResult, { success: true }>} PendingDeck
+ * @typedef {{ kind: 'overwrite', deckName: string } | { kind: 'id-conflict', conflictWith: string }} SaveNotice
+ */
+
+/**
+ * @param {{ visible: boolean, onClose: () => void }} props
+ */
 export default function CustomDeckModal({ visible, onClose }) {
-  const [decks, setDecks] = useState({});
+  const [decks, setDecks] = useState(/** @type {CustomDecks} */ ({}));
   const [showGuide, setShowGuide] = useState(false);
   const [copied, setCopied] = useState(false);
   
   // İsim alma ve silme adımları için state'ler
-  const [pendingDeck, setPendingDeck] = useState(null);
+  const [pendingDeck, setPendingDeck] = useState(/** @type {PendingDeck | null} */ (null));
   const [customDeckName, setCustomDeckName] = useState('');
-  const [deckToDelete, setDeckToDelete] = useState(null);
+  const [deckToDelete, setDeckToDelete] = useState(/** @type {string | null} */ (null));
 
   // Kaydetme akışının bildirimi: sistem Alert'i yerine, modalın kendi temasıyla
   // çizilen bir ekran. `null | { kind: 'overwrite', deckName } | { kind: 'id-conflict', conflictWith }`
-  const [saveNotice, setSaveNotice] = useState(null);
+  const [saveNotice, setSaveNotice] = useState(/** @type {SaveNotice | null} */ (null));
 
   // Animasyon Değerleri
   const scaleAnim = useRef(new Animated.Value(0.85)).current;
@@ -142,7 +151,12 @@ export default function CustomDeckModal({ visible, onClose }) {
 
   // Kaydetmeyi dener. `overwrite` yalnızca kullanıcı onayından SONRA true olur:
   // aynı adla var olan bir deste sessizce ezilmez.
+  /**
+   * @param {boolean} overwrite
+   */
   const performSave = async (overwrite) => {
+    if (!pendingDeck) return;
+
     const trimmedName = customDeckName.trim();
     if (!trimmedName) {
       showAlert('Invalid Name', 'Please enter a valid name for your deck.');
@@ -159,18 +173,18 @@ export default function CustomDeckModal({ visible, onClose }) {
       return;
     }
 
-    if (saveResult.reason === 'exists') {
+    if ('reason' in saveResult && saveResult.reason === 'exists') {
       // Sessiz üzerine yazma yok: onayı modalın kendi temasıyla çizilen ekranda iste.
       setSaveNotice({ kind: 'overwrite', deckName: saveResult.deckName });
       return;
     }
 
-    if (saveResult.reason === 'id-conflict') {
+    if ('reason' in saveResult && saveResult.reason === 'id-conflict') {
       setSaveNotice({ kind: 'id-conflict', conflictWith: saveResult.conflictWith });
       return;
     }
 
-    showAlert('Save Error', saveResult.error || 'Failed to save deck.');
+    showAlert('Save Error', ('error' in saveResult && saveResult.error) || 'Failed to save deck.');
   };
 
   // Butonun doğrudan çağırdığı sarmalayıcı: `onPress` olayı `overwrite` sanılmasın.

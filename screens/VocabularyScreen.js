@@ -19,15 +19,36 @@ import { speakHanzi } from '../services/speechService';
 // HSK seviye listesi ve kelime havuzları tek kaynaktan (Faz 3.1)
 import { LEVELS, LEVEL_LABELS, LEVEL_POOLS } from '../services/wordRepository';
 
+/**
+ * @typedef {import('../services/importService').CustomDecks} CustomDecks
+ * @typedef {import('../services/wordRepository').WordId} WordId
+ */
+
+// Sözlük listesindeki tek satır: HSK kaydı ya da özel deste kelimesi + kaynak etiketi.
+/**
+ * @typedef {{
+ *   id: WordId,
+ *   hanzi: string,
+ *   pinyin: string,
+ *   meaning: string,
+ *   categoryId: string,
+ *   sourceTag: string,
+ *   level?: string,
+ * }} VocabularyItem
+ */
+
 const BASE_CATEGORIES = [
   { id: 'all', label: 'All Words' },
   ...LEVELS.map((level) => ({ id: level, label: LEVEL_LABELS[level] })),
 ];
 
+/**
+ * @param {{ navigation: { goBack: () => void } }} props
+ */
 export default function VocabularyScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [customDecks, setCustomDecks] = useState({});
+  const [customDecks, setCustomDecks] = useState(/** @type {CustomDecks} */ ({}));
   const [isHandwritingVisible, setIsHandwritingVisible] = useState(false);
 
   // Özel desteleri AsyncStorage'dan yükle
@@ -52,6 +73,7 @@ export default function VocabularyScreen({ navigation }) {
       }))
     );
 
+    /** @type {VocabularyItem[]} */
     const customWords = [];
     Object.keys(customDecks).forEach((deckName) => {
       const categoryId = `custom_${deckName}`;
@@ -99,6 +121,9 @@ export default function VocabularyScreen({ navigation }) {
 
   // Çince seslendirme tek servisten (services/speechService.js) — ses seviyesi
   // kullanıcı ayarından gelir.
+  /**
+   * @param {{ item: VocabularyItem }} props
+   */
   const renderWordItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardMain}>

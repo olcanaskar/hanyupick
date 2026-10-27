@@ -122,7 +122,9 @@ export const buildOptions = (
   distractorCount = 3
 ): WordLike[] => {
   const blockedValues = new Set<string>(
-    WORD_FIELDS.map((field) => correctWord[field]).filter(Boolean)
+    WORD_FIELDS.map((field) => correctWord[field]).filter(
+      (value): value is string => Boolean(value)
+    )
   );
   const distractors: WordLike[] = [];
 

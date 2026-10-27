@@ -17,7 +17,7 @@ const TOP_Y = -MARGIN; // -45
 
 // Verilen değerleri sırayla döndüren sahte rastgelelik üreteci; son değer tekrar eder.
 // `calls()` kaç kez çağrıldığını verir → "sonlu sürede döndü" iddiası ölçülebilir olur.
-const scriptedRandom = (...values) => {
+const scriptedRandom = (...values: number[]) => {
   let index = 0;
   const random = () => {
     const value = values[Math.min(index, values.length - 1)];
@@ -30,12 +30,14 @@ const scriptedRandom = (...values) => {
   return random;
 };
 
-const isOnBoundary = ({ x, y }, { width, height }) =>
-  x === -MARGIN || y === -MARGIN || x === width + MARGIN || y === height + MARGIN;
+const isOnBoundary = (
+  { x, y }: { x: number; y: number },
+  { width, height }: { width: number; height: number }
+) => x === -MARGIN || y === -MARGIN || x === width + MARGIN || y === height + MARGIN;
 
 describe('getRandomBoundaryPoint — kenar ağırlıkları (%40 alt, %20 üst, %20 sağ, %20 sol)', () => {
   test('kenar seçimi ve koordinatlar', () => {
-    const cases = [
+    const cases: [number, { x: number; y: number }][] = [
       [0, { x: 200, y: BOTTOM_Y }],
       [0.399, { x: 200, y: BOTTOM_Y }],
       [0.4, { x: 200, y: TOP_Y }],

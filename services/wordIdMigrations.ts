@@ -42,7 +42,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // bulunmali (test dogrular) ve testler birlikte guncellenmelidir.
 
 // Silinen id → tutulan id (Faz 4)
-export const MERGED_WORD_ID_MAP = {
+export const MERGED_WORD_ID_MAP: Record<number, number> = {
   1889: 1206, // 包含 bāohán
   1894: 1207, // 宝贵 bǎoguì
   2002: 1237, // 财产 cáichǎn
@@ -72,7 +72,7 @@ export const MERGED_WORD_ID_MAP = {
 //   deger > 2500  -> kelime HSK 6 listesinde yasiyor (oradan devam eder)
 //   deger <= 2500 -> kelime HSK 5 icinde kaldi, yalnizca id'si degisti
 // Tablodaki her hedef id veride GERCEKTEN vardir (test dogrular).
-export const HSK5_REBALANCE_ID_MAP = {
+export const HSK5_REBALANCE_ID_MAP: Record<number, number> = {
   1802: 4855, // 执行 -> HSK6
   1803: 2454, // 执照 -> HSK5
   1804: 2453, // 直 -> HSK5
@@ -693,7 +693,7 @@ export const HSK5_REBALANCE_ID_MAP = {
 
 // Kelime ne resmi HSK5 ne de HSK6 listesinde kaldi (yanlis kaynakli artiklar:
 // istatistigi silinir, hata havuzu kaydi duser. Hedefi olmadigi icin MAP'te yer almaz.
-export const HSK5_REBALANCE_DROPPED_IDS = [
+export const HSK5_REBALANCE_DROPPED_IDS: number[] = [
   1808, // 至少
   1821, // 自信
   1827, // 总结
@@ -777,7 +777,7 @@ export const HSK5_REBALANCE_DROPPED_IDS = [
 //   * 16 kelime resmi HSK 2.0 listesinin hicbir seviyesinde yok: ilerlemeleri ve
 //     hata havuzu kayitlari silinir (bkz. HSK14_REALIGN_DROPPED_IDS).
 
-export const HSK14_REALIGN_ID_MAP = {
+export const HSK14_REALIGN_ID_MAP: Record<number, number> = {
   34: 35, // 汉语 (hsk1)
   35: 36, // 好 (hsk1)
   36: 37, // 号 (hsk1)
@@ -1763,7 +1763,7 @@ export const HSK14_REALIGN_ID_MAP = {
   1199: 699, // 短信 (hsk4)
 };
 
-export const HSK14_REALIGN_DROPPED_IDS = [
+export const HSK14_REALIGN_DROPPED_IDS: number[] = [
   395, // 河
   545, // 鞋
   548, // 信
@@ -1789,7 +1789,10 @@ export const HSK14_REALIGN_DROPPED_IDS = [
 // yeni resmi kelimeleri tutar); birlesik harita ikinci kez uygulanirsa o
 // kelimelerin ilerlemesi yanlis id'ye tasinirdi. Bu yuzden her faz kendi
 // surumuyle eslesir ve yalnizca surumu GERIDE olan fazlar sirayla uygulanir.
-export const WORD_ID_MIGRATIONS_BY_VERSION = {
+export const WORD_ID_MIGRATIONS_BY_VERSION: Record<
+  number,
+  { map: Record<number, number>; dropped: number[] }
+> = {
   1: { map: MERGED_WORD_ID_MAP, dropped: [] },
   2: { map: HSK5_REBALANCE_ID_MAP, dropped: HSK5_REBALANCE_DROPPED_IDS },
   3: { map: HSK14_REALIGN_ID_MAP, dropped: HSK14_REALIGN_DROPPED_IDS },

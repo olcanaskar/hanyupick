@@ -13,6 +13,26 @@ import { getExampleByWordId } from '../services/exampleService';
 import { FIELD_LABELS, getAnswerType, getHintField, getPromptType } from '../services/modes';
 import { speakHanzi } from '../services/speechService';
 
+/**
+ * Kart, kelime kaydını yalnızca gösterim için okur. `en`/`english` alanları
+ * `data/hsk*.json` içinde YOKTUR (tek biçim: id/hanzi/pinyin/meaning); eski veri
+ * şekillerine karşı savunma olarak isteğe bağlı tutulur.
+ *
+ * @typedef {import('../services/wordRepository').WordLike & { en?: string, english?: string }} CardWord
+ */
+
+/**
+ * @param {{
+ *   currentWord: CardWord | null,
+ *   level: string,
+ *   mode: string,
+ *   options?: CardWord[],
+ *   isAnswered: boolean,
+ *   selectedOption?: CardWord | null,
+ *   onSelectOption: (option: CardWord) => void,
+ *   onNextQuestion: () => void,
+ * }} props
+ */
 export default function QuestionCard({
   currentWord,
   level, // ---> Seviye parametresi eklendi
@@ -146,6 +166,9 @@ export default function QuestionCard({
   };
 
   // 2. Seçenek Buton Metni (Options)
+  /**
+   * @param {CardWord} option
+   */
   const renderOptionContent = (option) => {
     if (answerType === 'pinyin') {
       return option.pinyin;
@@ -258,6 +281,7 @@ export default function QuestionCard({
             // Not: `isSelected ? [...] : []` yazıldığında TypeScript iki ayrı nesne
             // şeklinin birleşimini çıkarıp Animated'ın `transform` tipine atanamaz
             // diyordu; diziyi koşullu olarak doldurmak hem tipi hem davranışı net.
+            /** @type {({ scale: Animated.Value } | { translateX: Animated.Value })[]} */
             const animatedTransform = [];
             if (isSelected) {
               animatedTransform.push({ scale: buttonScale }, { translateX: buttonShakeX });

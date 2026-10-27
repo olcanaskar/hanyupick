@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getStats, recordAnswer, removeWordStatsByIds, clearAllStats, mergeWordStatsIds, getMastery, isMastered, isProblematic } from '../services/statsManager';
 import { getDateKey, addDays } from '../services/dateUtils';
+import type { StatsStreak } from '../services/statsManager';
 
 const STATS_KEY = '@hsk_user_stats';
 
@@ -9,10 +10,12 @@ const today = getDateKey();
 const yesterday = getDateKey(addDays(new Date(), -1));
 const fourDaysAgo = getDateKey(addDays(new Date(), -4));
 
-const seedStats = (stats) => AsyncStorage.setItem(STATS_KEY, JSON.stringify(stats));
-const readStats = async () => JSON.parse(await AsyncStorage.getItem(STATS_KEY));
+// Depoya bilerek "eski/bozuk" şekiller de yazılır (ör. fazladan `level` alanı),
+// bu yüzden parametre `unknown`: burada amaç diski doldurmak, doğrulamak değil.
+const seedStats = (stats: unknown) => AsyncStorage.setItem(STATS_KEY, JSON.stringify(stats));
+const readStats = async () => JSON.parse((await AsyncStorage.getItem(STATS_KEY)) || '{}');
 
-const emptyStats = (streak) => ({ wordStats: {}, dailyStats: {}, streak });
+const emptyStats = (streak: StatsStreak) => ({ wordStats: {}, dailyStats: {}, streak });
 
 beforeEach(async () => {
   await AsyncStorage.clear();

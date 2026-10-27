@@ -116,10 +116,11 @@ const performRecordAnswer = async ({
 
     const currentCat = categories[category];
     if (isCorrect) {
-      currentCat.streak += 1;
+      // Alanlar diskteki eski kayıtlarda eksik olabilir (bkz. CategoryStat).
+      currentCat.streak = (currentCat.streak || 0) + 1;
       currentCat.wrongStreak = 0; // Doğru bilinince yanlış serisi kırılır
     } else {
-      currentCat.wrongStreak += 1;
+      currentCat.wrongStreak = (currentCat.wrongStreak || 0) + 1;
       currentCat.streak = 0; // Yanlış yapılınca doğru serisi sıfırlanır
     }
   }

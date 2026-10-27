@@ -20,6 +20,10 @@ import VocabularyScreen from './screens/VocabularyScreen';
 
 const STORAGE_KEY = '@hsk_review_pool';
 
+/**
+ * @typedef {import('./services/reviewPool').ReviewEntry} ReviewEntry
+ */
+
 // Faz 18: splash ekranı (app.json'daki `expo-splash-screen` plugin'i ile yapılandırılır)
 // uygulama hazır olana kadar görünür kalır ve en az SPLASH_MIN_MS boyunca sabit durur.
 // `preventAutoHideAsync` MODÜL kapsamında çağrılır — bileşen içinde çağrılırsa splash
@@ -41,7 +45,7 @@ const AppTheme = {
 };
 
 export default function App() {
-  const [reviewPool, setReviewPool] = useState([]);
+  const [reviewPool, setReviewPool] = useState(/** @type {ReviewEntry[]} */ ([]));
 
   // 1. Uygulama açılışında kayıtlı veriyi yükle
   useEffect(() => {
@@ -124,15 +128,21 @@ export default function App() {
   }, []);
 
   // 2. reviewPool değiştikçe diske kaydet
-  const updateReviewPool = useCallback((updater) => {
-    setReviewPool((prev) => {
-      const nextState = typeof updater === 'function' ? updater(prev) : updater;
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(nextState)).catch((err) =>
-        console.error('Kayıt başarısız:', err)
-      );
-      return nextState;
-    });
-  }, []);
+  const updateReviewPool = useCallback(
+    /**
+     * @param {ReviewEntry[] | ((prev: ReviewEntry[]) => ReviewEntry[])} updater
+     */
+    (updater) => {
+      setReviewPool((prev) => {
+        const nextState = typeof updater === 'function' ? updater(prev) : updater;
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(nextState)).catch((err) =>
+          console.error('Kayıt başarısız:', err)
+        );
+        return nextState;
+      });
+    },
+    []
+  );
 
   // 3. Bir özel deste silinince o desteye ait yanlışlar da havuzdan düşsün.
   //    Havuzun sahibi burasıdır (kalıcılığı da yukarıdaki update ile olur); istatistik
