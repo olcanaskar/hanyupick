@@ -1439,4 +1439,26 @@ Web'de `expo-speech` tarayıcının `speechSynthesis`'ini kullanır; o da **işl
 
 `npx tsc --noEmit` → **0 hata** · `npm run lint` → **0 hata, 14 uyarı** (hepsi eskiden beri var; yeni dosyalar uyarı eklemedi) · `npm test` → **263/263, 17/17 suite**. Tarayıcıda: `GET /audio/hsk/1.mp3` → `200 audio/mpeg` (2.348 bayt), `Audio` ile açılışta `duration 0.47 s`, `play()` reddi yok. `python tools/generate-audio.py --verify` → 5000/5000, fazla dosya yok. **Cihaz doğrulaması kullanıcıda** (native yol değişmedi).
 
+Üretilen dosyaların boyutu: **1,3-6,8 KB** (ortalama 3,2 KB), en uzunlar `虽然……但是……` gibi kalıplar (1,63 s). `npx expo export --platform web` → `dist/audio/hsk/` içinde **5000 dosya / 15,2 MB** (toplam `dist/` 17,6 MB); statik sunucudan `146.mp3` → `200 audio/mpeg`, yani export `public/`'i gerçekten kopyalıyor.
+
+### 8. Yayına alma (ve EAS Hosting'in ilk yükleme tuzağı)
+
+`npx eas-cli@latest deploy --prod` **ilk denemede iki kez** şu hatayla düştü:
+
+```
+Upload of 2418 assets failed: CDN firewall has aborted the upload with Bad Gateway.
+```
+
+Sebep, tek seferde 5003 dosyalık (15,2 MB) *ilk* yüklemeydi: CDN'in önündeki güvenlik katmanı o partiyi kesiyor. Çözüm, yüklemeyi kademelendirmek — her adım önceki adımın yüklediği dosyaları yeniden kullanıyor (artımlı deployment):
+
+| Deneme | `dist/audio/hsk` | Sonuç |
+| --- | --- | --- |
+| tam | 5000 | ❌ Bad Gateway (2 kez) |
+| 1 | 500 | ✅ preview |
+| 2 | 2500 | ✅ preview |
+| 3 | 4000 | ✅ preview |
+| 4 | 5000 | ✅ preview → `--prod` ✅ |
+
+Yani **ilk kez büyük bir varlık kümesi yüklerken önce küçük bir preview, sonra kademeli olarak tam küme** yüklenmeli; sonraki deployment'lar zaten artımlı. Üretim: `https://hanyupick.expo.app` — `audio/hsk/1.mp3`, `125`, `146`, `250`, `5000` → `200 audio/mpeg`; tarayıcıda sözlükte 爱'nin 🔊'ı `https://hanyupick.expo.app/audio/hsk/1.mp3` dosyasını çaldı (`play()` çözüldü). Test sırasında oluşan preview deployment'ları (`hanyupick--<id>.expo.app`) dashboard'da duruyor; üretimi etkilemiyorlar.
+
 

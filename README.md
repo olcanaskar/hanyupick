@@ -174,6 +174,11 @@ npx eas-cli@latest deploy --prod  # publishes it to https://hanyupick.expo.app
 The web build is the same tree as the native app: `App.js` only wraps the content in a centred
 phone-width frame when `Platform.OS === 'web'`, and the pop-up cards are capped to the same width.
 
+The first deployment that carries all 5,000 audio files can be rejected by the CDN
+(`CDN firewall has aborted the upload with Bad Gateway`). It is not a size limit: deployments are
+incremental, so upload in stages — copy a few hundred MP3s into `dist/audio/hsk/`, `deploy`, add
+more, `deploy` again, and only then `deploy --prod`.
+
 The app icon, the Android adaptive-icon layers and the splash image are **generated, never
 hand-edited**:
 
