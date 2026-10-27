@@ -1461,4 +1461,6 @@ Sebep, tek seferde 5003 dosyalık (15,2 MB) *ilk* yüklemeydi: CDN'in önündeki
 
 Yani **ilk kez büyük bir varlık kümesi yüklerken önce küçük bir preview, sonra kademeli olarak tam küme** yüklenmeli; sonraki deployment'lar zaten artımlı. Üretim: `https://hanyupick.expo.app` — `audio/hsk/1.mp3`, `125`, `146`, `250`, `5000` → `200 audio/mpeg`; tarayıcıda sözlükte 爱'nin 🔊'ı `https://hanyupick.expo.app/audio/hsk/1.mp3` dosyasını çaldı (`play()` çözüldü). Test sırasında oluşan preview deployment'ları (`hanyupick--<id>.expo.app`) dashboard'da duruyor; üretimi etkilemiyorlar.
 
+**Kullanıcı onayı (2026-10-28):** yayındaki sitede sesler çalışıyor. Bu fazın sonucu `known-good`a taşındı.
+
 
