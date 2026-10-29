@@ -283,7 +283,6 @@ Two documents explain the project in depth — both are written in Turkish, the 
 - Word levels and sizes follow the official **HSK 2.0** vocabulary lists published by Hanban (2012).
 - Built with [Expo](https://expo.dev), [React Native](https://reactnative.dev) and
   [React Navigation](https://reactnavigation.org).
-- The 汉 glyph in the icon is rendered from Microsoft YaHei Bold by `tools/generate-icons.py`.
 - HanyuPick is an independent project and is not affiliated with Hanban or the HSK organisers.
 
 ## License
