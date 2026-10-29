@@ -289,3 +289,22 @@ Two documents explain the project in depth — both are written in Turkish, the 
 ## License
 
 [MIT](LICENSE) © 2026 Olcan Askar
+
+## How this project was built (AI usage)
+
+HanyuPick was built by one developer working with an AI coding agent. The division of work was
+deliberate, and it is easiest to state plainly:
+
+| | |
+| --- | --- |
+| **Mine** | The idea of the app and every decision about what it should do: the six quiz directions, the mistake pool, custom decks, the statistics, search by drawing, the settings card. The **logic** behind them: options always come from the same HSK level, a word leaves the mistake pool only when it is answered correctly, mastery means three correct answers in a row in all three directions, "reset progress" clears the stats and the pool but never the custom decks. **All of the design**: layouts, the red/emerald palette, the pop-ups and the logo (the 汉 badge and its proportions). The **HSK 1–6 word data** — the official lists collected and organised into the fixed 5,000-word library — and the **HSK 1** example sentences. And the testing: every phase was run on a phone in Expo Go and signed off by me before it was called done. |
+| **The AI's** | The rest of the repository. The code (`services/`, `screens/`, `components/`), the Jest tests and the strict-TypeScript pass; the **4,850 example sentences for HSK 2–6**; the word-id migration tables; the tooling (the icon, screenshot and audio generators, the EAS and CI configuration, the web export and deployment); and the documentation (`README.md`, `NOTES.md`, `AGENTS.md`). |
+
+So the AI wrote most of the lines of code, but it did not decide what those lines should do. I set the
+requirements, the rules and the visuals; the AI proposed how to implement them, wrote the
+implementation and explained the trade-offs. Each phase was reviewed before it was committed, and the
+behaviour that matters was checked on a real device rather than assumed from a green test run.
+
+The point of this section is not to minimise the AI's share but to be exact about it: the direction,
+the design, the vocabulary data and the HSK 1 content are mine; the typing, the bulk of the example
+sentences and the tooling around the app are the AI's.
