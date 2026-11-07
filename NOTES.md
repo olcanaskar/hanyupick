@@ -1380,6 +1380,8 @@ Ekranlar `.js` kaldı ama artık `checkJs` + `strict` ile denetleniyor. Kullanı
 
 ## 37. Faz 37 — Web'de ses: 5.000 kelimenin sesi dosya olarak (ve neden başka çare yok)
 
+> 2026-11 düzeltmesi: kırpma hatası ve 64 kbps için **§37.9**'a bak.
+
 ### 1. Belirti
 
 Kullanıcı: "ne hanyupick.expo.app'te ne de yerel web sunucusunda hoparlöre basınca ses gelmiyor; sekmede hoparlör simgesi çıkıyor ama ses yok". Telefonda (Expo Go / APK) ses **çalışıyordu**. Yani sorun web'e özgüydü ve ilk akla gelen "ses seviyesi 0" değildi: `@hsk_settings` localStorage'da yoktu, yani `speechVolume` varsayılan **1**.
@@ -1409,11 +1411,11 @@ Web'de `expo-speech` tarayıcının `speechSynthesis`'ini kullanır; o da **işl
 | --- | --- | --- |
 | Ses | `zh-CN-XiaoxiaoNeural` (`edge-tts`) | doğal, kadın, öğrenme uygulamalarında yaygın; `edge-tts` anahtarsız ve ücretsiz |
 | Hız | `-15%` | native TTS `rate: 0.85` ile aynı tempo |
-| Kodlama | 32 kbps mono, 24 kHz | kelime başına ~2-3 KB |
+| Kodlama | 32 kbps mono, 24 kHz (2026-11: **64 kbps**, §37.9) | kelime başına ~2-3 KB (64 kbps'te ~5-14 KB) |
 | Dosya adı | `<wordId>.mp3` | id kimliktir: göç tablosu gerekmez, `__tests__/audioAssets.test.ts` kapsamı doğrular |
 | Yol | **göreceli** (`audio/hsk/…`) | alt yol dağıtımında da çalışır |
 
-**Sessizlik kırpma zorunlu:** servis her kısa metni sabit ~1,87 s'lik bir tampona koyuyor (`爱` = 0,59 s konuşma + **1,28 s sessizlik**, ffmpeg `silencedetect` ile ölçüldü; 1-3 heceli her kelime aynı 11.232 bayt). Kırpma olmadan 5.000 dosya ~**55 MB** olurdu ve her kelimeden sonra ~1,3 s ölü hava kalırdı. `silenceremove` (-50 dB, 50 ms pencere) + 0,2 s kuyruk + 32 kbps → ~**15 MB**, kelime biter bitmez susuyor.
+**Sessizlik kırpma zorunlu:** servis her kısa metni sabit ~1,87 s'lik bir tampona koyuyor (`爱` = 0,59 s konuşma + **1,28 s sessizlik**, ffmpeg `silencedetect` ile ölçüldü; 1-3 heceli her kelime aynı 11.232 bayt). Kırpma olmadan 5.000 dosya ~**55 MB** olurdu ve her kelimeden sonra ~1,3 s ölü hava kalırdı. `silenceremove` (-50 dB, 50 ms pencere) + 0,2 s kuyruk + 32 kbps → ~**15 MB**, kelime biter bitmez susuyor. (2026-11: `start_duration=0`, 0,25 s kuyruk, 64 kbps → **35,0 MB**; §37.9.)
 
 ### 5. Kod
 
@@ -1462,5 +1464,36 @@ Sebep, tek seferde 5003 dosyalık (15,2 MB) *ilk* yüklemeydi: CDN'in önündeki
 Yani **ilk kez büyük bir varlık kümesi yüklerken önce küçük bir preview, sonra kademeli olarak tam küme** yüklenmeli; sonraki deployment'lar zaten artımlı. Üretim: `https://hanyupick.expo.app` — `audio/hsk/1.mp3`, `125`, `146`, `250`, `5000` → `200 audio/mpeg`; tarayıcıda sözlükte 爱'nin 🔊'ı `https://hanyupick.expo.app/audio/hsk/1.mp3` dosyasını çaldı (`play()` çözüldü). Test sırasında oluşan preview deployment'ları (`hanyupick--<id>.expo.app`) dashboard'da duruyor; üretimi etkilemiyorlar.
 
 **Kullanıcı onayı (2026-10-28):** yayındaki sitede sesler çalışıyor. Bu fazın sonucu `known-good`a taşındı.
+
+### 9. 2026-11 düzeltmesi — 50 ms kırpma hatası ve 64 kbps
+
+Kullanıcı geri bildirimi: web'de kelime sesleri "kesik" ve "çok kaliteli değil".
+İki neden ölçüldü; ikisi de aynı üreticide düzeltildi.
+
+1. **Kırpma hatası (asıl "kesik" sebebi).** Eski `TRIM_FILTER`
+   `start_duration=0.05` kullanıyordu. ffmpeg bu 50 ms'lik pencereyi "konuşma
+   başladı" diye beklerken **atıyor**, yani her kelimenin başından ve sonundan
+   tam 50 ms gidiyordu. Ham edge-tts çıktısıyla karşılaştırma: `爱`'nin ham
+   konuşması 0,210 s'de başlarken dosya 0,266 s'den başlıyordu; `七`'de 0,41
+   s'lik kelimeden 0,07 s kalıyordu. İlk ünsüz ve son ünlü kesildiği için ses
+   "kesik" duyuluyordu. Düzeltme: `start_duration=0` (hem başta hem `areverse`
+   sonrası sonda); kırpma yine -50 dB eşiğinde, yalnızca gerçek sessizlik
+   atılıyor ve kuyruk 0,25 s'ye çıkarıldı.
+2. **Kodlama.** 32 kbps / 24 kHz mono MP3 konuşma için telefon kalitesiydi;
+   **64 kbps / 24 kHz mono**'ya çıkarıldı. Kaynak edge-tts zaten 24 kHz /
+   48 kbps olduğu için 44,1 kHz'e yükseltmek gerçek bilgi eklemez; 96 kbps /
+   44,1 kHz denendi, yalnızca dosyayı büyüttüğü için reddedildi. (Edge uç
+   noktası 24 kHz / 96 kbps çıktısını kabul ediyor, 48 kHz'i reddediyor;
+   gerekirse kaynak 96 kbps'e çıkarılabilir.)
+3. **Üretim hızı.** `ffmpeg` `subprocess.run` ile olay döngüsünü kilitliyordu;
+   `asyncio.to_thread`e alındı. 32 eşzamanlı istek + thread'li ffmpeg ile
+   5.000 dosya **5,3 dakikada** üretildi (4 eşzamanlı senkron ffmpeg'le ilk
+   deneme ~2,5 saat sürecekti). Proje betiğindeki `CONCURRENCY` 4 kalıyor;
+   tek seferlik yeniden üretim 32 ile yapıldı.
+
+Sonuç: **5.000 dosya / 36.710.368 bayt (35,0 MB)**, ortalama 7.342 bayt
+(4,9-14,1 KB), 64 kbps / 24 kHz mono. `python tools/generate-audio.py --verify`
+→ 5000/5000, fazla dosya yok. `npm test` 263/263, `npm run lint` 0 hata
+(14 eski uyarı), `npm run tsc` 0 hata.
 
 

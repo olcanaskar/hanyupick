@@ -23,14 +23,23 @@
 #   python tools/generate-audio.py --verify         # ağa çıkmadan kapsam kontrolü
 #
 # Ses: zh-CN-XiaoxiaoNeural, hız -15%. Native TTS `rate: 0.85` kullanır, yani
-# web ile cihaz aynı tempoda okur. Ses ya da hız değiştirilirse TÜM dosyalar
-# `--force` ile yeniden üretilmelidir; yoksa eski ve yeni ses karışır.
+# web ile cihaz aynı tempoda okur. Ses, hız ya da bitrate değiştirilirse TÜM
+# dosyalar `--force` ile yeniden üretilmelidir; yoksa eski ve yeni ses karışır.
 #
 # NEDEN FFMPEG: servis her kısa metni sabit ~1,87 s'lik bir tampona koyuyor,
 # yani 1 heceli bir kelimenin ardından ~1,3 s SESSİZLİK geliyor (ölçüldü:
 # 爱 -> 0,59 s konuşma + 1,28 s sessizlik). Bu hem gecikme hem de 5000 dosyada
-# ~55 MB demek. Kırpma + 32 kbps mono yeniden kodlama ile kelime başına
-# ~2-4 KB kalıyor (toplam ~15 MB) ve kelime biter bitmez susuyor.
+# ~55 MB demek. Kırpma + 64 kbps mono yeniden kodlama ile kelime başına
+# ~5-14 KB (ortalama ~7 KB, toplam ~35 MB) kalıyor ve kelime biter bitmez
+# susuyor.
+#
+# KIRPMA HATASI (2026-11): eski filtre `start_duration=0.05` kullanıyordu.
+# ffmpeg bu süreyi "konuşma başladı" diye beklerken ATIYOR, yani her kelimenin
+# başından ve sonundan tam 50 ms gidiyordu (ölçüldü: 爱'nin ham konuşması
+# 0,210 s'de başlarken dosya 0,266 s'den başlıyordu; 七'de 0,41 s'lik kelimeden
+# 0,07 s kalıyordu). İlk ünsüzler ve son ünlüler kesildiği için sesler "kesik"
+# duyuluyordu. `start_duration=0` bu pencereyi kaldırır; kırpma yine -50 dB
+# eşiğiyle yalnızca gerçek sessizliği atar.
 #
 # Dosya adı = kelime id'si (data/hsk*.json). Kelime id'leri kimliktir: bir
 # kelime taşınırsa (services/wordIdMigrations.ts) o id'nin sesi de o kelimeyi
@@ -47,20 +56,20 @@ from pathlib import Path
 
 VOICE = "zh-CN-XiaoxiaoNeural"
 RATE = "-15%"
-BITRATE = "32k"
+BITRATE = "64k"
 SAMPLE_RATE = "24000"
 CONCURRENCY = 4
 RETRIES = 3
 
-# Sessizliği kırpma: -50 dB eşiği konuşmanın tamamını korur, 0,05 s'lik
-# "start_duration" ise kelime ortasındaki kısa boşlukların kesilmesini engeller.
-# apad sondaki 0,2 s'lik doğal kuyruğu geri verir (kelime "kesik" duyulmasın).
+# Sessizliği kırpma: -50 dB eşiği konuşmanın tamamını korur; start_duration=0
+# ise ffmpeg'in ilk 50 ms'yi yutmasını engeller (yukarıdaki kırpma hatası).
+# apad sondaki 0,25 s'lik doğal kuyruğu geri verir (kelime "kesik" duyulmasın).
 TRIM_FILTER = (
-    "silenceremove=start_periods=1:start_threshold=-50dB:start_duration=0.05,"
+    "silenceremove=start_periods=1:start_threshold=-50dB:start_duration=0,"
     "areverse,"
-    "silenceremove=start_periods=1:start_threshold=-50dB:start_duration=0.05,"
+    "silenceremove=start_periods=1:start_threshold=-50dB:start_duration=0,"
     "areverse,"
-    "apad=pad_dur=0.2"
+    "apad=pad_dur=0.25"
 )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -155,7 +164,9 @@ async def synthesize(ffmpeg, text, target):
             raise RuntimeError("ses üretilemedi (boş yanıt)")
         partial = target.with_suffix(".part")
         try:
-            encode(ffmpeg, raw, partial)
+            # ffmpeg'i ayrı iş parçacığında çalıştır: aksi halde senkron
+            # subprocess.run olay döngüsünü kilitler ve eşzamanlılık işe yaramaz.
+            await asyncio.to_thread(encode, ffmpeg, raw, partial)
             partial.replace(target)
         finally:
             if partial.exists():
