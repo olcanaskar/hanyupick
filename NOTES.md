@@ -1507,4 +1507,7 @@ tarayıcıda sözlükte 爱'nin 🔊'ı yeni dosyayı çaldı (`decodedBodySize 
 `Cache-Control: public, max-age=3600` — yeni deployment taze cache anahtarı
 üretti (`Age` sıfırdan başladı), eski 32 kbps dosya servis edilmiyor.
 
+**Kullanıcı onayı (2026-11-07):** yeni sesler dinlendi ve onaylandı; bu sürüm
+`known-good`a taşındı.
+
 
