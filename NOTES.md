@@ -1496,4 +1496,15 @@ Sonuç: **5.000 dosya / 36.710.368 bayt (35,0 MB)**, ortalama 7.342 bayt
 → 5000/5000, fazla dosya yok. `npm test` 263/263, `npm run lint` 0 hata
 (14 eski uyarı), `npm run tsc` 0 hata.
 
+**Yayın (2026-11-07).** `npx expo export --platform web` → `dist/audio/hsk`
+içinde 5000 dosya / 35,01 MB. Tüm dosyalar değiştiği için §37.8'deki kademeli
+yükleme gerekebilirdi; ancak `npx eas-cli@latest deploy --non-interactive
+--json` tek seferde 5000 varlığı yükledi (bu kez Bad Gateway yok). Preview:
+`https://hanyupick--47prwkpwa3.expo.app`; ardından `deploy --prod --json` →
+`https://hanyupick.expo.app` (deployment `hanyupick--5y6aac0ed7`). Üretimde
+`audio/hsk/1.mp3` → `200 audio/mpeg`, **5.612 bayt**, `24 kHz / 64 kbps`;
+tarayıcıda sözlükte 爱'nin 🔊'ı yeni dosyayı çaldı (`decodedBodySize 5612`).
+`Cache-Control: public, max-age=3600` — yeni deployment taze cache anahtarı
+üretti (`Age` sıfırdan başladı), eski 32 kbps dosya servis edilmiyor.
+
 
