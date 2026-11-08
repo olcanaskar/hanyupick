@@ -164,6 +164,24 @@ npx eas-cli@latest build --profile preview    --platform android
 npx eas-cli@latest build --profile production --platform android
 ```
 
+`expo.android.versionCode` in `app.json` is the **F-Droid build number** (`major * 10000 + minor * 100 +
+patch`, so 1.1.1 is `10101`). EAS keeps its own remote `versionCode` for the GitHub/Play builds
+(`cli.appVersionSource: "remote"`), so the two channels do not share a counter — and because they are
+signed with different keys, one cannot update the other anyway.
+
+### F-Droid
+
+The app is prepared for the main F-Droid repository. F-Droid compiles every app from source, so the
+build recipe lives in `fdroid/` as a draft for [`fdroiddata`](https://gitlab.com/fdroid/fdroiddata) and
+is submitted there as a merge request. The recipe pins a tagged release, generates `android/` with
+`npx expo prebuild`, compiles the Expo modules from source (the prebuilt AARs in `node_modules` are
+removed) and drops the web-only `public/audio` tree. `scripts/fdroid-prepare.mjs` switches Expo
+autolinking to source builds. See [`fdroid/README.md`](fdroid/README.md) for the submission steps and
+`NOTES.md` §38 for the full reasoning.
+
+The F-Droid build is signed by F-Droid, not by the EAS key. Switching from the GitHub APK to the
+F-Droid build therefore needs an uninstall first, and the reverse switch needs one too.
+
 ### Web deployment
 
 ```bash
@@ -222,6 +240,9 @@ recordings — `__tests__/audioAssets.test.ts` fails until they match again.
 | `tools/generate-icons.py` | The single source of the icons and the splash image. |
 | `tools/generate-store-screenshots.py` | The single source of the store-style README gallery (from `docs/screenshots/raw/`). |
 | `tools/generate-audio.py` + `public/audio/hsk/` | The single source of the web pronunciation audio (one MP3 per word id, 5,000 files). Web only — never bundled into the app. |
+| `fastlane/metadata/android/en-US/` | The store listing F-Droid reads from the pinned release commit: title, descriptions, changelog, 512 px icon and phone screenshots. |
+| `fdroid/` | The F-Droid build recipe (a draft for the `fdroiddata` merge request) and its submission notes. Not part of the app build. |
+| `scripts/fdroid-prepare.mjs` | The F-Droid-only preparation step: switches Expo autolinking to source builds and checks the pinned `versionCode`. |
 
 Everything that has one source of truth really has one: `services/wordRepository.ts` for levels and
 word pools, `services/modes.ts` for the six quiz directions, `services/statsManager.ts` for the

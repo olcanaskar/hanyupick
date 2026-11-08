@@ -1,0 +1,27 @@
+HanyuPick is an offline-first flashcard app for the official HSK 1-6 Chinese vocabulary lists. The whole 5,000-word library is bundled in the app: 150 + 150 + 300 + 600 + 1,300 + 2,500 words, with ids 1-5000 and no gaps.
+
+PRACTICE IN SIX DIRECTIONS
+- Hanzi to Pinyin
+- Hanzi to English
+- Pinyin to Hanzi
+- Pinyin to English
+- English to Hanzi
+- English to Pinyin
+Every question is drawn from the same HSK level, so the wrong options are never from an easier level. After you answer, the card shows the third field as a hint and an example sentence that contains the word.
+
+A MISTAKE POOL, NOT A RESET BUTTON
+Words you get wrong go into a review pool for that direction. Answer correctly and the word leaves the pool; the count on the home screen shows what is left.
+
+THE WHOLE LIBRARY, NO ACCOUNT
+No sign-up, no server, no ads, no tracking. Progress stays on your phone. The app works in aeroplane mode, except for search by drawing, which sends the strokes to Google's public Input Tools service when you use it.
+
+MORE
+- Vocabulary search by hanzi, pinyin or meaning
+- Handwriting pad to look up a word by drawing it
+- Custom decks imported from a JSON file
+- Mastery, streaks and an activity calendar
+- Speak a word aloud with the device's text-to-speech engine
+- Haptics and speech volume settings
+- A light, readable design in the app's red palette
+
+HanyuPick is free software, released under the MIT license. The source code is at https://github.com/olcanaskar/hanyupick.

@@ -1,0 +1,5 @@
+First F-Droid release.
+
+HanyuPick 1.1.1 is the same app as the 1.1.0 GitHub release: the full HSK 1-6 library, six quiz directions, the mistake pool, custom decks, vocabulary search with handwriting, statistics and settings.
+
+This build is compiled from source by F-Droid and signed with F-Droid's key. It cannot update an APK installed from GitHub (different signing key); uninstall the GitHub build first.
