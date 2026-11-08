@@ -1,0 +1,116 @@
+Categories:
+  - Science & Education
+License: MIT
+AuthorName: Olcan Askar
+AuthorEmail: aabdullaholcan@gmail.com
+AuthorWebSite: https://github.com/olcanaskar
+WebSite: https://github.com/olcanaskar/hanyupick
+SourceCode: https://github.com/olcanaskar/hanyupick
+IssueTracker: https://github.com/olcanaskar/hanyupick/issues
+Changelog: https://github.com/olcanaskar/hanyupick/releases
+AntiFeatures:
+  - NonFreeNet
+
+AutoName: HanyuPick
+
+RepoType: git
+Repo: https://github.com/olcanaskar/hanyupick.git
+
+Builds:
+  - versionName: 1.1.1
+    versionCode: 10101
+    commit: 12d7112cc4c8f7306dca0e1a9f52fe456c69422f
+    sudo:
+      - apt-get update
+      - apt-get install -y g++ make python3 xz-utils
+      - echo "deb https://deb.debian.org/debian bookworm main" > /etc/apt/sources.list.d/bookworm.list
+      - apt-get update
+      - apt-get install -y -t bookworm openjdk-17-jdk-headless
+      - update-java-alternatives -s java-1.17.0-openjdk-amd64
+      - curl -Lo node.tar.xz https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz
+      - echo "fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6  node.tar.xz" | sha256sum -c -
+      - tar xJf node.tar.xz
+      - cp -a node-v24.21.0-linux-x64/. /usr/local/
+    init:
+      - npm ci --no-audit --no-fund
+      - node scripts/fdroid-prepare.mjs
+      - npx expo prebuild --platform android --clean --no-install
+    output: android/app/build/outputs/apk/release/app-release-unsigned.apk
+    rm:
+      - node_modules/*/local-maven-repo
+      - node_modules/@expo/*/local-maven-repo
+      - node_modules/expo/node_modules/*/local-maven-repo
+      - node_modules/expo/template.tgz
+      - node_modules/expo-*/prebuilds
+      - node_modules/expo/node_modules/expo-*/prebuilds
+      - node_modules/@expo/expo-modules-macros-plugin/apple
+      - node_modules/fb-dotslash/bin/linux-musl.aarch64
+      - node_modules/fb-dotslash/bin/linux-musl.x86_64
+      - node_modules/fb-dotslash/bin/macos
+      - node_modules/fb-dotslash/bin/windows
+      - node_modules/fb-dotslash/bin/windows-arm64
+      - node_modules/hermes-compiler/hermesc/osx-bin
+      - node_modules/hermes-compiler/hermesc/win64-bin
+      - node_modules/react-native/React/I18n
+      - node_modules/react-native-svg/apple
+      - public/audio
+    prebuild:
+      - sed -i '/signingConfig signingConfigs/d' android/app/build.gradle
+    scanignore:
+      - node_modules/hermes-compiler/hermesc/linux64-bin/hermesc
+      - node_modules/@react-native-async-storage/async-storage/android/build.gradle
+      - node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle
+      - node_modules/react-native/ReactAndroid/publish.gradle
+      - node_modules/react-native-safe-area-context/android/build.gradle
+      - node_modules/react-native-screens/android/build.gradle
+      - node_modules/react-native-svg/android/build.gradle
+    build:
+      - cd android
+      - gradle assembleRelease
+
+MaintainerNotes: |-
+  Expo SDK 57 / React Native 0.86.3. android/ is not committed; init: installs
+  npm dependencies, switches Expo autolinking to source builds and generates
+  the native project with `npx expo prebuild`. Node 24 LTS is downloaded in
+  sudo: because Debian's packaged Node is too old. Bump the tarball URL and
+  SHA-256 together.
+
+  React Native's Gradle plugins need a Java 17 toolchain, installed from
+  bookworm in sudo: (same approach as io.evcc.android). Gradle 9.3.1 is
+  downloaded by the wrapper from gradle-wrapper.properties.
+
+  scripts/fdroid-prepare.mjs (in the app repo) sets
+  expo.autolinking.android.buildFromSource to [".*"] so every Expo module is
+  compiled from source instead of the prebuilt AARs that Expo ships in
+  node_modules/expo-*/local-maven-repo. The rm: entries delete those AARs,
+  the iOS-only XCFramework prebuilds, expo/template.tgz (needed by prebuild,
+  which already ran in init:), the macOS/Windows hermesc and fb-dotslash
+  binaries, react-native/React/I18n and react-native-svg/apple. public/audio
+  (5,000 web-only MP3s) is removed too; public/ is not part of the native
+  bundle.
+
+  The scanignore: entries are the library build.gradle files that reference
+  the React Native maven path through Gradle variables the scanner cannot
+  resolve, plus hermesc/linux64-bin/hermesc. hermesc only compiles the JS
+  bundle on the build host; nothing from it is packaged in the APK.
+
+  AntiFeatures: NonFreeNet. The optional handwriting search in Vocabulary
+  sends the drawn strokes to Google's public Input Tools endpoint. Everything
+  else works offline; the app is fully usable without that feature.
+
+  No proprietary dependencies: no Google Play Services, Firebase, ads,
+  analytics or crash reporting. Reproducible builds are not enabled (Expo
+  prebuild + Hermes output is not deterministic today), so F-Droid signs the
+  APK with its own key. The GitHub APK uses a different key; switching between
+  the two channels needs an uninstall.
+
+  app.json expo.android.versionCode is the F-Droid build number
+  (major*10000 + minor*100 + patch). EAS keeps its own remote versionCode for
+  the GitHub/Play builds (cli.appVersionSource: "remote"), so the values are
+  deliberately different.
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+UpdateCheckData: app.json|"versionCode":\s*(\d+)|.|"version":\s*"([\d.]+)"
+CurrentVersion: 1.1.1
+CurrentVersionCode: 10101
