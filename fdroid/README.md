@@ -53,6 +53,14 @@ There is no F-Droid account besides GitLab, and no token is stored in this repos
 - **Versioning.** `app.json` `expo.android.versionCode` is the F-Droid build number
   (`major * 10000 + minor * 100 + patch`). EAS uses its own remote `versionCode` for GitHub/Play.
 
+## Status
+
+Submitted to `fdroiddata` as [!56381](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/56381) on
+2026-11-08. The fork pipeline is blocked by GitLab's identity verification for shared runners
+("Verify your identity to run this pipeline"); per the fdroiddata checklist no phone number or credit
+card was provided, and the MR asks the maintainers to trigger CI on the F-Droid side. The metadata
+passed `fdroid lint` and `fdroid rewritemeta` locally.
+
 ## After the merge
 
 F-Droid publishes new apps in roughly 24-48 hours if the build succeeds. Once
