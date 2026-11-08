@@ -1,3 +1,5 @@
+AntiFeatures:
+  - NonFreeNet
 Categories:
   - Science & Education
 License: MIT
@@ -8,8 +10,6 @@ WebSite: https://github.com/olcanaskar/hanyupick
 SourceCode: https://github.com/olcanaskar/hanyupick
 IssueTracker: https://github.com/olcanaskar/hanyupick/issues
 Changelog: https://github.com/olcanaskar/hanyupick/releases
-AntiFeatures:
-  - NonFreeNet
 
 AutoName: HanyuPick
 
@@ -28,7 +28,8 @@ Builds:
       - apt-get install -y -t bookworm openjdk-17-jdk-headless
       - update-java-alternatives -s java-1.17.0-openjdk-amd64
       - curl -Lo node.tar.xz https://nodejs.org/dist/v24.21.0/node-v24.21.0-linux-x64.tar.xz
-      - echo "fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6  node.tar.xz" | sha256sum -c -
+      - echo "fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6  node.tar.xz"
+        | sha256sum -c -
       - tar xJf node.tar.xz
       - cp -a node-v24.21.0-linux-x64/. /usr/local/
     init:
@@ -54,8 +55,7 @@ Builds:
       - node_modules/react-native/React/I18n
       - node_modules/react-native-svg/apple
       - public/audio
-    prebuild:
-      - sed -i '/signingConfig signingConfigs/d' android/app/build.gradle
+    prebuild: sed -i '/signingConfig signingConfigs/d' android/app/build.gradle
     scanignore:
       - node_modules/hermes-compiler/hermesc/linux64-bin/hermesc
       - node_modules/@react-native-async-storage/async-storage/android/build.gradle
